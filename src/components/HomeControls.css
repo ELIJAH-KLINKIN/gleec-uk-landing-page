@@ -1,0 +1,65 @@
+/* HomeControls */
+.gl-home-ctrl {
+  padding-bottom: 80px;
+}
+.gl-ctrl-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.gl-ctrl-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 22px;
+  padding: 28px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  transition:
+    border-color 240ms,
+    transform 240ms;
+}
+.gl-ctrl-card:hover {
+  border-color: var(--gleec-purple-edge);
+  transform: translateY(-3px);
+}
+.gl-ctrl-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(140, 65, 255, 0.1);
+  border: 1px solid rgba(140, 65, 255, 0.24);
+  color: #c7aaff;
+  display: grid;
+  place-items: center;
+  margin-bottom: 28px;
+}
+.gl-ctrl-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--fg-0);
+  margin: 0 0 8px;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.gl-ctrl-card p {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--fg-2);
+  line-height: 1.55;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+@media (max-width: 980px) {
+  .gl-ctrl-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .gl-ctrl-grid {
+    grid-template-columns: 1fr;
+  }
+}

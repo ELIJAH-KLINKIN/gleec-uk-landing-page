@@ -1,0 +1,118 @@
+/* Global baseline: reset, anchor offsets, focus rings, reduced motion.
+   Loaded after tokens.css so it can use the design tokens.
+   Note: there is deliberately no global `box-sizing: border-box` — the page
+   was designed under the browser default (content-box) and its fixed widths
+   assume it. Components that need border-box opt in locally. */
+
+html {
+  background: var(--bg-0);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* In-page links land below the floating sticky nav instead of under it. */
+  scroll-padding-top: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a,
+button,
+[role="tab"],
+input,
+select,
+textarea,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid #c7aaff;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.gl-btn:focus-visible,
+.gl-hc-pill:focus-visible,
+.gl-gae-pill:focus-visible,
+.gl-fc-ctrl:focus-visible {
+  border-radius: 999px;
+}
+
+.gl-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — first focusable element on the page. */
+.gl-skip {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 160ms var(--ease-out);
+}
+.gl-skip:focus-visible {
+  transform: none;
+}
+
+.gl-noscript {
+  max-width: 640px;
+  margin: 96px auto;
+  padding: 0 24px;
+  color: var(--fg-2);
+  font-family: var(--font-body);
+  text-align: center;
+}
+
+::selection {
+  background: rgba(140, 65, 255, 0.45);
+  color: #fff;
+}
+
+/* Respect the OS "reduce motion" setting: collapse transitions to (almost)
+   instant. Decorative keyframe animations are switched off in their own
+   component stylesheets; the carousels' timer bars are left alone because the
+   carousels start paused under this setting (see useAutoplay). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+  }
+}

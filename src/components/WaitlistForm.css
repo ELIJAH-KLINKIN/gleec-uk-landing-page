@@ -1,0 +1,320 @@
+/* WaitlistForm */
+.gl-wl-form,
+.gl-wl-form *,
+.gl-wl-form *::before,
+.gl-wl-form *::after,
+.gl-wl-success {
+  box-sizing: border-box;
+}
+.gl-wl-form {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.gl-wl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 16px;
+}
+.gl-wl-span {
+  grid-column: 1 / -1;
+}
+.gl-wl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.gl-wl-field > label,
+.gl-wl-fieldset > legend {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-1);
+  letter-spacing: -0.005em;
+}
+.gl-wl-req {
+  color: #c7aaff;
+  margin-left: 2px;
+}
+.gl-wl-opt {
+  margin-left: 6px;
+  font-weight: 500;
+  color: var(--fg-3);
+}
+
+.gl-wl-field input[type="text"],
+.gl-wl-field input[type="email"],
+.gl-wl-field input[type="tel"],
+.gl-wl-field select,
+.gl-wl-field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  color: var(--fg-0);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.4;
+  transition:
+    border-color 140ms var(--ease-out),
+    background 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out);
+}
+.gl-wl-field textarea {
+  resize: vertical;
+  min-height: 104px;
+}
+.gl-wl-field ::placeholder {
+  color: var(--fg-3);
+  opacity: 1;
+}
+.gl-wl-field input:hover,
+.gl-wl-field select:hover,
+.gl-wl-field textarea:hover {
+  border-color: var(--line-3);
+}
+.gl-wl-field input:focus,
+.gl-wl-field select:focus,
+.gl-wl-field textarea:focus {
+  outline: none;
+  border-color: var(--gleec-purple);
+  background: var(--bg-2);
+  box-shadow: 0 0 0 3px rgba(140, 65, 255, 0.22);
+}
+.gl-wl-field [aria-invalid="true"] {
+  border-color: rgba(255, 122, 122, 0.7);
+}
+.gl-wl-field [aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(255, 122, 122, 0.2);
+}
+
+.gl-wl-select {
+  position: relative;
+}
+.gl-wl-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+.gl-wl-select > span {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fg-3);
+}
+.gl-wl-select option {
+  background: #17171b;
+  color: #fff;
+}
+
+.gl-wl-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.gl-wl-fieldset > legend {
+  padding: 0;
+  margin-bottom: 8px;
+}
+.gl-wl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gl-wl-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-2);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 140ms,
+    color 140ms,
+    background 140ms;
+}
+.gl-wl-chip:hover {
+  border-color: var(--line-3);
+  color: var(--fg-0);
+}
+.gl-wl-chip.is-on {
+  color: var(--fg-0);
+  border-color: var(--gleec-purple-edge);
+  background: rgba(140, 65, 255, 0.16);
+}
+.gl-wl-chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.gl-wl-chip:has(input:focus-visible) {
+  outline: 2px solid #c7aaff;
+  outline-offset: 3px;
+}
+
+.gl-wl-consent {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.gl-wl-consent input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--gleec-purple);
+  cursor: pointer;
+}
+
+.gleec .gl-wl-err {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: #ff9a9a;
+}
+
+.gl-wl-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.gl-wl-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  text-align: center;
+}
+.gl-wl-submit {
+  min-width: 200px;
+  justify-content: center;
+}
+.gl-wl-submit:disabled {
+  opacity: 0.75;
+  cursor: progress;
+  transform: none;
+}
+.gleec .gl-wl-fine {
+  margin: 0;
+  max-width: 520px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fg-3);
+}
+.gl-wl-spin svg {
+  animation: gl-wl-spin 900ms linear infinite;
+}
+@keyframes gl-wl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gl-wl-spin svg {
+    animation-duration: 2400ms;
+  }
+}
+
+.gl-wl-status:empty {
+  display: none;
+}
+.gleec .gl-wl-server-err {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(230, 30, 30, 0.08);
+  border: 1px solid rgba(255, 122, 122, 0.3);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #ffb3b3;
+}
+
+.gl-wl-success {
+  max-width: 560px;
+  margin: 8px auto 0;
+  padding: 36px 28px;
+  border-radius: 24px;
+  background: rgba(140, 65, 255, 0.08);
+  border: 1px solid var(--gleec-purple-edge);
+  text-align: center;
+  outline: none;
+}
+.gl-wl-success-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gleec-purple);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(140, 65, 255, 0.18);
+  margin-bottom: 18px;
+}
+.gleec .gl-wl-success-h {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--fg-0);
+  margin: 0 0 10px;
+}
+.gleec .gl-wl-success p {
+  margin: 0 0 18px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.gl-wl-link {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 4px 2px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: #c7aaff;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.gl-wl-link:hover {
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .gl-wl-grid {
+    grid-template-columns: 1fr;
+  }
+  .gl-wl-submit {
+    width: 100%;
+  }
+}

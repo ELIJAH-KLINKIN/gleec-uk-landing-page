@@ -16,3 +16,23 @@
 
 # Logs
 *.log
+
+# Build / deps
+node_modules/
+dist/
+.vercel/
+
+# Local env overrides (the committed .env holds public defaults only)
+.env.local
+.env.*.local
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+dist-ssr/
+
+# Local Claude Code launch config
+.claude/
+dist-test/
+dist-test-ssr/

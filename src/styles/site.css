@@ -1,0 +1,133 @@
+/* GLEEC Business website — kit-specific styles (page chrome only) */
+
+.gl-page {
+  background: var(--bg-0);
+  color: var(--fg-1);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.gl-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.gl-section {
+  padding: 120px 0;
+  position: relative;
+}
+.gl-section.tight {
+  padding: 80px 0;
+}
+.gl-section.huge {
+  padding: 160px 0;
+}
+
+.gl-section + .gl-section {
+  border-top: 1px solid var(--line-1);
+}
+
+/* Eyebrow + heading rhythm */
+.gl-eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gleec-purple);
+  margin: 0 0 18px;
+}
+
+.gl-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.5vw, 56px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--fg-0);
+  margin: 0 0 18px;
+  text-wrap: balance;
+  max-width: 760px;
+}
+
+.gl-lead {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--fg-2);
+  line-height: 1.55;
+  margin: 0 0 36px;
+  max-width: 560px;
+}
+
+/* Buttons (kit-level) */
+.gl-btn {
+  box-sizing: border-box;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 999px;
+  padding: 13px 22px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 140ms var(--ease-out);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.gl-btn-primary {
+  background: #fff;
+  color: #000;
+}
+.gl-btn-primary:hover {
+  background: #f2f2f2;
+  transform: translateY(-1px);
+}
+.gl-btn-primary:active {
+  transform: scale(0.985);
+  background: #e5e5e5;
+}
+.gl-btn-secondary {
+  background: transparent;
+  color: #fff;
+  border-color: var(--line-3);
+}
+.gl-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--line-strong);
+}
+.gl-btn-lg {
+  padding: 16px 28px;
+  font-size: 16px;
+}
+.gl-btn-sm {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+/* Aura */
+.gl-aura {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+}
+.gl-aura-purple {
+  background: radial-gradient(closest-side, rgba(140, 65, 255, 0.55), transparent 70%);
+}
+
+/* Reveal-on-mount */
+.gl-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 480ms var(--ease-out),
+    transform 480ms var(--ease-out);
+}
+.gl-reveal.gl-in {
+  opacity: 1;
+  transform: none;
+}

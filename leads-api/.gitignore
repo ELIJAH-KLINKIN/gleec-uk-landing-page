@@ -1,0 +1,11 @@
+node_modules/
+.vercel/
+.env*
+!.env.example
+.DS_Store
+.vercel
+
+# Agent skills installed by the Vercel/Neon CLI (local tooling, not part of the API)
+.agents/
+.claude/
+skills-lock.json

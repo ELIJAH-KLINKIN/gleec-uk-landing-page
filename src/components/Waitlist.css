@@ -1,0 +1,65 @@
+/* Waitlist */
+.gl-cta-section {
+  position: relative;
+  padding: 56px 0 112px;
+  overflow: hidden;
+}
+.gl-cta-inner {
+  position: relative;
+  z-index: 1;
+}
+.gl-cta-card {
+  background: var(--bg-1);
+  border: 1px solid var(--line-2);
+  border-radius: 28px;
+  padding: 80px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--inset-top);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.gl-cta-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(closest-side at 50% 0%, rgba(140, 65, 255, 0.18), transparent 70%),
+    radial-gradient(closest-side at 50% 120%, rgba(140, 65, 255, 0.1), transparent 60%);
+  pointer-events: none;
+}
+.gl-cta-card > * {
+  position: relative;
+}
+.gl-cta-card .gl-wl-form {
+  margin-top: 8px;
+  text-align: left;
+}
+.gl-cta-card .gl-eyebrow {
+  margin-bottom: 18px;
+}
+.gl-cta-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(36px, 4.6vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg-0);
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.gl-cta-lead {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: var(--fg-2);
+  margin: 0 auto 32px;
+  max-width: 600px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+@media (max-width: 720px) {
+  .gl-cta-card {
+    padding: 56px 24px;
+  }
+}
