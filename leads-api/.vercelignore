@@ -1,0 +1,8 @@
+# Allowlist: upload only what the functions need. Without this, a no-framework
+# project also serves every other file (README, tests, schema) as static content.
+/*
+!api
+!lib
+!package.json
+!package-lock.json
+!vercel.json

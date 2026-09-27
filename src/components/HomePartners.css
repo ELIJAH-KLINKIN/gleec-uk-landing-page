@@ -1,0 +1,56 @@
+/* HomePartners */
+.gl-home-partners {
+  padding: 80px 0;
+}
+.gl-partners-head {
+  max-width: 760px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+.gl-partners-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(36px, 4.6vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg-0);
+  margin: 12px 0 0;
+  text-wrap: balance;
+}
+.gl-partners-sub {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--fg-2);
+  margin: 20px auto 0;
+  max-width: 620px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.gl-partners-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 24px;
+  align-items: center;
+  justify-items: center;
+  opacity: 0.78;
+}
+.gl-partner {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-1);
+  filter: grayscale(1);
+  transition:
+    opacity 240ms,
+    filter 240ms;
+}
+.gl-partner:hover {
+  filter: grayscale(0);
+}
+@media (max-width: 760px) {
+  .gl-partners-strip {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 36px;
+  }
+}

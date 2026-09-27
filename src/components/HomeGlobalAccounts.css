@@ -1,0 +1,729 @@
+/* HomeGlobalAccounts */
+/* ---- Section frame ---- */
+.gl-home-gae {
+  padding: 140px 0 120px;
+}
+.gl-gae-aura {
+  width: 1000px;
+  height: 1000px;
+  top: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.1;
+}
+.gl-gae-ctas {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+/* ---- Shell ---- */
+.gl-gae-shell {
+  position: relative;
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  gap: 18px;
+  padding: 22px;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(140, 65, 255, 0.1), transparent 60%),
+    linear-gradient(180deg, #0c0c10 0%, #08080b 100%);
+  border: 1px solid var(--line-2);
+  border-radius: 32px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 32px 80px rgba(0, 0, 0, 0.55);
+}
+
+.gl-gae-eye {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gleec-purple);
+}
+.gl-gae-eye.dim {
+  color: var(--fg-3);
+}
+
+/* ---- Markets column ---- */
+.gl-gae-markets {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line-1);
+  border-radius: 22px;
+  padding: 18px 10px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.gl-gae-markets > .gl-gae-eye {
+  padding: 0 8px 12px;
+}
+.gl-gae-markets ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.gl-gae-market {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--fg-2);
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  transition:
+    color 200ms var(--ease-out),
+    background 200ms var(--ease-out);
+  min-width: 0;
+}
+.gl-gae-market .gl-gae-market-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gl-gae-market:hover {
+  color: var(--fg-0);
+  background: rgba(255, 255, 255, 0.03);
+}
+.gl-gae-market.is-on {
+  color: var(--fg-0);
+  background: rgba(140, 65, 255, 0.1);
+  box-shadow:
+    inset 0 0 0 1px rgba(140, 65, 255, 0.18),
+    0 0 24px -8px rgba(140, 65, 255, 0.35);
+}
+
+.gl-gae-mflag {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: linear-gradient(160deg, #1f1f26 0%, #131318 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: box-shadow 220ms var(--ease-out);
+  overflow: hidden;
+}
+.gl-gae-mflag.is-on {
+  box-shadow:
+    inset 0 0 0 1px rgba(140, 65, 255, 0.45),
+    0 0 0 2px rgba(140, 65, 255, 0.18);
+}
+.gl-gae-mflag svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.gl-gae-markets-foot {
+  margin-top: 16px;
+  padding: 14px 10px 2px;
+  border-top: 1px solid var(--line-1);
+}
+.gl-gae-stat {
+  padding: 0;
+  min-width: 0;
+}
+.gl-gae-stat strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg-0);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: block;
+  margin-bottom: 6px;
+}
+.gl-gae-stat span {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  color: var(--fg-3);
+  line-height: 1.4;
+  display: block;
+}
+
+/* ---- Centre column ---- */
+.gl-gae-centre {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.gl-gae-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line-1);
+  border-radius: 999px;
+  width: max-content;
+  max-width: 100%;
+}
+.gl-gae-pill {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-2);
+  background: transparent;
+  border: 0;
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 180ms var(--ease-out),
+    background 180ms var(--ease-out);
+  white-space: nowrap;
+}
+.gl-gae-pill:hover {
+  color: var(--fg-0);
+  background: rgba(255, 255, 255, 0.04);
+}
+.gl-gae-pill.is-on {
+  color: #fff;
+  background: var(--gleec-purple);
+  box-shadow:
+    0 6px 16px rgba(140, 65, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.gl-gae-stage {
+  position: relative;
+  min-height: 460px;
+}
+
+.gl-gae-card-details {
+  background: linear-gradient(180deg, #15151a 0%, #0b0b0f 100%);
+  border: 1px solid var(--line-2);
+  border-radius: 22px;
+  padding: 26px 26px 22px;
+  box-shadow:
+    var(--inset-top),
+    0 18px 48px rgba(0, 0, 0, 0.4);
+  transition:
+    opacity 280ms var(--ease-out),
+    transform 280ms var(--ease-out);
+}
+@keyframes gaeFade {
+  from {
+    opacity: 0.7;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gl-gae-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.gleec .gl-gae-card-h {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--fg-0);
+  margin: 6px 0 0;
+}
+.gl-gae-cur-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(140, 65, 255, 0.1);
+  border: 1px solid rgba(140, 65, 255, 0.32);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: #d7c2ff;
+  letter-spacing: 0.02em;
+}
+.gl-gae-cur-chip > :first-child {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.gl-gae-card-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  padding-bottom: 22px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line-1);
+}
+.gl-gae-card-col .gl-gae-eye {
+  margin-bottom: 14px;
+}
+.gl-gae-card-col dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gl-gae-card-col dl > div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+.gl-gae-card-col dt {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--fg-3);
+}
+.gl-gae-card-col dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-0);
+  letter-spacing: -0.01em;
+  word-break: break-word;
+}
+.gl-gae-card-col dd.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.gl-gae-card-col dd.addr {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--fg-1);
+  line-height: 1.4;
+}
+
+.gl-gae-card-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gl-gae-method-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gl-gae-mchip {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-1);
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line-2);
+  white-space: nowrap;
+}
+.gl-gae-note {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--fg-3);
+  line-height: 1.5;
+}
+
+/* ---- Floating explanation card ---- */
+.gl-gae-explain-wrap {
+  position: absolute;
+  right: -8px;
+  bottom: -28px;
+  width: 340px;
+  z-index: 2;
+}
+@keyframes gaeFloat {
+  from {
+    opacity: 0.7;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.gl-gae-explain {
+  background: linear-gradient(160deg, #1a1a20 0%, #0d0d11 100%);
+  border: 1px solid rgba(140, 65, 255, 0.4);
+  border-radius: 18px;
+  padding: 18px 20px 20px;
+  box-shadow:
+    0 0 0 1px rgba(140, 65, 255, 0.2),
+    0 24px 56px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(140, 65, 255, 0.18);
+}
+.gl-gae-explain-eye {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gleec-purple);
+  margin-bottom: 12px;
+}
+.gl-gae-explain-num {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fg-0);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line-2);
+  flex-wrap: wrap;
+}
+.gl-gae-explain-num .seg {
+  position: relative;
+}
+.gl-gae-explain-num .dash {
+  color: var(--fg-3);
+}
+.gl-gae-explain-num.iban .seg.a {
+  color: #d7c2ff;
+}
+.gl-gae-explain-num.iban .seg.b {
+  color: #9bc9ff;
+}
+.gl-gae-explain-num.iban .seg.c {
+  color: var(--fg-0);
+  font-size: 17px;
+  letter-spacing: 0.04em;
+}
+.gl-gae-explain-num.swift .seg.a {
+  color: #d7c2ff;
+}
+.gl-gae-explain-num.swift .seg.b {
+  color: #9bc9ff;
+}
+.gl-gae-explain-num.swift .seg.c {
+  color: #abe7cb;
+}
+.gl-gae-explain-num.swift .seg.d {
+  color: var(--fg-3);
+}
+.gl-gae-explain-num .seg.a {
+  color: #d7c2ff;
+}
+.gl-gae-explain-num .seg.b {
+  color: #9bc9ff;
+}
+.gl-gae-explain-num .seg.c {
+  color: #abe7cb;
+}
+.gl-gae-explain-num.aba {
+  font-size: 17px;
+  letter-spacing: 0.04em;
+}
+.gl-gae-explain-num.aba .seg.a {
+  color: #d7c2ff;
+}
+.gl-gae-explain-num.aba .seg.b {
+  color: #9bc9ff;
+}
+
+.gl-gae-explain-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  color: var(--fg-2);
+}
+.gl-gae-explain-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.gl-gae-explain-legend .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.gl-gae-explain-legend .dot.a {
+  background: #d7c2ff;
+}
+.gl-gae-explain-legend .dot.b {
+  background: #9bc9ff;
+}
+.gl-gae-explain-legend .dot.c {
+  background: #abe7cb;
+}
+.gl-gae-explain-legend .dot.d {
+  background: var(--fg-3);
+}
+
+/* ---- Right column ---- */
+.gl-gae-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.gl-gae-side-block {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line-1);
+  border-radius: 22px;
+  padding: 22px 20px;
+}
+.gl-gae-side-block .gl-gae-eye {
+  margin-bottom: 14px;
+  color: var(--gleec-purple);
+}
+.gl-gae-side-block:last-child .gl-gae-eye {
+  color: var(--fg-3);
+}
+
+.gl-gae-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.gl-gae-bullets li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--fg-1);
+  line-height: 1.4;
+}
+.gl-gae-tick {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(140, 65, 255, 0.16);
+  color: #d7c2ff;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+}
+
+.gl-gae-methods-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gl-gae-methods-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-1);
+}
+.gl-gae-methods-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.gl-gae-methods-list strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-0);
+  letter-spacing: -0.005em;
+}
+.gl-gae-methods-list span {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--fg-3);
+  line-height: 1.4;
+}
+
+/* ---- Bottom strip ---- */
+.gl-gae-strip {
+  margin-top: 56px;
+  text-align: center;
+}
+.gl-gae-strip-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.gl-gae-strip-pill {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-2);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line-2);
+  transition:
+    color 180ms,
+    border-color 180ms;
+  white-space: nowrap;
+}
+.gl-gae-strip-pill:hover {
+  color: var(--fg-0);
+  border-color: var(--line-3);
+}
+.gl-gae-strip-cap {
+  margin: 18px 0 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--fg-3);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1080px) {
+  .gl-gae-shell {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  .gl-gae-side {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+  .gl-gae-side-block {
+    flex: 1;
+  }
+  .gl-gae-explain-wrap {
+    width: 300px;
+    right: 0;
+    bottom: -20px;
+  }
+  .gl-gae-stage {
+    padding-bottom: 90px;
+  }
+}
+@media (max-width: 820px) {
+  .gl-gae-shell {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 24px;
+  }
+  .gl-gae-markets ul {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+    margin: 0 -4px;
+    padding: 0 4px 4px;
+  }
+  .gl-gae-markets ul::-webkit-scrollbar {
+    display: none;
+  }
+  .gl-gae-markets ul {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .gl-gae-market {
+    flex-shrink: 0;
+  }
+  .gl-gae-market-bar {
+    display: none;
+  }
+  .gl-gae-market.is-on {
+    background: rgba(140, 65, 255, 0.16);
+    border: 1px solid rgba(140, 65, 255, 0.35);
+  }
+  .gl-gae-markets-foot {
+    display: none;
+  }
+  .gl-gae-pills {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .gl-gae-pills::-webkit-scrollbar {
+    display: none;
+  }
+  .gl-gae-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .gl-gae-side {
+    flex-direction: column;
+  }
+  .gl-gae-stage {
+    min-height: 0;
+    padding-bottom: 220px;
+  }
+  .gl-gae-explain-wrap {
+    position: static;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .gl-gae-stage {
+    padding-bottom: 0;
+  }
+}
+@media (max-width: 540px) {
+  .gl-gae-card-details {
+    padding: 20px 18px;
+  }
+  .gl-gae-card-h {
+    font-size: 18px;
+  }
+  .gl-gae-explain-num {
+    font-size: 20px;
+  }
+  .gl-gae-explain-num.iban .seg.c {
+    font-size: 14px;
+  }
+  .gl-gae-card-col dl > div {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+}
+
+/* While the explainer floats over the details card (wider than 820px), keep
+   the card's own text clear of it: reserve room at the bottom of the card. */
+@media (min-width: 821px) {
+  .gl-gae-card-details {
+    padding-bottom: 104px;
+  }
+}
+
+/* Entrance motion when the market / method changes. The details card, the
+   explainer and the methods list are re-keyed in JSX so these replay. */
+.gl-gae-card-details {
+  animation: gaeFade 360ms var(--ease-out) both;
+}
+.gl-gae-explain-wrap {
+  animation: gaeFloat 460ms var(--ease-out) both;
+}
+.gl-gae-methods-list {
+  animation: gaeFade 360ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gl-gae-card-details,
+  .gl-gae-explain-wrap,
+  .gl-gae-methods-list {
+    animation: none;
+  }
+}

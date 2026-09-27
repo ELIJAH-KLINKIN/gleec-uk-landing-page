@@ -1,0 +1,122 @@
+/* HomeSegments */
+.gl-home-segs {
+  padding-bottom: 80px;
+}
+.gl-segs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.gl-seg {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 28px;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  transition:
+    border-color 240ms,
+    transform 240ms,
+    background 240ms;
+}
+.gl-seg:hover {
+  border-color: var(--line-3);
+  transform: translateY(-3px);
+}
+
+.gl-seg.is-featured {
+  background:
+    radial-gradient(140% 90% at 100% 0%, rgba(140, 65, 255, 0.16), transparent 60%),
+    radial-gradient(120% 80% at 0% 100%, rgba(140, 65, 255, 0.06), transparent 60%), var(--bg-2);
+  border-color: rgba(140, 65, 255, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(140, 65, 255, 0.2),
+    0 28px 60px rgba(140, 65, 255, 0.18);
+}
+
+.gl-seg-h {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--fg-0);
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+.gl-seg-body {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--fg-2);
+  line-height: 1.55;
+  margin: 0 0 28px;
+  text-wrap: pretty;
+}
+
+.gl-seg-block {
+  flex: 1;
+}
+.gl-seg-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0 0 14px;
+}
+.gl-seg-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gl-seg-bullets li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--fg-1);
+}
+.gl-seg-dash {
+  width: 14px;
+  height: 1.5px;
+  background: var(--fg-3);
+  border-radius: 1px;
+}
+.gl-seg.is-featured .gl-seg-dash {
+  background: var(--gleec-purple);
+}
+
+.gl-seg-cta {
+  margin-top: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-0);
+  text-decoration: none;
+  transition:
+    gap 200ms,
+    color 200ms;
+}
+.gl-seg-cta:hover {
+  gap: 12px;
+  color: var(--gleec-purple);
+}
+
+@media (max-width: 980px) {
+  .gl-segs-grid {
+    grid-template-columns: 1fr;
+  }
+  .gl-seg {
+    min-height: 0;
+  }
+}
