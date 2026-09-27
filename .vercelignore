@@ -1,0 +1,10 @@
+# The lead API is its own Vercel project (leads-api/); tests and local
+# artefacts aren't needed to build the site.
+leads-api
+tests
+dist
+dist-*
+test-results
+playwright-report
+node_modules
+.claude
