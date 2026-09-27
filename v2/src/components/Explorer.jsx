@@ -161,7 +161,11 @@ export default function Explorer() {
             </ul>
           </div>
           <div>
-            <h3 className="xp-below-title">Transfer methods · {market.label}</h3>
+            <h3 className="xp-below-title">
+              Transfer methods ·
+              <Flag code={market.flag} size={22} />
+              {market.label}
+            </h3>
             <dl className="kv kv-inset">
               {market.routes.map(([name, desc]) => (
                 <div key={name}>

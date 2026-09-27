@@ -269,6 +269,22 @@ a:hover {
   transform: translateX(2px);
 }
 
+/* "Coming soon" label — the same quiet pill wherever something isn't ready yet. */
+.soon {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--soon-fill);
+  color: var(--soon-text);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  white-space: nowrap;
+  vertical-align: 0.1em;
+}
+
 /* Utility */
 .visually-hidden {
   position: absolute !important;

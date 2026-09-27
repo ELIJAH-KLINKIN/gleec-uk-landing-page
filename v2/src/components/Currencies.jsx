@@ -3,6 +3,8 @@
 import { CURRENCIES } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
+import Flag from "./ui/Flag.jsx";
+import { CURRENCY_FLAG } from "../lib/flags.js";
 import "./Currencies.css";
 
 export default function Currencies() {
@@ -22,7 +24,10 @@ export default function Currencies() {
               <span className="cur-symbol" aria-hidden="true">
                 {c.symbol}
               </span>
-              <span className="cur-code">{c.code}</span>
+              <span className="cur-code">
+                <Flag code={CURRENCY_FLAG[c.code]} size={22} />
+                {c.code}
+              </span>
               <span className="cur-name">{c.name}</span>
               <span className="cur-routes">{c.routes}</span>
             </li>
@@ -30,10 +35,15 @@ export default function Currencies() {
         </ul>
 
         <div className="cur-soon">
-          <h3 className="cur-soon-title">{CURRENCIES.soonLabel}</h3>
+          <h3 className="cur-soon-title">
+            <span className="soon">{CURRENCIES.soonLabel}</span>
+          </h3>
           <ul className="cur-chips">
             {CURRENCIES.soon.map((code) => (
-              <li key={code}>{code}</li>
+              <li key={code}>
+                <Flag code={CURRENCY_FLAG[code]} size={18} />
+                {code}
+              </li>
             ))}
             <li className="cur-more">{CURRENCIES.more}</li>
           </ul>

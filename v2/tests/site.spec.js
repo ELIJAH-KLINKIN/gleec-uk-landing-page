@@ -259,90 +259,119 @@ test("FAQ rows open and close; several can be open", async ({ page }) => {
   await expect(items.nth(3)).not.toHaveAttribute("open");
 });
 
-test("segment and plan links pre-select the business type", async ({ page }) => {
+// ---------------- Waitlist form ----------------
+const STATS_API = "https://leads-api.test/api/stats";
+const DETAILS_API = `${LEADS_API}/details`;
+
+test("waitlist: pill field, live count and planned launch", async ({ page }) => {
+  await page.route(STATS_API, (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true,"companies":1284}' }),
+  );
+  await page.goto("./#waitlist");
+  const form = page.locator("#waitlist form");
+  await expect(form.getByRole("textbox", { name: "Work email" })).toBeVisible();
+  await expect(form.getByRole("button", { name: "Join" })).toBeDisabled();
+  await expect(form.getByText("1,284 companies on the list")).toBeVisible();
+  await expect(form.getByText("Planned launch: Q2 2027")).toBeVisible();
+});
+
+test("waitlist: count is hidden when unavailable", async ({ page }) => {
+  await page.route(STATS_API, (route) => route.fulfill({ status: 503, body: "{}" }));
+  await page.goto("./#waitlist");
+  await expect(page.locator("#waitlist").getByText("Planned launch: Q2 2027")).toBeVisible();
+  await expect(page.locator("#waitlist").getByText(/on the list/)).toHaveCount(0);
+});
+
+test("waitlist: invalid email shows how to fix it", async ({ page }) => {
+  let called = false;
+  await page.route(LEADS_API, (route) => {
+    called = true;
+    return route.abort();
+  });
+  await page.goto("./#waitlist");
+  const form = page.locator("#waitlist form");
+  await form.getByRole("textbox", { name: "Work email" }).fill("not-an-email");
+  await form.getByRole("button", { name: "Join" }).click();
+  await expect(form.getByText("Enter an email address like name@company.com.")).toBeVisible();
+  await expect(form.getByRole("textbox", { name: "Work email" })).toBeFocused();
+  expect(called).toBe(false);
+});
+
+test("waitlist: join with email, then add details", async ({ page }) => {
+  let joinBody;
+  let detailsBody;
+  await page.route(LEADS_API, async (route) => {
+    joinBody = route.request().postDataJSON();
+    await route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' });
+  });
+  await page.route(DETAILS_API, async (route) => {
+    detailsBody = route.request().postDataJSON();
+    await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
+  });
+  await page.goto("./?utm_source=linkedin#waitlist");
+  const section = page.locator("#waitlist");
+  await page.waitForTimeout(2600); // the API's bot time-trap rejects instant submissions
+  await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await section.getByRole("button", { name: "Join" }).click();
+
+  await expect(section.getByText("You’re on the list.")).toBeVisible();
+  await expect(section.getByRole("heading", { name: "Need a tailored setup?" })).toBeVisible();
+  expect(joinBody).toMatchObject({
+    email: "ada@example.co.uk",
+    consent: true,
+    website: "",
+    source: { utm_source: "linkedin" },
+  });
+  expect(joinBody.startedAt).toBeGreaterThan(0);
+
+  const send = section.getByRole("button", { name: "Send Details" });
+  await expect(send).toBeDisabled();
+  await section.getByLabel("Full name").fill("Ada Lovelace");
+  await section.getByLabel("Company name").fill("Analytical Engines Ltd");
+  await section.getByLabel("Business type").selectOption("international");
+  await section.getByRole("button", { name: "EUR" }).click();
+  await expect(section.getByRole("button", { name: "EUR" })).toHaveAttribute("aria-pressed", "true");
+  await send.click();
+  await expect(section.getByRole("heading", { name: "Thanks — we’ll be in touch." })).toBeVisible();
+  expect(detailsBody).toMatchObject({
+    id: "L1",
+    token: "T1",
+    fullName: "Ada Lovelace",
+    company: "Analytical Engines Ltd",
+    businessType: "international",
+    currencies: ["EUR"],
+  });
+});
+
+test("waitlist: details can be skipped", async ({ page }) => {
+  await page.route(LEADS_API, (route) =>
+    route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' }),
+  );
+  await page.goto("./#waitlist");
+  const section = page.locator("#waitlist");
+  await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await section.getByRole("button", { name: "Join" }).click();
+  await section.getByRole("button", { name: "Not Now" }).click();
+  await expect(section.getByRole("heading", { name: "You’re on the list." })).toBeVisible();
+});
+
+test("waitlist: segment links pre-select the business type for the details step", async ({ page }) => {
+  await page.route(LEADS_API, (route) =>
+    route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' }),
+  );
   await page.goto("./");
   await page
     .locator(".seg-card")
     .nth(1)
     .getByRole("link", { name: /See If It Fits/ })
     .click();
-  await expect(page.locator("#waitlist select[name=businessType]")).toHaveValue("international");
-  await page
-    .locator(".plan-bespoke")
-    .getByRole("link", { name: /Speak to Us/ })
-    .click();
-  await expect(page.locator("#waitlist select[name=businessType]")).toHaveValue("group");
+  const section = page.locator("#waitlist");
+  await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await section.getByRole("button", { name: "Join" }).click();
+  await expect(section.getByLabel("Business type")).toHaveValue("international");
 });
 
-// ---------------- Waitlist form ----------------
-
-async function fillRequired(form) {
-  await form.getByLabel("Full name").fill("Ada Lovelace");
-  await form.getByLabel("Work email").fill("ada@example.co.uk");
-  await form.getByLabel("Company name").fill("Analytical Engines Ltd");
-  await form.getByLabel("Country of incorporation").fill("United Kingdom");
-  await form.getByRole("checkbox", { name: /I agree/ }).check();
-}
-
-test("form: submit is unavailable until required fields are filled; errors appear on leaving a field", async ({
-  page,
-}) => {
-  await page.goto("./#waitlist");
-  const form = page.locator("#waitlist form");
-  const submit = form.getByRole("button", { name: "Join the Waitlist" });
-  await expect(submit).toBeDisabled();
-  await expect(form.getByText(/Fill in your name, work email/)).toBeVisible();
-
-  await form.getByLabel("Work email").fill("not-an-email");
-  await form.getByLabel("Work email").blur();
-  await expect(form.getByText("Enter an email address like name@company.com.")).toBeVisible();
-  await expect(form.getByLabel("Work email")).toHaveAttribute("aria-invalid", "true");
-
-  await fillRequired(form);
-  await form.getByLabel("Work email").fill("not-an-email");
-  await expect(submit).toBeEnabled();
-  await submit.click();
-  await expect(form.getByLabel("Work email")).toBeFocused();
-});
-
-test("form: valid submission posts the lead and shows the success state", async ({ page }) => {
-  let body;
-  await page.route(LEADS_API, async (route) => {
-    body = route.request().postDataJSON();
-    await route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"t"}' });
-  });
-  await page.goto("./?utm_source=linkedin#waitlist");
-  const form = page.locator("#waitlist form");
-  await page.waitForTimeout(2600); // the API's bot time-trap rejects instant submissions
-  await fillRequired(form);
-  await form.getByLabel("Phone").fill("+44 20 7946 0000");
-  await form.getByLabel("Business type").selectOption("international");
-  await form.getByLabel("Expected monthly volume").selectOption("250k_1m");
-  await form.getByRole("button", { name: "EUR" }).click();
-  await form.getByRole("button", { name: "USD" }).click();
-  await expect(form.getByRole("button", { name: "EUR" })).toHaveAttribute("aria-pressed", "true");
-  await form.getByLabel("Message").fill("Receivables in EUR, payouts in USD.");
-  await form.getByRole("button", { name: "Join the Waitlist" }).click();
-  await expect(page.getByRole("heading", { name: "You’re on the list, Ada" })).toBeVisible();
-  expect(body).toMatchObject({
-    fullName: "Ada Lovelace",
-    email: "ada@example.co.uk",
-    company: "Analytical Engines Ltd",
-    country: "United Kingdom",
-    phone: "+44 20 7946 0000",
-    businessType: "international",
-    currencies: ["EUR", "USD"],
-    monthlyVolume: "250k_1m",
-    message: "Receivables in EUR, payouts in USD.",
-    consent: true,
-    website: "",
-    source: { utm_source: "linkedin" },
-  });
-  await page.getByRole("button", { name: "Register Another Company" }).click();
-  await expect(form.getByLabel("Full name")).toHaveValue("");
-});
-
-test("form: server errors are shown next to the field or above the button", async ({ page }) => {
+test("waitlist: server problems are explained and the email is kept", async ({ page }) => {
   let mode = "validation";
   await page.route(LEADS_API, (route) => {
     if (mode === "validation")
@@ -361,16 +390,15 @@ test("form: server errors are shown next to the field or above the button", asyn
   });
   await page.goto("./#waitlist");
   const form = page.locator("#waitlist form");
-  const submit = form.getByRole("button", { name: "Join the Waitlist" });
-  await fillRequired(form);
-  await submit.click();
+  const email = form.getByRole("textbox", { name: "Work email" });
+  await email.fill("ada@example.co.uk");
+  await form.getByRole("button", { name: "Join" }).click();
   await expect(form.getByText("Use a company email address.")).toBeVisible();
-  await expect(form.getByLabel("Work email")).toBeFocused();
   mode = "429";
-  await submit.click();
+  await form.getByRole("button", { name: "Join" }).click();
   await expect(form.getByRole("alert")).toContainText("Too many attempts");
   mode = "network";
-  await submit.click();
+  await form.getByRole("button", { name: "Join" }).click();
   await expect(form.getByRole("alert")).toContainText("Unable to reach the server");
-  await expect(form.getByLabel("Company name")).toHaveValue("Analytical Engines Ltd");
+  await expect(email).toHaveValue("ada@example.co.uk");
 });

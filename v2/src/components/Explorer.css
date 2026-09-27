@@ -214,6 +214,10 @@
   margin-top: var(--s-12);
 }
 .xp-below-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-icon);
   margin-bottom: var(--s-4);
   font-size: var(--t-headline);
   font-weight: 600;

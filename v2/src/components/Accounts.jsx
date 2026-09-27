@@ -2,6 +2,8 @@
 // illustrative desktop app window (sidebar + balances + activity).
 import { ACCOUNTS } from "../content.js";
 import Icon from "./ui/Icon.jsx";
+import Flag from "./ui/Flag.jsx";
+import { CURRENCY_FLAG } from "../lib/flags.js";
 import "./Accounts.css";
 
 const SIDEBAR = ["Accounts", "Cards", "Transfers", "Statements"];
@@ -53,7 +55,10 @@ export default function Accounts() {
             <div className="app-balances">
               {m.balances.map((b, i) => (
                 <div key={b.code} className={"app-balance" + (i === 0 ? " is-selected" : "")}>
-                  <span>{b.code}</span>
+                  <span>
+                    <Flag code={CURRENCY_FLAG[b.code]} size={14} />
+                    {b.code}
+                  </span>
                   <strong>
                     {b.symbol}
                     {b.amount}

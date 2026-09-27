@@ -557,16 +557,31 @@ export const CONTROLS = {
 };
 
 export const WAITLIST = {
-  eyebrow: "Join the waitlist",
-  title: "Need a tailored setup?",
-  lead: "Tell us about your company, expected payment activity, currencies and ownership structure. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
+  // Step 1 — email only.
+  eyebrow: "Waitlist",
+  title: "Be first to know when accounts open.",
+  lead: "Leave your work email and we’ll let you know as soon as GLEEC Business opens to eligible companies.",
+  emailLabel: "Work email",
+  emailPlaceholder: "Work email",
+  join: "Join",
+  joining: "Joining…",
+  // Shown under the field. Launch date is a planning estimate — confirm before go-live.
+  launch: "Planned launch: Q2 2027",
+  count: (n) => `${n.toLocaleString("en-GB")} ${n === 1 ? "company" : "companies"} on the list`,
   consent:
-    "I agree that Gleec Pay Ltd may contact me about GLEEC Business. I understand the service is not yet available and is subject to FCA authorisation and onboarding approval.",
-  fineprint:
-    "We’ll only use these details to contact you about GLEEC Business. Registering interest is not an application for a regulated service.",
-  successTitle: "You’re on the list",
-  successBody:
-    "Thanks for your interest in GLEEC Business. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
+    "By joining, you agree that Gleec Pay Ltd may contact you about GLEEC Business. The service isn’t available yet and is subject to FCA authorisation and onboarding approval. Registering interest is not an application for a regulated service.",
+
+  // Step 2 — optional company details (sales uses these to prepare a setup).
+  joinedTitle: "You’re on the list.",
+  joinedBody: "We’ll email you as soon as GLEEC Business opens to eligible companies.",
+  detailsTitle: "Need a tailored setup?",
+  detailsLead:
+    "Tell us about your company, expected payment activity, currencies and ownership structure. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
+  sendDetails: "Send Details",
+  sending: "Sending…",
+  skip: "Not Now",
+  doneTitle: "Thanks — we’ll be in touch.",
+  doneBody: "We’ll use these details to prepare for your onboarding once GLEEC Business opens.",
 };
 
 export const FAQ = {

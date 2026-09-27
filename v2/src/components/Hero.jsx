@@ -1,6 +1,8 @@
 // Hero.jsx — headline, two actions, and an illustrative account card.
 import { DISCLAIMER_SHORT, HERO } from "../content.js";
 import Icon from "./ui/Icon.jsx";
+import Flag from "./ui/Flag.jsx";
+import { CURRENCY_FLAG } from "../lib/flags.js";
 import "./Hero.css";
 
 export default function Hero() {
@@ -28,7 +30,10 @@ export default function Hero() {
         <div className="hero-card squircle">
           <div className="hero-card-top">
             <span className="hero-card-label">{m.account}</span>
-            <span className="hero-chip">{m.currency}</span>
+            <span className="hero-chip">
+              <Flag code={CURRENCY_FLAG[m.currency]} size={16} />
+              {m.currency}
+            </span>
           </div>
           <p className="hero-balance">
             <span className="hero-balance-sym">{m.balance[0]}</span>
@@ -45,7 +50,10 @@ export default function Hero() {
           <div className="hero-subbalances">
             {m.balances.map((b) => (
               <div key={b.code} className="hero-sub">
-                <span className="hero-sub-code">{b.code}</span>
+                <span className="hero-sub-code">
+                  <Flag code={CURRENCY_FLAG[b.code]} size={16} />
+                  {b.code}
+                </span>
                 <span className="hero-sub-amount">{b.amount}</span>
                 <span className="hero-sub-note">{b.note}</span>
               </div>

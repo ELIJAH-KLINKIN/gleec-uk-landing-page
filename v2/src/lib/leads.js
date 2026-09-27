@@ -1,6 +1,11 @@
-// Client for the lead-intake API (see leads-api/README.md for the contract).
+// Client for the lead-intake API (../../leads-api). Email first:
+//   POST {endpoint}           → join with an email; returns { id, token }
+//   POST {endpoint}/details   → optional company details for that lead
+//   GET  …/stats              → { companies } — how many are on the list
 
-export const LEADS_ENDPOINT = (import.meta.env.VITE_LEADS_ENDPOINT || "").trim();
+export const LEADS_ENDPOINT = (import.meta.env.VITE_LEADS_ENDPOINT || "").trim().replace(/\/+$/, "");
+const DETAILS_ENDPOINT = LEADS_ENDPOINT && `${LEADS_ENDPOINT}/details`;
+const STATS_ENDPOINT = LEADS_ENDPOINT && LEADS_ENDPOINT.replace(/\/leads$/, "/stats");
 
 export const BUSINESS_TYPES = [
   { value: "local", label: "UK business" },
@@ -21,33 +26,45 @@ export const MONTHLY_VOLUMES = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^[0-9 +().-]*$/;
+const len = (s) => (s || "").trim().length;
 
-// Mirrors the server-side rules so people get instant, specific feedback.
 // Messages say how to fix the problem (HIG: plain, direct, no blame).
-export function validateLead(v) {
+export function validateEmail(email) {
+  if (!len(email)) return "Enter your work email.";
+  if (!EMAIL_RE.test(email.trim()) || len(email) > 254) return "Enter an email address like name@company.com.";
+  return undefined;
+}
+
+// Step-two fields are all optional; each is checked only when filled in.
+export function validateDetails(v) {
   const errors = {};
-  const len = (s) => (s || "").trim().length;
-  if (len(v.fullName) < 2) errors.fullName = "Enter your full name.";
+  if (len(v.fullName) === 1) errors.fullName = "Enter your full name.";
   else if (len(v.fullName) > 120) errors.fullName = "Shorten your name to 120 characters or fewer.";
-  if (!len(v.email)) errors.email = "Enter your work email.";
-  else if (!EMAIL_RE.test(v.email.trim()) || len(v.email) > 254)
-    errors.email = "Enter an email address like name@company.com.";
-  if (!len(v.company)) errors.company = "Enter your company name.";
-  else if (len(v.company) > 160) errors.company = "Shorten the company name to 160 characters or fewer.";
-  if (len(v.country) < 2) errors.country = "Enter the country where your company is registered.";
+  if (len(v.company) > 160) errors.company = "Shorten the company name to 160 characters or fewer.";
+  if (len(v.country) === 1) errors.country = "Enter the country where your company is registered.";
   else if (len(v.country) > 80) errors.country = "Shorten the country to 80 characters or fewer.";
   if (len(v.phone) > 40 || !PHONE_RE.test(v.phone || "")) errors.phone = "Use only digits, spaces and + ( ) -.";
   else if (len(v.phone) && (v.phone.match(/\d/g) || []).length < 5)
     errors.phone = "Enter a full phone number, including the area code.";
   if (len(v.message) > 2000) errors.message = "Keep your message to 2,000 characters or fewer.";
-  if (!v.consent) errors.consent = "Tick the box to confirm Gleec Pay Ltd may contact you.";
   return errors;
 }
 
-// True once every required field has something in it (the submit button is
-// unavailable until then).
-export function hasRequired(v) {
-  return ["fullName", "email", "company", "country"].every((k) => (v[k] || "").trim().length > 0) && v.consent === true;
+export function hasAnyDetail(v) {
+  return (
+    ["fullName", "company", "country", "phone", "businessType", "monthlyVolume", "message"].some(
+      (k) => len(v[k]) > 0,
+    ) || v.currencies.length > 0
+  );
+}
+
+export class LeadError extends Error {
+  constructor(kind, fields) {
+    super(kind);
+    // "validation" | "rate_limited" | "network" | "server" | "not_configured" | "already_submitted"
+    this.kind = kind;
+    this.fields = fields || {};
+  }
 }
 
 function sourceInfo() {
@@ -57,45 +74,16 @@ function sourceInfo() {
     const val = params.get(k);
     if (val) utm[k] = val.slice(0, 200);
   }
-  return {
-    page: window.location.href.slice(0, 500),
-    referrer: (document.referrer || "").slice(0, 500),
-    ...utm,
-  };
+  return { page: window.location.href.slice(0, 500), referrer: (document.referrer || "").slice(0, 500), ...utm };
 }
 
-export class LeadError extends Error {
-  constructor(kind, fields) {
-    super(kind);
-    this.kind = kind; // "validation" | "rate_limited" | "network" | "server" | "not_configured"
-    this.fields = fields || {};
-  }
-}
-
-export async function submitLead(values, { startedAt }) {
-  if (!LEADS_ENDPOINT) throw new LeadError("not_configured");
-
-  const payload = {
-    fullName: values.fullName.trim(),
-    email: values.email.trim(),
-    company: values.company.trim(),
-    country: values.country.trim(),
-    phone: values.phone.trim() || undefined,
-    businessType: values.businessType || undefined,
-    currencies: values.currencies.length ? values.currencies : undefined,
-    monthlyVolume: values.monthlyVolume || undefined,
-    message: values.message.trim() || undefined,
-    consent: values.consent === true,
-    website: values.website,
-    startedAt,
-    source: sourceInfo(),
-  };
-
+async function post(url, payload) {
+  if (!url) throw new LeadError("not_configured");
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   let res;
   try {
-    res = await fetch(LEADS_ENDPOINT, {
+    res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -106,7 +94,6 @@ export async function submitLead(values, { startedAt }) {
   } finally {
     clearTimeout(timer);
   }
-
   let body = null;
   try {
     body = await res.json();
@@ -116,5 +103,47 @@ export async function submitLead(values, { startedAt }) {
   if (res.ok && body?.ok) return body;
   if (res.status === 400 && body?.error === "validation") throw new LeadError("validation", body.fields);
   if (res.status === 429) throw new LeadError("rate_limited");
+  if (res.status === 409) throw new LeadError("already_submitted");
   throw new LeadError("server");
+}
+
+// Step 1: join with an email. Joining is the consent action (notice shown by the button).
+export function joinWaitlist({ email, website }, { startedAt }) {
+  return post(LEADS_ENDPOINT, {
+    email: email.trim(),
+    consent: true,
+    website,
+    startedAt,
+    source: sourceInfo(),
+  });
+}
+
+// Step 2: optional details for the lead created in step 1.
+export function sendDetails({ id, token }, v) {
+  const clean = (s) => (s || "").trim() || undefined;
+  return post(DETAILS_ENDPOINT, {
+    id,
+    token,
+    fullName: clean(v.fullName),
+    company: clean(v.company),
+    country: clean(v.country),
+    phone: clean(v.phone),
+    businessType: v.businessType || undefined,
+    currencies: v.currencies.length ? v.currencies : undefined,
+    monthlyVolume: v.monthlyVolume || undefined,
+    message: clean(v.message),
+  });
+}
+
+// How many companies are on the list, or null when unknown.
+export async function fetchWaitlistCount() {
+  if (!STATS_ENDPOINT) return null;
+  try {
+    const res = await fetch(STATS_ENDPOINT, { headers: { Accept: "application/json" } });
+    if (!res.ok) return null;
+    const body = await res.json();
+    return Number.isInteger(body?.companies) ? body.companies : null;
+  } catch {
+    return null;
+  }
 }

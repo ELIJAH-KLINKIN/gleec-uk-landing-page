@@ -23,7 +23,7 @@ export default function Footer() {
                   <li key={l.label}>
                     {l.soon ? (
                       <span className="footer-soon">
-                        {l.label} <span>Coming soon</span>
+                        {l.label} <span className="soon">Coming soon</span>
                       </span>
                     ) : (
                       <a href={l.href}>{l.label}</a>
