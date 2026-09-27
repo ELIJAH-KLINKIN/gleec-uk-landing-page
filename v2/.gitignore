@@ -8,5 +8,3 @@ dist-test-ssr/
 .env.*.local
 playwright-report/
 test-results/
-.vercel
-.env*
