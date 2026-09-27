@@ -15,15 +15,23 @@ function part(value, render, { fixed = false } = {}) {
 const staticLine = (html) => part('', () => html, { fixed: true });
 const labelled = (label) => (value) => `<b>${label}:</b> ${value}`;
 
-export function buildTelegramParts(lead) {
-  const parts = [
-    staticLine('🟣 <b>New GLEEC Business waitlist lead</b>'),
-    staticLine(''),
-    part(lead.fullName, labelled('Name')),
-    part(lead.company, labelled('Company')),
-    part(lead.country, labelled('Country')),
-    part(lead.email, (email) => `<b>Email:</b> <a href="mailto:${email}">${email}</a>`, { fixed: true }),
-  ];
+const TITLES = {
+  created: '🟣 <b>New GLEEC Business waitlist lead</b>',
+  updated: '📝 <b>Lead details added</b>',
+};
+
+/**
+ * @param {object} lead  the stored lead (camelCase), with id
+ * @param {{ kind?: 'created' | 'updated' }} [options]  'updated' = second step of the email-first
+ *        form: different title, no source block (it was in the first message).
+ */
+export function buildTelegramParts(lead, { kind = 'created' } = {}) {
+  // Name, company and country are optional since the email-first form: absent → no line.
+  const parts = [staticLine(TITLES[kind] ?? TITLES.created), staticLine('')];
+  if (lead.fullName) parts.push(part(lead.fullName, labelled('Name')));
+  if (lead.company) parts.push(part(lead.company, labelled('Company')));
+  if (lead.country) parts.push(part(lead.country, labelled('Country')));
+  parts.push(part(lead.email, (email) => `<b>Email:</b> <a href="mailto:${email}">${email}</a>`, { fixed: true }));
   if (lead.phone) parts.push(part(lead.phone, labelled('Phone')));
   if (lead.businessType) {
     parts.push(part(BUSINESS_TYPE_LABELS[lead.businessType] ?? lead.businessType, labelled('Business type')));
@@ -39,7 +47,7 @@ export function buildTelegramParts(lead) {
     parts.push(part(lead.message, (message) => `<b>Message:</b>\n<blockquote>${message}</blockquote>`));
   }
 
-  const source = lead.source || {};
+  const source = (kind === 'created' && lead.source) || {};
   const utm = ['source', 'medium', 'campaign', 'term', 'content']
     .filter((key) => source[`utm_${key}`])
     .map((key) => `${key}=${source[`utm_${key}`]}`);
@@ -64,8 +72,8 @@ function render(parts) {
  * checked against the raw HTML (always >= the parsed length Telegram counts),
  * shortening the longest free-text value first.
  */
-export function formatTelegramMessage(lead, limit = TELEGRAM_MAX_LENGTH) {
-  const parts = buildTelegramParts(lead);
+export function formatTelegramMessage(lead, limit = TELEGRAM_MAX_LENGTH, options = {}) {
+  const parts = buildTelegramParts(lead, options);
   let html = render(parts);
   while (html.length > limit) {
     const candidates = parts.filter((p) => !p.fixed && p.value.length > ELLIPSIS.length);

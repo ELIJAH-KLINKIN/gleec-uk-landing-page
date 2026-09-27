@@ -6,10 +6,10 @@ create table if not exists leads (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
 
-  full_name        text not null,
+  full_name        text,                        -- optional since the email-first form (v2)
   email            text not null,               -- always stored lower-case
-  company          text not null,
-  country          text not null,               -- country of incorporation
+  company          text,                        -- optional since v2
+  country          text,                        -- optional since v2; country of incorporation
   phone            text,
   business_type    text,                        -- local | international | group | other
   currencies       text[] not null default '{}', -- subset of GBP, EUR, USD, Other
@@ -30,15 +30,31 @@ create table if not exists leads (
   crm_status       text,                        -- sent | not_configured | failed: <reason>
   crm_sent_at      timestamptz,
 
+  details_at       timestamptz,                 -- set once by POST /api/leads/details
+  details_ip_hash  text,                        -- IP hash of that request (details rate limit)
+
   constraint leads_status_check check (status in ('new', 'contacted', 'qualified', 'disqualified')),
   constraint leads_email_lowercase_check check (email = lower(email))
 );
+
+-- Upgrade of a table created before the email-first form. Idempotent: DROP NOT NULL on a
+-- column that is already nullable is a no-op, and ADD COLUMN IF NOT EXISTS skips existing ones.
+alter table leads
+  alter column full_name drop not null,
+  alter column company drop not null,
+  alter column country drop not null,
+  add column if not exists details_at timestamptz,
+  add column if not exists details_ip_hash text;
 
 -- Duplicate check: same email within 24h.
 create index if not exists leads_email_created_at_idx on leads (email, created_at desc);
 
 -- Rate limit: leads per IP hash within 10 minutes.
 create index if not exists leads_ip_hash_created_at_idx on leads (ip_hash, created_at desc);
+
+-- Rate limit of the details step: details added per IP hash within 10 minutes.
+create index if not exists leads_details_ip_hash_details_at_idx on leads (details_ip_hash, details_at desc)
+  where details_ip_hash is not null;
 
 -- Newest-first listing for sales.
 create index if not exists leads_created_at_idx on leads (created_at desc);

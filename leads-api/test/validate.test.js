@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { MESSAGES, detectBot, normalizeSource, validateLead } from '../lib/validate.js';
-import { NOW, validBody } from './helpers.js';
+import { MESSAGES, detectBot, normalizeSource, validateDetails, validateLead } from '../lib/validate.js';
+import { NOW, emailOnlyBody, validBody } from './helpers.js';
 
 const errorsFor = (overrides) => {
   const result = validateLead(validBody(overrides));
@@ -63,8 +63,19 @@ describe('validateLead — happy path', () => {
   });
 
   it('reports every invalid field at once', () => {
-    const fields = errorsFor({ fullName: '', email: 'nope', consent: false });
+    const fields = errorsFor({ fullName: 'A', email: 'nope', consent: false });
     assert.deepEqual(Object.keys(fields).sort(), ['consent', 'email', 'fullName']);
+  });
+
+  it('email-first: only email, consent and startedAt are required', () => {
+    const result = validateLead(emailOnlyBody());
+    assert.equal(result.ok, true, JSON.stringify(result.fields));
+    assert.equal(result.lead.email, 'ada@example.co.uk');
+    for (const name of ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message']) {
+      assert.equal(result.lead[name], null, name);
+    }
+    assert.deepEqual(result.lead.currencies, []);
+    assert.deepEqual(validateLead({}).fields, { email: MESSAGES.email, consent: MESSAGES.consent, startedAt: MESSAGES.startedAt });
   });
 });
 
@@ -76,10 +87,15 @@ describe('validateLead — body shape', () => {
   }
 });
 
-describe('validateLead — fullName (2–120)', () => {
-  it('rejects too short, too long, missing and non-string', () => {
-    for (const fullName of ['A', ' A ', 'x'.repeat(121), undefined, null, 42, ['Ada']]) {
+describe('validateLead — fullName (optional, 2–120)', () => {
+  it('rejects too short, too long and non-string', () => {
+    for (const fullName of ['A', ' A ', 'x'.repeat(121), 42, ['Ada'], {}]) {
       assert.equal(errorsFor({ fullName }).fullName, MESSAGES.fullName, `value ${JSON.stringify(fullName)}`);
+    }
+  });
+  it('absent, null, empty or blank means not given', () => {
+    for (const fullName of [undefined, null, '', '   ']) {
+      assert.equal(leadFor({ fullName }).fullName, null, `value ${JSON.stringify(fullName)}`);
     }
   });
   it('accepts the boundaries', () => {
@@ -126,20 +142,22 @@ describe('validateLead — email', () => {
   });
 });
 
-describe('validateLead — company (1–160) and country (2–80)', () => {
+describe('validateLead — company (optional, 1–160) and country (optional, 2–80)', () => {
   it('company boundaries', () => {
     assert.equal(leadFor({ company: 'X' }).company, 'X');
     assert.equal(leadFor({ company: 'x'.repeat(160) }).company.length, 160);
-    assert.equal(errorsFor({ company: '   ' }).company, MESSAGES.company);
     assert.equal(errorsFor({ company: 'x'.repeat(161) }).company, MESSAGES.company);
-    assert.equal(errorsFor({ company: undefined }).company, MESSAGES.company);
+    assert.equal(errorsFor({ company: 42 }).company, MESSAGES.company);
+    assert.equal(errorsFor({ company: '\u0000' }).company, MESSAGES.company, 'only control characters');
+    for (const company of [undefined, null, '', '   ']) assert.equal(leadFor({ company }).company, null);
   });
   it('country boundaries', () => {
     assert.equal(leadFor({ country: 'UK' }).country, 'UK');
     assert.equal(leadFor({ country: 'x'.repeat(80) }).country.length, 80);
     assert.equal(errorsFor({ country: 'U' }).country, MESSAGES.country);
     assert.equal(errorsFor({ country: 'x'.repeat(81) }).country, MESSAGES.country);
-    assert.equal(errorsFor({ country: undefined }).country, MESSAGES.country);
+    assert.equal(errorsFor({ country: ['UK'] }).country, MESSAGES.country);
+    for (const country of [undefined, null, '', '  ']) assert.equal(leadFor({ country }).country, null);
   });
 });
 
@@ -211,6 +229,61 @@ describe('validateLead — consent and startedAt', () => {
     for (const startedAt of [undefined, null, '1700000000000', Number.NaN, Number.POSITIVE_INFINITY]) {
       assert.equal(errorsFor({ startedAt }).startedAt, MESSAGES.startedAt, String(startedAt));
     }
+  });
+});
+
+describe('validateDetails', () => {
+  it('accepts any subset of the detail fields, normalised like POST /api/leads', () => {
+    const result = validateDetails({ company: '  Analytical\tEngines ', currencies: ['USD', 'USD', 'GBP'] });
+    assert.equal(result.ok, true);
+    assert.equal(result.details.company, 'Analytical Engines');
+    assert.deepEqual(result.details.currencies, ['USD', 'GBP']);
+    assert.equal(result.details.fullName, null);
+    assert.equal(result.details.phone, null);
+  });
+
+  it('applies the same per-field rules', () => {
+    const result = validateDetails({
+      fullName: 'A',
+      company: 'x'.repeat(161),
+      country: 'U',
+      phone: '+44 CALL ME',
+      businessType: 'global',
+      currencies: ['JPY'],
+      monthlyVolume: '5m+',
+      message: 'm'.repeat(2001),
+    });
+    assert.deepEqual(result, {
+      ok: false,
+      fields: {
+        fullName: MESSAGES.fullName,
+        company: MESSAGES.company,
+        country: MESSAGES.country,
+        phone: MESSAGES.phoneChars,
+        businessType: MESSAGES.businessType,
+        currencies: MESSAGES.currencies,
+        monthlyVolume: MESSAGES.monthlyVolume,
+        message: MESSAGES.message,
+      },
+    });
+  });
+
+  it('needs at least one field with a value (else fields.body)', () => {
+    for (const body of [{}, { id: 'x', token: 'y' }, { fullName: '', phone: '  ', currencies: [], message: '\n' }]) {
+      assert.deepEqual(validateDetails(body), { ok: false, fields: { body: MESSAGES.noDetails } }, JSON.stringify(body));
+    }
+    assert.equal(validateDetails({ currencies: ['EUR'] }).ok, true);
+    assert.equal(validateDetails({ businessType: 'other' }).ok, true);
+  });
+
+  it('ignores fields the details step cannot change', () => {
+    const result = validateDetails({ phone: '12345', email: 'evil@example.com', consent: false, status: 'qualified', source: { page: 'x' } });
+    assert.equal(result.ok, true);
+    for (const key of ['email', 'consent', 'status', 'source']) assert.equal(key in result.details, false, key);
+  });
+
+  it('rejects a body that is not an object', () => {
+    for (const body of [null, [], 'x']) assert.deepEqual(validateDetails(body), { ok: false, fields: { body: MESSAGES.body } });
   });
 });
 

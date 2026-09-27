@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { buildCrmPayload, sendCrmWebhook, signBody } from '../lib/crm.js';
+import { buildCrmPayload, buildCrmUpdatePayload, sendCrmWebhook, signBody } from '../lib/crm.js';
 import { createFakeFetch, hangingFetch } from './helpers.js';
 
 const SECRET = 'whsec_test_secret';
@@ -63,7 +63,39 @@ describe('buildCrmPayload', () => {
   });
 });
 
+describe('buildCrmPayload — email-first and updates', () => {
+  const KEYS = [
+    'id', 'createdAt', 'status', 'fullName', 'email', 'company', 'country', 'phone', 'businessType',
+    'currencies', 'monthlyVolume', 'message', 'consent', 'consentAt', 'source',
+  ];
+
+  it('keeps the same shape for an email-only lead, missing fields null', () => {
+    const payload = buildCrmPayload({ id: record.id, createdAt: record.createdAt, email: 'zoe@example.com', consent: true });
+    assert.deepEqual(Object.keys(payload), KEYS);
+    assert.equal(payload.status, 'new');
+    for (const key of ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message', 'consentAt']) {
+      assert.equal(payload[key], null, key);
+    }
+    assert.deepEqual(payload.currencies, []);
+    assert.deepEqual(payload.source, {});
+  });
+
+  it('lead.updated payload: same fields plus detailsAt, with the stored status', () => {
+    const payload = buildCrmUpdatePayload({ ...record, status: 'contacted', detailsAt: '2026-09-26T12:01:00.000Z' });
+    assert.deepEqual(Object.keys(payload), [...KEYS, 'detailsAt']);
+    assert.equal(payload.status, 'contacted');
+    assert.equal(payload.detailsAt, '2026-09-26T12:01:00.000Z');
+    assert.equal('ipHash' in payload, false);
+  });
+});
+
 describe('sendCrmWebhook', () => {
+  it('sends the event it is given (lead.updated for the details step)', async () => {
+    const fetch = createFakeFetch(() => new Response(null, { status: 204 }));
+    await sendCrmWebhook({ url: URL_, secret: SECRET, payload: {}, fetch, event: 'lead.updated' });
+    assert.equal(new Headers(fetch.calls[0].init.headers).get('x-gleec-event'), 'lead.updated');
+  });
+
   it('POSTs the JSON with a signature the receiver can verify', async () => {
     const fetch = createFakeFetch(() => new Response(null, { status: 204 }));
     const payload = buildCrmPayload(record);

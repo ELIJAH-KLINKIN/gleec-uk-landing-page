@@ -15,6 +15,9 @@ export const DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
 // Outbound calls (Telegram, CRM webhook).
 export const NOTIFY_TIMEOUT_MS = 5000;
 
+// GET /api/stats: browsers keep the count 1 min, Vercel's CDN 5 min (+10 min stale while refreshing).
+export const STATS_CACHE_CONTROL = 'public, max-age=60, s-maxage=300, stale-while-revalidate=600';
+
 export const USER_AGENT_MAX = 300;
 export const SOURCE_FIELD_MAX = 500;
 

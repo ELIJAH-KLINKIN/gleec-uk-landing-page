@@ -1,4 +1,4 @@
-// Vercel Function: GET /api/health -> { ok, db, telegram, crm } (booleans, never values).
+// Vercel Function: GET /api/health -> { ok, db, telegram, crm, details } (booleans, never values).
 import { healthResponse } from '../lib/health.js';
 
 export function GET() {

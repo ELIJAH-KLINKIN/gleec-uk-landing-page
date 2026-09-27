@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { TELEGRAM_MAX_LENGTH, formatTelegramMessage, sendTelegramMessage } from '../lib/telegram.js';
 import { escapeHtml } from '../lib/text.js';
 import { validateLead } from '../lib/validate.js';
-import { TELEGRAM_TOKEN, createFakeFetch, hangingFetch, validBody } from './helpers.js';
+import { TELEGRAM_TOKEN, createFakeFetch, emailOnlyBody, hangingFetch, validBody } from './helpers.js';
 
 const LEAD_ID = '3f1c2b1e-7a1d-4a55-9d0b-6a8c1e2f4b77';
 
@@ -72,6 +72,49 @@ describe('formatTelegramMessage', () => {
       assert.equal(html.includes(`<b>${label}:</b>`), false, label);
     }
     assert.ok(html.includes('<b>Lead ID:</b>'));
+  });
+
+  it('email-first lead: no Name/Company/Country lines, no empty labels, same header', () => {
+    const { lead } = validateLead(emailOnlyBody());
+    const html = formatTelegramMessage({ ...lead, id: LEAD_ID, createdAt: '2026-09-26T12:00:00.000Z' });
+    assert.equal(
+      html,
+      [
+        '🟣 <b>New GLEEC Business waitlist lead</b>',
+        '',
+        '<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>',
+        '',
+        '<b>Source page:</b> https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/',
+        '',
+        `<b>Lead ID:</b> <code>${LEAD_ID}</code>`,
+      ].join('\n'),
+    );
+    for (const label of ['Name', 'Company', 'Country']) assert.equal(html.includes(`<b>${label}:</b>`), false, label);
+  });
+
+  it('details added: its own title, the stored details, email and id — no source block', () => {
+    const record = { ...leadRecord({ fullName: '', country: '', message: '' }), detailsAt: '2026-09-26T12:01:00.000Z' };
+    const html = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' });
+    const lines = html.split('\n');
+    assert.equal(lines[0], '📝 <b>Lead details added</b>');
+    assert.ok(html.includes('<b>Company:</b> Analytical Engines Ltd'));
+    assert.ok(html.includes('<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>'));
+    assert.ok(html.includes('<b>Currencies:</b> GBP, EUR'));
+    assert.ok(html.endsWith(`<b>Lead ID:</b> <code>${LEAD_ID}</code>`));
+    for (const label of ['Name', 'Country', 'Message', 'Source page', 'Referrer', 'UTM']) {
+      assert.equal(html.includes(`<b>${label}:</b>`), false, label);
+    }
+    assert.equal(html.includes('New GLEEC Business waitlist lead'), false);
+    assertEntitiesWellFormed(html);
+  });
+
+  it('details message escapes input and stays within the limit too', () => {
+    const record = leadRecord({ fullName: '<b>x</b>', company: '&'.repeat(160), message: '&<>"'.repeat(500) });
+    const html = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' });
+    assert.ok(html.length <= TELEGRAM_MAX_LENGTH);
+    assert.ok(html.includes('<b>Name:</b> &lt;b&gt;x&lt;/b&gt;'));
+    assert.ok(html.endsWith(`<code>${LEAD_ID}</code>`));
+    assertEntitiesWellFormed(html);
   });
 
   it('escapes all user input', () => {

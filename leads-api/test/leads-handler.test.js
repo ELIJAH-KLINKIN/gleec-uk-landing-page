@@ -5,6 +5,7 @@ import { createLeadsHandler } from '../lib/leads-handler.js';
 import { MESSAGES } from '../lib/validate.js';
 import {
   BASE_ENV,
+  LEAD_TOKEN_SECRET,
   NOW,
   ORIGIN,
   TELEGRAM_ENV,
@@ -12,12 +13,16 @@ import {
   createFakeFetch,
   createFakeRepo,
   createTestLogger,
+  emailOnlyBody,
   hangingFetch,
   makeRequest,
   validBody,
 } from './helpers.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
+// Independent of lib/token.js: base64url(HMAC-SHA256(id, key LEAD_TOKEN_SECRET)).
+const expectedToken = (id) => createHmac('sha256', LEAD_TOKEN_SECRET).update(id).digest('base64url');
 
 function setup({ env = {}, repo = createFakeRepo(), fetch = createFakeFetch(), ...rest } = {}) {
   const log = createTestLogger();
@@ -98,6 +103,88 @@ describe('POST /api/leads — success', () => {
       assert.equal(status, 201, origin);
       assert.equal(response.headers.get('access-control-allow-origin'), origin);
     }
+  });
+});
+
+describe('POST /api/leads — email-first (v2) and the details token', () => {
+  it('email only: 201 with id and token, name/company/country stored as null', async () => {
+    const { handler, repo } = setup();
+    const { status, body } = await post(handler, { body: emailOnlyBody() });
+    assert.equal(status, 201);
+    assert.deepEqual(Object.keys(body), ['ok', 'id', 'token']);
+    assert.match(body.id, UUID_RE);
+    assert.match(body.token, TOKEN_RE);
+    assert.equal(body.token, expectedToken(body.id));
+    const row = repo.rows[0];
+    assert.equal(row.email, 'ada@example.co.uk');
+    for (const name of ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message']) {
+      assert.equal(row[name], null, name);
+    }
+    assert.deepEqual(row.currencies, []);
+  });
+
+  it('empty strings for name/company/country are "not given", not a 400', async () => {
+    const { handler, repo } = setup();
+    const { status } = await post(handler, { body: emailOnlyBody({ fullName: '', company: '', country: '' }) });
+    assert.equal(status, 201);
+    assert.equal(repo.rows[0].fullName, null);
+  });
+
+  it('still requires email, consent and startedAt', async () => {
+    const { handler } = setup();
+    const { status, body } = await post(handler, { body: { website: '' } });
+    assert.equal(status, 400);
+    assert.deepEqual(Object.keys(body.fields).sort(), ['consent', 'email', 'startedAt']);
+  });
+
+  it('v1 full payload still works unchanged (plus the token)', async () => {
+    const { handler, repo } = setup();
+    const { status, body } = await post(handler, { body: validBody() });
+    assert.equal(status, 201);
+    assert.equal(body.token, expectedToken(body.id));
+    const row = repo.rows[0];
+    assert.equal(row.fullName, 'Ada Lovelace');
+    assert.equal(row.company, 'Analytical Engines Ltd');
+    assert.equal(row.country, 'United Kingdom');
+    assert.equal(row.phone, '+44 20 7946 0958');
+    assert.deepEqual(row.currencies, ['GBP', 'EUR']);
+  });
+
+  it('token is null when LEAD_TOKEN_SECRET is unset (and that is logged at cold start)', async () => {
+    const { handler, log } = setup({ env: { LEAD_TOKEN_SECRET: '' } });
+    const { status, body } = await post(handler, { body: emailOnlyBody() });
+    assert.equal(status, 201);
+    assert.match(body.id, UUID_RE);
+    assert.equal(body.token, null);
+    assert.ok(log.entries.some((e) => e.event === 'config.warning' && /LEAD_TOKEN_SECRET/.test(e.warning)));
+  });
+
+  it('the token never appears in the logs', async () => {
+    const { handler, log } = setup({ env: TELEGRAM_ENV });
+    const { body } = await post(handler, { body: emailOnlyBody() });
+    assert.equal(JSON.stringify(log.entries).includes(body.token), false);
+  });
+
+  it('Telegram message for an email-only lead has no empty Name/Company/Country lines', async () => {
+    const fetch = createFakeFetch();
+    const { handler } = setup({ env: TELEGRAM_ENV, fetch });
+    await post(handler, { body: emailOnlyBody() });
+    const { text } = fetch.calls[0].json;
+    assert.ok(text.startsWith('🟣 <b>New GLEEC Business waitlist lead</b>\n\n<b>Email:</b>'));
+    for (const label of ['Name', 'Company', 'Country']) assert.equal(text.includes(`<b>${label}:</b>`), false, label);
+  });
+
+  it('CRM payload for an email-only lead keeps its shape with nulls', async () => {
+    const fetch = createFakeFetch(() => new Response(null, { status: 204 }));
+    const { handler } = setup({ env: { CRM_WEBHOOK_URL: 'https://crm.example.test/hook', CRM_WEBHOOK_SECRET: 's' }, fetch });
+    await post(handler, { body: emailOnlyBody() });
+    const { json } = fetch.calls[0];
+    assert.equal(new Headers(fetch.calls[0].init.headers).get('x-gleec-event'), 'lead.created');
+    assert.equal(json.fullName, null);
+    assert.equal(json.company, null);
+    assert.equal(json.country, null);
+    assert.equal(json.email, 'ada@example.co.uk');
+    assert.equal('detailsAt' in json, false);
   });
 });
 
@@ -253,12 +340,15 @@ describe('POST /api/leads — waitUntil', () => {
 });
 
 describe('POST /api/leads — bot traps', () => {
-  it('honeypot: 201 with a random id, nothing stored, nobody notified', async () => {
+  it('honeypot: 201 with a random id and token, nothing stored, nobody notified', async () => {
     const { handler, repo, fetch, log } = setup({ env: TELEGRAM_ENV });
     const { status, body } = await post(handler, { body: validBody({ website: 'https://spam.example' }) });
     assert.equal(status, 201);
     assert.equal(body.ok, true);
+    assert.deepEqual(Object.keys(body), ['ok', 'id', 'token']);
     assert.match(body.id, UUID_RE);
+    assert.match(body.token, TOKEN_RE);
+    assert.notEqual(body.token, expectedToken(body.id), 'random, not a working token');
     assert.equal(repo.calls.insert, 0);
     assert.equal(repo.calls.count, 0);
     assert.equal(fetch.calls.length, 0);
@@ -277,8 +367,21 @@ describe('POST /api/leads — bot traps', () => {
     const { status, body } = await post(handler, { body: validBody({ startedAt: NOW - 1200 }) });
     assert.equal(status, 201);
     assert.equal(body.ok, true);
+    assert.match(body.token, TOKEN_RE);
     assert.equal(repo.calls.insert, 0);
     assert.equal(fetch.calls.length, 0);
+  });
+
+  it('bot answers look like real ones: fresh id and token each time; token null without the secret', async () => {
+    const { handler } = setup();
+    const a = await post(handler, { body: emailOnlyBody({ website: 'x' }) });
+    const b = await post(handler, { body: emailOnlyBody({ website: 'x' }) });
+    assert.notEqual(a.body.id, b.body.id);
+    assert.notEqual(a.body.token, b.body.token);
+    const { handler: noSecret } = setup({ env: { LEAD_TOKEN_SECRET: '' } });
+    const c = await post(noSecret, { body: emailOnlyBody({ website: 'x' }) });
+    assert.deepEqual(Object.keys(c.body), ['ok', 'id', 'token']);
+    assert.equal(c.body.token, null);
   });
 
   it('time trap: exactly 2500 ms is accepted', async () => {
@@ -460,10 +563,20 @@ describe('Duplicates (same email within 24 h)', () => {
     });
 
     assert.equal(second.status, 201);
-    assert.deepEqual(second.body, { ok: true, id: first.body.id });
+    assert.deepEqual(second.body, { ok: true, id: first.body.id, token: first.body.token });
+    assert.equal(second.body.token, expectedToken(first.body.id));
     assert.equal(repo.rows.length, 1);
     assert.equal(fetch.calls.length, 1, 'Telegram called once');
     assert.equal(repo.calls.update.length, 1);
+  });
+
+  it('an email-only resubmission of a v1 lead returns the v1 lead id and its token', async () => {
+    const { handler, repo } = setup();
+    const first = await post(handler, { body: validBody() });
+    const second = await post(handler, { body: emailOnlyBody() });
+    assert.deepEqual(second.body, first.body);
+    assert.equal(repo.rows.length, 1);
+    assert.equal(repo.rows[0].company, 'Analytical Engines Ltd', 'the stored lead is untouched');
   });
 
   it('the same email after 24 h is a new lead', async () => {

@@ -36,7 +36,15 @@ describe('config', () => {
         CRM_WEBHOOK_URL: 'https://crm.example',
       }),
     );
-    assert.deepEqual(status, { db: true, telegram: true, crm: false });
+    assert.deepEqual(status, { db: true, telegram: true, crm: false, details: false });
+    assert.equal(configStatus(loadConfig({ LEAD_TOKEN_SECRET: ' s ' })).details, true);
+  });
+
+  it('LEAD_TOKEN_SECRET: trimmed; missing → warning (token null, details step off)', () => {
+    assert.equal(loadConfig({ LEAD_TOKEN_SECRET: '  abc  ' }).leadTokenSecret, 'abc');
+    const config = loadConfig({});
+    assert.equal(config.leadTokenSecret, '');
+    assert.ok(config.warnings.some((w) => w.startsWith('LEAD_TOKEN_SECRET is not set')));
   });
 
   it('a fully configured environment produces no warnings', () => {
@@ -48,6 +56,7 @@ describe('config', () => {
       TELEGRAM_CHAT_ID: '-100',
       CRM_WEBHOOK_URL: 'https://crm.example',
       CRM_WEBHOOK_SECRET: 'k',
+      LEAD_TOKEN_SECRET: 'l',
     });
     assert.deepEqual(config.warnings, []);
   });

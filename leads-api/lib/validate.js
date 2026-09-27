@@ -29,7 +29,20 @@ export const MESSAGES = {
   message: 'Message must be 2000 characters or fewer.',
   consent: 'Please tick the box to agree to be contacted.',
   startedAt: 'Something went wrong with the form. Please reload the page and try again.',
+  noDetails: 'Please fill in at least one field.',
 };
+
+// Fields that POST /api/leads/details may add (all optional on POST /api/leads too).
+export const DETAIL_FIELDS = [
+  'fullName',
+  'company',
+  'country',
+  'phone',
+  'businessType',
+  'currencies',
+  'monthlyVolume',
+  'message',
+];
 
 export function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -56,7 +69,9 @@ export function detectBot(body, now) {
   return null;
 }
 
-function requiredText(value, min, max) {
+/** Absent/empty → null; otherwise one line of min–max characters. */
+function optionalText(value, min, max) {
+  if (isBlank(value)) return { value: null };
   if (typeof value !== 'string') return { error: true };
   const text = singleLine(value);
   if (text.length < min || text.length > max) return { error: true };
@@ -118,8 +133,29 @@ export function normalizeSource(value) {
   return source;
 }
 
+/** Collects normalised values into `out` and error messages into `fields`. */
+function createChecker(out, fields) {
+  return (name, result, message) => {
+    if (result.error) fields[name] = typeof result.error === 'string' ? result.error : message;
+    else out[name] = result.value;
+  };
+}
+
+/** The optional company details, with the same rules on both endpoints. */
+function checkDetailFields(body, check) {
+  check('fullName', optionalText(body.fullName, 2, 120), MESSAGES.fullName);
+  check('company', optionalText(body.company, 1, 160), MESSAGES.company);
+  check('country', optionalText(body.country, 2, 80), MESSAGES.country);
+  check('phone', validatePhone(body.phone));
+  check('businessType', optionalEnum(body.businessType, BUSINESS_TYPES), MESSAGES.businessType);
+  check('currencies', validateCurrencies(body.currencies), MESSAGES.currencies);
+  check('monthlyVolume', optionalEnum(body.monthlyVolume, MONTHLY_VOLUMES), MESSAGES.monthlyVolume);
+  check('message', validateMessage(body.message), MESSAGES.message);
+}
+
 /**
- * Validates a parsed JSON body.
+ * Validates a parsed POST /api/leads body. Only email, consent and startedAt are required;
+ * the details are optional (email-first form) but validated whenever they are present.
  * @returns {{ ok: true, lead: object } | { ok: false, fields: Record<string, string> }}
  */
 export function validateLead(body) {
@@ -127,21 +163,10 @@ export function validateLead(body) {
 
   const fields = {};
   const lead = {};
+  const check = createChecker(lead, fields);
 
-  const check = (name, result, message) => {
-    if (result.error) fields[name] = typeof result.error === 'string' ? result.error : message;
-    else lead[name] = result.value;
-  };
-
-  check('fullName', requiredText(body.fullName, 2, 120), MESSAGES.fullName);
   check('email', validateEmail(body.email), MESSAGES.email);
-  check('company', requiredText(body.company, 1, 160), MESSAGES.company);
-  check('country', requiredText(body.country, 2, 80), MESSAGES.country);
-  check('phone', validatePhone(body.phone));
-  check('businessType', optionalEnum(body.businessType, BUSINESS_TYPES), MESSAGES.businessType);
-  check('currencies', validateCurrencies(body.currencies), MESSAGES.currencies);
-  check('monthlyVolume', optionalEnum(body.monthlyVolume, MONTHLY_VOLUMES), MESSAGES.monthlyVolume);
-  check('message', validateMessage(body.message), MESSAGES.message);
+  checkDetailFields(body, check);
 
   if (body.consent === true) lead.consent = true;
   else fields.consent = MESSAGES.consent;
@@ -153,4 +178,28 @@ export function validateLead(body) {
 
   if (Object.keys(fields).length > 0) return { ok: false, fields };
   return { ok: true, lead };
+}
+
+/**
+ * Validates the detail fields of a POST /api/leads/details body (id and token are checked
+ * by the handler). At least one field must carry a value.
+ * @returns {{ ok: true, details: object } | { ok: false, fields: Record<string, string> }}
+ */
+export function validateDetails(body) {
+  if (!isPlainObject(body)) return { ok: false, fields: { body: MESSAGES.body } };
+
+  const fields = {};
+  const details = {};
+  checkDetailFields(body, createChecker(details, fields));
+
+  if (Object.keys(fields).length > 0) return { ok: false, fields };
+  if (!hasAnyDetail(details)) return { ok: false, fields: { body: MESSAGES.noDetails } };
+  return { ok: true, details };
+}
+
+export function hasAnyDetail(details) {
+  return DETAIL_FIELDS.some((name) => {
+    const value = details[name];
+    return Array.isArray(value) ? value.length > 0 : value != null;
+  });
 }

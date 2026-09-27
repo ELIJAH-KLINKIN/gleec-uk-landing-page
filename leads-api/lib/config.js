@@ -27,6 +27,8 @@ export function loadConfig(env = {}) {
     allowedOrigins: parseAllowedOrigins(env.ALLOWED_ORIGINS),
     databaseUrl: clean(env.DATABASE_URL),
     ipHashSalt: clean(env.IP_HASH_SALT),
+    // Signs the per-lead token that authorises POST /api/leads/details.
+    leadTokenSecret: clean(env.LEAD_TOKEN_SECRET),
     telegram:
       telegramToken && telegramChatId
         ? { token: telegramToken, chatId: telegramChatId, threadId }
@@ -50,6 +52,9 @@ function collectWarnings({ env, telegramToken, telegramChatId, threadRaw, thread
   if (!clean(env.ALLOWED_ORIGINS)) warnings.push('ALLOWED_ORIGINS is not set: every browser request will get 403');
   if (!clean(env.DATABASE_URL)) warnings.push('DATABASE_URL is not set: leads cannot be stored (500)');
   if (!clean(env.IP_HASH_SALT)) warnings.push('IP_HASH_SALT is not set: IPs are not stored and rate limiting is off');
+  if (!clean(env.LEAD_TOKEN_SECRET)) {
+    warnings.push('LEAD_TOKEN_SECRET is not set: /api/leads returns token null and /api/leads/details answers 503');
+  }
   if (Boolean(telegramToken) !== Boolean(telegramChatId)) {
     warnings.push('Only one of TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID is set: Telegram is off');
   }
@@ -64,5 +69,6 @@ export function configStatus(config) {
     db: Boolean(config.databaseUrl),
     telegram: Boolean(config.telegram),
     crm: Boolean(config.crm && config.crm.url && config.crm.secret),
+    details: Boolean(config.leadTokenSecret),
   };
 }

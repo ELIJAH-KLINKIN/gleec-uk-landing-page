@@ -5,10 +5,13 @@ export const NOW = Date.parse('2026-09-26T12:00:00.000Z');
 export const ORIGIN = 'https://elijah-klinkin.github.io';
 export const TELEGRAM_TOKEN = '123456789:AAHfakeTokenForTestsOnly_abcdefghijk';
 
+export const LEAD_TOKEN_SECRET = 'test-lead-token-secret';
+
 export const BASE_ENV = {
   ALLOWED_ORIGINS: `${ORIGIN}, http://localhost:5173/,http://localhost:4173`,
   IP_HASH_SALT: 'test-salt',
   DATABASE_URL: 'postgresql://user:pass@ep-test.eu-west-2.aws.neon.tech/neondb',
+  LEAD_TOKEN_SECRET,
 };
 
 export const TELEGRAM_ENV = {
@@ -41,8 +44,21 @@ export function validBody(overrides = {}) {
   };
 }
 
+/** The version-2 form's first step: email only. */
+export function emailOnlyBody(overrides = {}) {
+  return {
+    email: 'Ada@Example.co.uk',
+    consent: true,
+    website: '',
+    startedAt: NOW - 30_000,
+    source: { page: 'https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/' },
+    ...overrides,
+  };
+}
+
 export function makeRequest({
   method = 'POST',
+  path = '/api/leads',
   origin = ORIGIN,
   body,
   rawBody,
@@ -60,12 +76,14 @@ export function makeRequest({
   if (rawBody !== undefined) init.body = rawBody;
   else if (body !== undefined) init.body = JSON.stringify(body);
   if (init.body instanceof ReadableStream) init.duplex = 'half';
-  return new Request('https://leads.example.test/api/leads', init);
+  return new Request(`https://leads.example.test${path}`, init);
 }
 
-/** In-memory repository with the same interface as lib/db.js createLeadRepo(). */
+const DETAIL_COLUMNS = ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message'];
+
+/** In-memory repository with the same interface (and semantics) as lib/db.js createLeadRepo(). */
 export function createFakeRepo({ clock = () => NOW, rows = [] } = {}) {
-  const calls = { count: 0, insert: 0, update: [] };
+  const calls = { count: 0, insert: 0, update: [], detailsCount: 0, details: [], companies: 0 };
   const repo = {
     rows,
     calls,
@@ -87,6 +105,46 @@ export function createFakeRepo({ clock = () => NOW, rows = [] } = {}) {
       calls.update.push({ id, ...results });
       const row = rows.find((r) => r.id === id);
       if (row) Object.assign(row, results);
+    },
+    async countRecentDetailsByIpHash(ipHash, since) {
+      calls.detailsCount += 1;
+      return rows.filter((r) => r.detailsIpHash === ipHash && r.detailsAt && Date.parse(r.detailsAt) > since.getTime()).length;
+    },
+    // Mirrors SQL.addDetailsOnce: fills only empty columns, once per lead.
+    async addDetailsOnce(id, details, { ipHash = null } = {}) {
+      calls.details.push({ id, details, ipHash });
+      const row = rows.find((r) => r.id === id);
+      if (!row) return { outcome: 'not_found' };
+      if (row.detailsAt) return { outcome: 'already_submitted' };
+      for (const key of DETAIL_COLUMNS) {
+        if ((row[key] == null || row[key] === '') && details[key] != null) row[key] = details[key];
+      }
+      if (!row.currencies || row.currencies.length === 0) row.currencies = details.currencies ?? [];
+      row.detailsAt = new Date(clock()).toISOString();
+      row.detailsIpHash = ipHash;
+      const record = {
+        id: row.id,
+        createdAt: row.createdAt,
+        status: row.status ?? 'new',
+        fullName: row.fullName ?? null,
+        email: row.email,
+        company: row.company ?? null,
+        country: row.country ?? null,
+        phone: row.phone ?? null,
+        businessType: row.businessType ?? null,
+        currencies: row.currencies ?? [],
+        monthlyVolume: row.monthlyVolume ?? null,
+        message: row.message ?? null,
+        consent: row.consent === true,
+        consentAt: row.consentAt ?? null,
+        source: row.source ?? {},
+        detailsAt: row.detailsAt,
+      };
+      return { outcome: 'updated', record };
+    },
+    async countCompanies() {
+      calls.companies += 1;
+      return new Set(rows.filter((r) => r.status !== 'disqualified').map((r) => r.email.toLowerCase())).size;
     },
   };
   return repo;

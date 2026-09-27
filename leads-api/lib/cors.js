@@ -14,10 +14,10 @@ export function corsHeaders(origin, allowedOrigins) {
 }
 
 /** Headers for a successful preflight from an allowed origin. */
-export function preflightHeaders(origin) {
+export function preflightHeaders(origin, methods = 'POST, OPTIONS') {
   return {
     'access-control-allow-origin': origin,
-    'access-control-allow-methods': 'POST, OPTIONS',
+    'access-control-allow-methods': methods,
     'access-control-allow-headers': 'Content-Type',
     'access-control-max-age': '7200',
     vary: 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
