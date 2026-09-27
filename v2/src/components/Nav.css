@@ -1,0 +1,178 @@
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  isolation: isolate;
+  border-bottom: 1px solid var(--separator);
+}
+/* The glass material lives on a pseudo-element: a backdrop-filter on .nav
+   itself would become the containing block for the fixed-position menu and
+   collapse it to the bar's height. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bar);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+.nav-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+  height: 52px;
+}
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--hit);
+  font-family: var(--font-display);
+  font-size: var(--t-callout);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--label);
+  white-space: nowrap;
+}
+.nav-brand:hover {
+  text-decoration: none;
+}
+.nav-brand img {
+  width: auto;
+  height: 20px;
+}
+.nav-brand-accent {
+  color: var(--tint-text);
+}
+.nav-links {
+  display: flex;
+  gap: var(--s-1);
+  margin-left: auto;
+}
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  padding: 0 var(--s-3);
+  font-size: var(--t-footnote);
+  color: var(--label);
+  opacity: 0.8;
+  transition: opacity var(--dur-1) var(--ease);
+}
+.nav-links a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+.nav-cta {
+  flex-shrink: 0;
+}
+
+/* Menu button: two lines that fold into an ✕ */
+.nav-toggle {
+  display: none;
+  position: relative;
+  width: var(--hit);
+  height: var(--hit);
+  margin-right: -10px;
+  border: 0;
+  background: none;
+  color: var(--label);
+}
+.nav-toggle span {
+  position: absolute;
+  left: 13px;
+  width: 18px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.nav-toggle span:first-child {
+  transform: translateY(-3.5px);
+}
+.nav-toggle span:last-child {
+  transform: translateY(3.5px);
+}
+.nav.is-open .nav-toggle span:first-child {
+  transform: rotate(45deg);
+}
+.nav.is-open .nav-toggle span:last-child {
+  transform: rotate(-45deg);
+}
+
+.nav-menu {
+  position: fixed;
+  inset: 52px 0 0;
+  overflow-y: auto;
+  background: var(--bar-solid);
+}
+.nav-menu[hidden] {
+  display: none;
+}
+.nav-menu ul {
+  padding-block: var(--s-6) var(--s-16);
+}
+.nav-menu a {
+  display: block;
+  padding: var(--s-2) 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: var(--track-title);
+  color: var(--label);
+}
+.nav-menu a:hover {
+  text-decoration: none;
+  color: var(--tint-text);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nav-menu:not([hidden]) li {
+    animation: nav-item-in var(--dur-3) var(--ease-out) both;
+  }
+  .nav-menu li:nth-child(2) {
+    animation-delay: 20ms;
+  }
+  .nav-menu li:nth-child(3) {
+    animation-delay: 40ms;
+  }
+  .nav-menu li:nth-child(4) {
+    animation-delay: 60ms;
+  }
+  .nav-menu li:nth-child(5) {
+    animation-delay: 80ms;
+  }
+  .nav-menu li:nth-child(6) {
+    animation-delay: 100ms;
+  }
+  .nav-menu li:nth-child(7) {
+    animation-delay: 120ms;
+  }
+}
+@keyframes nav-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+:root.menu-open {
+  overflow: hidden;
+}
+
+@media (max-width: 833px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-cta {
+    margin-left: auto;
+  }
+  .nav-toggle {
+    display: block;
+  }
+}
+@media (max-width: 360px) {
+  .nav-cta {
+    display: none;
+  }
+}

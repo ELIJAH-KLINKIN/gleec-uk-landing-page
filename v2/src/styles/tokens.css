@@ -1,0 +1,174 @@
+/* ============================================================
+   GLEEC Business v2 — design tokens
+   Modelled on Apple's Human Interface Guidelines: semantic colours
+   that swap for light / dark appearance, one type ramp, a 4-pt
+   spacing grid and concentric radii. Components use only these.
+   ============================================================ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---------- Colour: light appearance ---------- */
+  --bg: #ffffff; /* systemBackground */
+  --bg-2: #f5f5f7; /* alternating section background */
+  --bg-grouped: #f2f2f7; /* systemGroupedBackground */
+  --surface: #ffffff; /* card / grouped cell on --bg-2 */
+  --surface-2: #f2f2f7; /* nested cell, control track */
+  --field: #ffffff; /* text-field fill */
+
+  --label: #1d1d1f; /* primary text */
+  --label-2: #6e6e73; /* secondary text — 5.1:1 on white */
+  --label-3: #86868b; /* tertiary, non-essential text only */
+  --separator: rgba(60, 60, 67, 0.18);
+  --separator-strong: rgba(60, 60, 67, 0.36);
+  --fill: rgba(120, 120, 128, 0.12); /* control track, chip */
+  --fill-2: rgba(120, 120, 128, 0.2);
+
+  /* Brand tint (GLEEC purple) — the one action colour. */
+  --tint: #8c41ff; /* filled-button background: white text 4.9:1 */
+  --tint-pressed: #7a2ef5;
+  --tint-text: #7a2ef5; /* links / tinted text: 5.9:1 on white */
+  --tint-fill: rgba(140, 65, 255, 0.1); /* tinted button / selected row */
+  --on-tint: #ffffff;
+
+  --green: #248a3d; /* systemGreen (accessible) */
+  --orange: #c93400;
+  --blue: #0066cc;
+  --red: #d70015;
+  --green-fill: rgba(52, 199, 89, 0.14);
+  --orange-fill: rgba(255, 149, 0, 0.16);
+  --blue-fill: rgba(0, 122, 255, 0.12);
+  --purple-fill: rgba(140, 65, 255, 0.12);
+
+  /* Materials */
+  --bar: rgba(255, 255, 255, 0.72);
+  --bar-solid: #ffffff;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.08), 0 32px 80px rgba(0, 0, 0, 0.12);
+
+  /* ---------- Type ---------- */
+  /* SF Pro on Apple devices; Inter (self-hosted) everywhere else. */
+  --font:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* One ramp (rem, so it follows the reader's text-size setting). */
+  --t-hero: clamp(2.75rem, 1.6rem + 4.6vw, 5rem); /* 44 → 80 */
+  --t-title-1: clamp(2.25rem, 1.55rem + 2.8vw, 3.5rem); /* 36 → 56 */
+  --t-title-2: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem); /* 28 → 40 */
+  --t-title-3: 1.5rem; /* 24 */
+  --t-headline: 1.3125rem; /* 21 */
+  --t-body-l: 1.3125rem; /* 21 — section intro */
+  --t-body: 1.0625rem; /* 17 */
+  --t-callout: 1rem; /* 16 */
+  --t-subhead: 0.9375rem; /* 15 */
+  --t-footnote: 0.8125rem; /* 13 */
+  --t-caption: 0.75rem; /* 12 */
+
+  --track-display: -0.022em;
+  --track-title: -0.015em;
+  --track-body: -0.01em;
+
+  /* ---------- Space (4-pt grid) ---------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-30: 120px;
+
+  --gap-icon: 6px; /* icon → its own word */
+  --gap-chip: 8px; /* peer chips / pills */
+  --section-y: clamp(80px, 5rem + 4vw, 140px);
+  --page-x: max(22px, env(safe-area-inset-left));
+  --content: 980px;
+  --wide: 1200px;
+
+  /* ---------- Shape ---------- */
+  --r-control: 12px; /* fields, segmented track */
+  --r-card: 20px;
+  --r-card-l: 28px;
+  --r-pill: 999px;
+  --hit: 44px; /* minimum touch target */
+
+  /* ---------- Motion ---------- */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 160ms;
+  --dur-2: 280ms;
+  --dur-3: 600ms;
+}
+
+/* ---------- Colour: dark appearance ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --bg-2: #101012;
+    --bg-grouped: #000000;
+    --surface: #1c1c1e; /* secondarySystemBackground */
+    --surface-2: #2c2c2e; /* tertiarySystemBackground */
+    --field: #1c1c1e;
+
+    --label: #f5f5f7;
+    --label-2: #a1a1a6; /* 7.9:1 on black */
+    --label-3: #86868b;
+    --separator: rgba(84, 84, 88, 0.6);
+    --separator-strong: rgba(120, 120, 128, 0.7);
+    --fill: rgba(120, 120, 128, 0.24);
+    --fill-2: rgba(120, 120, 128, 0.36);
+
+    --tint: #8c41ff;
+    --tint-pressed: #9d5cff;
+    --tint-text: #b28cff; /* 7.6:1 on black */
+    --tint-fill: rgba(157, 92, 255, 0.2);
+
+    --green: #30d158;
+    --orange: #ff9f0a;
+    --blue: #409cff;
+    --red: #ff6961;
+    --green-fill: rgba(48, 209, 88, 0.18);
+    --orange-fill: rgba(255, 159, 10, 0.18);
+    --blue-fill: rgba(10, 132, 255, 0.2);
+    --purple-fill: rgba(157, 92, 255, 0.22);
+
+    --bar: rgba(22, 22, 23, 0.72);
+    --bar-solid: #161617;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-2: 0 12px 32px rgba(0, 0, 0, 0.5);
+    --shadow-3: 0 32px 80px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Increase Contrast: stronger separators and secondary text. */
+@media (prefers-contrast: more) {
+  :root {
+    --label-2: #424245;
+    --separator: rgba(60, 60, 67, 0.5);
+    --tint-text: #6a1fe3;
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --label-2: #d2d2d7;
+    --separator: rgba(160, 160, 168, 0.7);
+    --tint-text: #c9adff;
+  }
+}
+
+/* Reduce Transparency: materials become opaque. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --bar: var(--bar-solid);
+  }
+}

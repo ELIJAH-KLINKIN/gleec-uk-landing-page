@@ -5,6 +5,7 @@ Includes a waitlist form whose leads are stored in Postgres and posted to a Tele
 
 - **Site:** static React app built with Vite, prerendered to HTML at build time, hosted on GitHub Pages.
 - **Lead API:** [`leads-api/`](leads-api/README.md), a Vercel Function backed by Neon Postgres.
+- **Version 2:** [`v2/`](v2/README.md), a from-scratch redesign that follows Apple's Human Interface Guidelines, with the same content and the same lead API.
 
 Live (staging): https://elijah-klinkin.github.io/gleec-uk-landing-page/
 

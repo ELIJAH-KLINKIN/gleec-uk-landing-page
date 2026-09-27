@@ -1,0 +1,6 @@
+tests
+dist
+dist-*
+test-results
+playwright-report
+node_modules

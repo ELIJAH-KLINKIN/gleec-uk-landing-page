@@ -1,0 +1,210 @@
+/* Highlights gallery */
+.highlights {
+  overflow: hidden;
+}
+.highlights .section-head {
+  margin-bottom: var(--s-12);
+}
+.hl {
+  --tile: min(400px, 84vw);
+  --tile-gap: 20px;
+}
+.hl-scroller {
+  position: relative;
+  display: flex;
+  gap: var(--tile-gap);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  /* the first tile lines up with the page's content edge */
+  --gutter: max(var(--page-x), calc((100% - var(--wide)) / 2));
+  padding: var(--s-2) var(--gutter) var(--s-6);
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.hl-scroller::-webkit-scrollbar {
+  display: none;
+}
+.hl-scroller:focus-visible {
+  outline-offset: -3px;
+  border-radius: 0;
+}
+.hl-tile {
+  flex: 0 0 var(--tile);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s-8);
+  min-height: 520px;
+  padding: var(--s-8);
+  border-radius: var(--r-card-l);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.hl-tile-eyebrow {
+  margin-bottom: var(--s-2);
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  color: var(--label-2);
+}
+.hl-tile .title-3 {
+  margin-bottom: var(--s-3);
+}
+.hl-tile-body {
+  font-size: var(--t-callout);
+  line-height: 1.5;
+  color: var(--label-2);
+}
+
+/* Illustrative notice */
+.hl-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: 18px;
+  background: var(--surface-2);
+  font-size: var(--t-footnote);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.hl-notice-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.hl-notice-text strong {
+  font-size: var(--t-subhead);
+  font-weight: 600;
+}
+.hl-notice-text span {
+  color: var(--label-2);
+}
+.hl-notice-amount {
+  font-size: var(--t-subhead);
+  font-weight: 600;
+}
+.hl-notice-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+.hl-notice-icon.orange {
+  background: var(--orange-fill);
+  color: var(--orange);
+}
+.hl-notice-icon.purple {
+  background: var(--purple-fill);
+  color: var(--tint-text);
+}
+.hl-notice-icon.blue {
+  background: var(--blue-fill);
+  color: var(--blue);
+}
+.hl-notice-details {
+  display: grid;
+  gap: 0;
+  padding-block: var(--s-1);
+}
+.hl-notice-details > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-2) 0;
+}
+.hl-notice-details > div + div {
+  border-top: 1px solid var(--separator);
+}
+.hl-notice-details dt {
+  color: var(--label-2);
+}
+.hl-notice-details dd {
+  font-weight: 600;
+}
+
+/* Controls: page control + play/pause centred, paddles on the right */
+.hl-controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.hl-dots {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: var(--hit);
+  padding: 0 var(--s-3);
+  border-radius: var(--r-pill);
+  background: var(--fill);
+}
+.hl-dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: var(--hit);
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.hl-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--label-3);
+  opacity: 0.55;
+  transition:
+    opacity var(--dur-1),
+    background-color var(--dur-1);
+}
+.hl-dot:hover::before {
+  opacity: 0.85;
+}
+.hl-dot.is-current::before {
+  background: var(--label);
+  opacity: 1;
+}
+.hl-paddle {
+  display: grid;
+  place-items: center;
+  width: var(--hit);
+  height: var(--hit);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fill);
+  color: var(--label);
+  transition:
+    background-color var(--dur-1),
+    opacity var(--dur-1);
+}
+.hl-paddle:not([disabled]):hover {
+  background: var(--fill-2);
+}
+.hl-paddles {
+  position: absolute;
+  right: 0;
+  display: flex;
+  gap: var(--s-3);
+}
+.hl-paddle[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+@media (max-width: 734px) {
+  .hl-paddles {
+    display: none;
+  }
+  .hl-tile {
+    min-height: 480px;
+    padding: var(--s-6);
+  }
+}

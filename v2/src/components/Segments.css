@@ -1,0 +1,45 @@
+/* Segments */
+.seg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+}
+.seg-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-8);
+  border-radius: var(--r-card-l);
+  background: var(--surface);
+}
+.seg-body {
+  margin-top: var(--s-3);
+  color: var(--label-2);
+}
+.seg-label {
+  margin: var(--s-6) 0 var(--s-2);
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  color: var(--label-2);
+}
+.seg-points {
+  display: grid;
+  gap: 0;
+  margin-bottom: var(--s-6);
+  border-top: 1px solid var(--separator);
+}
+.seg-points li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--separator);
+  font-size: var(--t-subhead);
+  line-height: 1.4;
+}
+.seg-link {
+  margin-top: auto;
+}
+@media (max-width: 1000px) {
+  .seg-grid {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}

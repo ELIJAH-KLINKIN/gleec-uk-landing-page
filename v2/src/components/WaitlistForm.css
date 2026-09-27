@@ -1,0 +1,260 @@
+/* WaitlistForm — one control surface for every field (same fill, hairline,
+   height, radius and font size). */
+.wl-form {
+  display: grid;
+  gap: var(--s-8);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+.wl-group {
+  display: grid;
+  gap: var(--s-5);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.wl-group-title {
+  margin-bottom: var(--s-1);
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: var(--track-title);
+  color: var(--label);
+}
+.wl-field {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.wl-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  color: var(--label);
+}
+.wl-optional {
+  font-size: var(--t-footnote);
+  font-weight: 400;
+  color: var(--label-2);
+}
+
+.wl-field input,
+.wl-field select,
+.wl-field textarea {
+  width: 100%;
+  min-height: var(--hit);
+  padding: 10px 14px;
+  border: 1px solid var(--separator-strong);
+  border-radius: var(--r-control);
+  background: var(--field);
+  color: var(--label);
+  font-size: var(--t-body); /* ≥16px, so iOS doesn't zoom on focus */
+  line-height: 1.35;
+  transition:
+    border-color var(--dur-1),
+    box-shadow var(--dur-1);
+}
+.wl-field textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+.wl-field ::placeholder {
+  color: var(--label-3);
+  opacity: 1;
+}
+.wl-field input:focus,
+.wl-field select:focus,
+.wl-field textarea:focus {
+  outline: none;
+  border-color: var(--tint);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+}
+.wl-field [aria-invalid="true"] {
+  border-color: var(--red);
+}
+.wl-field [aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 20%, transparent);
+}
+
+/* Pop-up button */
+.wl-select {
+  position: relative;
+}
+.wl-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+.wl-select svg {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--label-2);
+  pointer-events: none;
+}
+
+/* Toggle buttons */
+.wl-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-chip);
+}
+.wl-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-icon);
+  min-height: var(--hit);
+  min-width: 72px;
+  justify-content: center;
+  padding: 8px 18px;
+  border: 1px solid var(--separator-strong);
+  border-radius: var(--r-pill);
+  background: var(--field);
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  color: var(--label);
+  transition:
+    background-color var(--dur-1),
+    border-color var(--dur-1);
+}
+.wl-toggle:hover {
+  background: var(--fill);
+}
+.wl-toggle.is-on {
+  border-color: transparent;
+  background: var(--tint-fill);
+  color: var(--tint-text);
+  font-weight: 600;
+}
+
+/* Consent checkbox */
+.wl-consent-row {
+  display: grid;
+  gap: var(--s-2);
+}
+.wl-consent {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: var(--s-3);
+  align-items: start;
+  font-size: var(--t-subhead);
+  line-height: 1.47;
+  color: var(--label);
+  cursor: pointer;
+}
+.wl-consent input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--tint);
+  cursor: pointer;
+}
+
+.wl-hint {
+  font-size: var(--t-footnote);
+  color: var(--label-2);
+}
+.wl-error {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-icon);
+  font-size: var(--t-footnote);
+  color: var(--red);
+}
+.wl-error svg {
+  flex-shrink: 0;
+}
+
+.wl-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.wl-actions {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  text-align: center;
+}
+.wl-submit {
+  min-width: 240px;
+}
+.wl-spin {
+  animation: wl-spin 900ms linear infinite;
+}
+@keyframes wl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.wl-status:empty {
+  display: none;
+}
+.wl-server-error {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-control);
+  background: color-mix(in srgb, var(--red) 10%, transparent);
+  font-size: var(--t-subhead);
+  color: var(--red);
+}
+.wl-fineprint {
+  max-width: 460px;
+}
+
+/* Success */
+.wl-success {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: var(--s-10) var(--s-6);
+  border-radius: var(--r-card-l);
+  background: var(--surface);
+  text-align: center;
+  outline: none;
+}
+.wl-success-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--s-2);
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+}
+.wl-success-body {
+  margin-bottom: var(--s-3);
+  color: var(--label-2);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wl-success-icon {
+    animation: wl-pop 420ms var(--ease-out) both;
+  }
+}
+@keyframes wl-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@media (max-width: 600px) {
+  .wl-submit {
+    width: 100%;
+  }
+}

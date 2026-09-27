@@ -1,0 +1,110 @@
+/* Cards */
+.cards .section-head {
+  margin-bottom: var(--s-10);
+}
+.cards-switch {
+  display: flex;
+  justify-content: center;
+}
+.cards-stage {
+  position: relative;
+  height: clamp(220px, 34vw, 360px);
+  margin: var(--s-12) auto var(--s-10);
+  max-width: 640px;
+}
+.cards-scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+  pointer-events: none;
+}
+.cards-scene.is-current {
+  opacity: 1;
+}
+.cards-img {
+  position: absolute;
+  width: 78%;
+  height: auto;
+  left: 11%;
+  border-radius: 5%;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.22));
+}
+.cards-img.back {
+  top: 0;
+  transform: translate(9%, -4%) rotate(6deg);
+  opacity: 0.85;
+}
+.cards-img.front {
+  top: 8%;
+  transform: rotate(-3deg);
+}
+
+/* Notification banner */
+.cards-notice {
+  position: absolute;
+  right: -6%;
+  bottom: 2%;
+  display: flex;
+  gap: var(--s-3);
+  width: 300px;
+  padding: var(--s-3) var(--s-4);
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--separator);
+  box-shadow: var(--shadow-2);
+  font-size: var(--t-footnote);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.cards-notice-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--tint);
+  color: var(--on-tint);
+}
+.cards-notice-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.cards-notice-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--t-caption);
+  color: var(--label-2);
+}
+.cards-notice-text strong {
+  font-weight: 600;
+}
+.cards-notice-text > span:last-child {
+  color: var(--label-2);
+}
+
+.cards-caption {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+.cards-points {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-4) 0 var(--s-8);
+  color: var(--label-2);
+}
+
+@media (max-width: 734px) {
+  .cards-notice {
+    right: 50%;
+    bottom: -12%;
+    transform: translateX(50%);
+    width: min(300px, 92%);
+  }
+  .cards-stage {
+    margin-bottom: var(--s-16);
+  }
+}
