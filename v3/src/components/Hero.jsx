@@ -50,7 +50,7 @@ export default function Hero() {
   const current = demos[active];
 
   return (
-    <section className="hero" aria-labelledby="hero-title">
+    <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="container-wide hero-top">
         <div className="hero-heading">
           <p className="eyebrow">{HERO.eyebrow}</p>

@@ -15,3 +15,8 @@ const app = (
 // dev server serves an empty #root, so render from scratch.
 if (root.firstElementChild) hydrateRoot(root, app);
 else createRoot(root).render(app);
+
+// Turn on smooth scrolling once the initial jump to any #section has happened.
+const enableSmoothScroll = () => requestAnimationFrame(() => document.documentElement.classList.add("smooth-scroll"));
+if (document.readyState === "complete") enableSmoothScroll();
+else window.addEventListener("load", enableSmoothScroll, { once: true });

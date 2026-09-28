@@ -60,6 +60,102 @@ test("every in-page link resolves; no dead links", async ({ page, request }) => 
   }
 });
 
+// ---------------- Navigation ----------------
+// Waits until scrolling has stopped: the same position three samples in a row.
+const settle = async (page) => {
+  let last = -1;
+  let same = 0;
+  for (let i = 0; i < 60; i++) {
+    const y = await page.evaluate(() => Math.round(window.scrollY));
+    same = y === last ? same + 1 : 0;
+    if (same >= 2) return y;
+    last = y;
+    await page.waitForTimeout(100);
+  }
+  return last;
+};
+
+test("logo returns to the very top from anywhere, in one click", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await settle(page);
+  await page.locator(".nav-brand").click();
+  expect(await settle(page)).toBe(0);
+});
+
+test("menu links land each section with its heading below the bar", async ({ page }, testInfo) => {
+  test.skip(isMobile(testInfo), "links live in the phone menu");
+  await page.goto("./");
+  for (const label of ["Product", "Accounts", "Payments", "Cards", "Pricing", "FAQ"]) {
+    const link = page.locator(".nav-links a", { hasText: label });
+    await link.click();
+    await settle(page);
+    const { headTop, navBottom, vh } = await page.evaluate(
+      (href) => {
+        const h = document.querySelector(href).querySelector("h2");
+        return {
+          headTop: h.getBoundingClientRect().top,
+          navBottom: document.querySelector(".nav").getBoundingClientRect().bottom,
+          vh: window.innerHeight,
+        };
+      },
+      await link.getAttribute("href"),
+    );
+    expect(headTop, `${label} heading below the bar`).toBeGreaterThan(navBottom);
+    expect(headTop, `${label} heading in the top half`).toBeLessThan(vh / 2);
+  }
+});
+
+test("scroll spy: a purple underline follows the section being read", async ({ page }, testInfo) => {
+  test.skip(isMobile(testInfo), "underline is on the desktop bar");
+  await page.goto("./");
+  const bar = page.locator(".nav-indicator");
+  await expect(page.locator('.nav-links a[aria-current="location"]')).toHaveCount(0);
+  await expect(bar).not.toHaveClass(/is-visible/);
+  for (const label of ["Accounts", "Cards", "FAQ"]) {
+    const link = page.locator(".nav-links a", { hasText: label });
+    await link.click();
+    await settle(page);
+    await expect(link).toHaveAttribute("aria-current", "location");
+    await expect(page.locator('.nav-links a[aria-current="location"]')).toHaveCount(1);
+    await expect(bar).toHaveClass(/is-visible/);
+    await expect
+      .poll(
+        async () => {
+          const [l, b] = await Promise.all([link.boundingBox(), bar.boundingBox()]);
+          return b.x >= l.x && b.x + b.width <= l.x + l.width + 1 && b.y > l.y + l.height / 2;
+        },
+        { message: `underline sits under ${label}` },
+      )
+      .toBe(true);
+  }
+  // Back at the top, nothing is underlined.
+  await page.locator(".nav-brand").click();
+  await settle(page);
+  await expect(page.locator('.nav-links a[aria-current="location"]')).toHaveCount(0);
+});
+
+test("opening a #section link jumps straight there (no long glide)", async ({ page }) => {
+  await page.goto("./#faq");
+  await page.waitForLoadState("load");
+  await expect
+    .poll(() => page.evaluate(() => Math.round(document.querySelector("#faq").getBoundingClientRect().top)), {
+      timeout: 1000,
+    })
+    .toBeLessThan(120);
+});
+
+test("phone menu marks the current section", async ({ page }, testInfo) => {
+  test.skip(!isMobile(testInfo), "phone menu only");
+  await page.goto("./#cards");
+  await settle(page);
+  // A real tap: Playwright's click() first "scrolls the sticky button into view",
+  // which moves the page underneath (a tool artefact, not something users see).
+  const box = await page.getByRole("button", { name: "Menu" }).boundingBox();
+  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator('#nav-menu a[aria-current="location"]')).toHaveText("Cards");
+});
+
 // ---------------- Legal and regulatory pages ----------------
 const LEGAL = [
   ["/regulatory/", "Regulatory information", "not currently authorised by the FCA"],

@@ -34,8 +34,11 @@ html {
   text-size-adjust: 100%;
   scroll-padding-top: 72px; /* anchors land below the navigation bar */
 }
+/* Smooth scrolling for in-page links only. It is switched on after the page has
+   loaded (entry-client.jsx), so opening a link like /#faq jumps straight to the
+   section instead of gliding through the whole page. */
 @media (prefers-reduced-motion: no-preference) {
-  html {
+  html.smooth-scroll {
     scroll-behavior: smooth;
   }
 }
