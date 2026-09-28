@@ -1,0 +1,56 @@
+/* RotatingPhrase */
+.rot {
+  display: grid;
+  width: max-content;
+  max-width: 100%;
+  color: var(--tint-text);
+}
+.rot-phrase {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+.rot-ch {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+/* Waiting below, invisible. */
+.rot-phrase[data-state="wait"] .rot-ch {
+  opacity: 0;
+  transform: translateY(0.45em);
+  filter: blur(10px);
+  transition: none;
+}
+
+/* Arriving: each letter rises out of a blur, left to right. */
+.rot-phrase[data-state="in"] .rot-ch {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition:
+    opacity 520ms var(--ease-out),
+    transform 620ms var(--ease-out),
+    filter 520ms var(--ease-out);
+  transition-delay: calc(var(--i) * 22ms + 120ms);
+}
+
+/* Leaving: letters lift away and soften, slightly faster. */
+.rot-phrase[data-state="out"] .rot-ch {
+  opacity: 0;
+  transform: translateY(-0.35em);
+  filter: blur(8px);
+  transition:
+    opacity 360ms var(--ease),
+    transform 420ms var(--ease),
+    filter 360ms var(--ease);
+  transition-delay: calc(var(--i) * 14ms);
+}
+
+/* Reduce Motion: a plain swap — no movement, no blur. */
+@media (prefers-reduced-motion: reduce) {
+  .rot-phrase .rot-ch {
+    transform: none !important;
+    filter: none !important;
+    transition-delay: 0ms !important;
+  }
+}

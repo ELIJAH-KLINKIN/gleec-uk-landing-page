@@ -1,5 +1,7 @@
-// Hero.jsx — a compact header (headline left; intro and actions right) so the
-// product demo is on screen, and moving, the moment the page loads.
+// Hero.jsx — a compact header (headline left; intro and the single action
+// right) so the product demo is on screen, and moving, the moment the page
+// loads. The headline's first line rotates with the demo tab ("Business
+// accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Global payments" ↔ Payments).
 // A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
 // the demo. It advances by itself every 7 s — shown as a fill inside the
 // current pill — until the visitor picks a tab, then stays on their choice.
@@ -9,7 +11,7 @@ import { useRef, useState } from "react";
 import { DISCLAIMER_SHORT, HERO } from "../content.js";
 import { DEMO_MEDIA, DEMO_SIZE, DEMO_SIZE_MOBILE } from "../lib/demoMedia.js";
 import { useAutoAdvance } from "../lib/useAutoAdvance.js";
-import Icon from "./ui/Icon.jsx";
+import RotatingPhrase from "./RotatingPhrase.jsx";
 import DemoScreen from "./DemoScreen.jsx";
 import "./Hero.css";
 
@@ -53,7 +55,9 @@ export default function Hero() {
         <div className="hero-heading">
           <p className="eyebrow">{HERO.eyebrow}</p>
           <h1 className="hero-title" id="hero-title">
-            {HERO.title} <span className="hero-em">{HERO.titleEmphasis}</span>
+            <span className="visually-hidden">{HERO.titleSpoken}</span>
+            <RotatingPhrase phrases={demos.map((d) => d.phrase)} index={active} />
+            <span aria-hidden="true">{HERO.titleRest}</span>
           </h1>
         </div>
         <div className="hero-side">
@@ -61,10 +65,6 @@ export default function Hero() {
           <div className="hero-actions">
             <a className="btn btn-filled btn-large" href={HERO.primary.href}>
               {HERO.primary.label}
-            </a>
-            <a className="link-chevron" href={HERO.secondary.href}>
-              {HERO.secondary.label}
-              <Icon name="chevron-right" size={18} />
             </a>
           </div>
         </div>

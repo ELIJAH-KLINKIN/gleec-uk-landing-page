@@ -24,7 +24,7 @@ const isMobile = (testInfo) => testInfo.project.name === "mobile";
 
 test("prerendered HTML and metadata", async ({ page, request }) => {
   const html = await (await request.get("./")).text();
-  expect(html).toContain("Business accounts for companies that");
+  expect(html).toContain("for companies that don’t fit the default box.");
   expect(html).toContain('id="waitlist"');
   await page.goto("./");
   await expect(page).toHaveTitle(/GLEEC Business/);
@@ -130,16 +130,26 @@ test("mobile menu opens, navigates, locks scroll and closes", async ({ page }, t
   await expect(menu).toBeHidden();
 });
 
-test("hero actions go to the form and the plans", async ({ page }) => {
+test("hero has a single action: Join the Waitlist", async ({ page }) => {
   await page.goto("./");
-  await page.locator(".hero").getByRole("link", { name: "Join the Waitlist" }).click();
+  const hero = page.locator(".hero-top");
+  await expect(hero.getByRole("link")).toHaveCount(1);
+  await hero.getByRole("link", { name: "Join the Waitlist" }).click();
   await expect(page.locator("#waitlist form")).toBeInViewport();
+});
+
+test("headline reads as one sentence and its first line follows the demo tab", async ({ page }) => {
   await page.goto("./");
-  await page
-    .locator(".hero")
-    .getByRole("link", { name: /View Plans/ })
-    .click();
-  await expect(page.locator("#plans")).toBeInViewport();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
+  );
+  const phrase = page.locator('.rot-phrase[data-state="in"]');
+  await expect(phrase).toHaveText("Business\u00a0accounts");
+  await page.locator(".demo").getByRole("tab", { name: "Cards" }).click();
+  await expect(phrase).toHaveText("Corporate\u00a0cards");
+  await page.locator(".demo").getByRole("tab", { name: "Payments" }).click();
+  await expect(phrase).toHaveText("Global\u00a0payments");
+  await expect(page.locator(".rot-phrase")).toHaveCount(3);
 });
 
 test("highlights gallery: dots and paddles move it; it never moves on its own", async ({ page }, testInfo) => {

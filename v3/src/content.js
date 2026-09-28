@@ -15,27 +15,32 @@ export const DISCLAIMER_SHORT =
 
 export const HERO = {
   eyebrow: "UK Business Accounts",
-  title: "Business accounts for companies that",
-  titleEmphasis: "don’t fit the default box.",
+  // The headline's first line rotates with the demo tab below it
+  // ("Business accounts" ↔ Accounts, …); the rest of the sentence stays put.
+  titleRest: "for companies that don’t fit the default box.",
+  // What screen readers hear: one stable sentence.
+  titleSpoken: "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
   lead: "Designed for UK and international businesses that need GBP, EUR and USD accounts, reliable fiat payment routes underpinned by efficient KYB and personalised client support.",
   primary: { label: "Join the Waitlist", href: "#waitlist" },
-  secondary: { label: "View Plans", href: "#plans" },
   // Product demo under the headline: one tab per area, auto-advancing every 7 s.
   demoNote: "Product preview. Features shown are illustrative and subject to authorisation.",
   demos: [
     {
       id: "accounts",
       label: "Accounts",
+      phrase: "Business accounts",
       caption: "GBP, EUR and USD accounts with local details, in one place.",
     },
     {
       id: "cards",
       label: "Cards",
+      phrase: "Corporate cards",
       caption: "Virtual and physical company cards with limits and spend controls.",
     },
     {
       id: "payments",
       label: "Payments",
+      phrase: "Global payments",
       caption: "Faster Payments, SEPA and SWIFT from a single payment flow.",
     },
   ],

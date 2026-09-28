@@ -22,9 +22,6 @@
   color: var(--label);
   text-wrap: balance;
 }
-.hero-em {
-  color: var(--tint-text);
-}
 .hero-lead {
   font-size: var(--t-body);
   line-height: 1.5;
