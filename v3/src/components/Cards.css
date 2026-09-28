@@ -57,15 +57,34 @@
   line-height: 1.35;
   font-variant-numeric: tabular-nums;
 }
-.cards-notice-icon {
+.cards-notice-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+}
+.cards-notice-merchant {
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--separator);
+}
+/* The sending app's icon, badged on the merchant logo. */
+.cards-notice-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
   background: var(--tint);
-  color: var(--on-tint);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.cards-notice-badge img {
+  width: 7px;
+  height: auto;
+  filter: brightness(0) invert(1);
 }
 .cards-notice-text {
   display: grid;

@@ -422,6 +422,7 @@ export const CARDS = {
       ],
       notice: {
         app: "GLEEC Business",
+        merchant: "openai",
         title: "OpenAI · Subscription",
         detail: "Virtual · Marketing · within limit",
         amount: "−£82.00",
@@ -438,6 +439,7 @@ export const CARDS = {
       ],
       notice: {
         app: "GLEEC Business",
+        merchant: "booking",
         title: "Booking.com · Travel",
         detail: "Physical · Travel team · within limit",
         amount: "−£420.00",

@@ -1,10 +1,13 @@
 // Cards.jsx — company cards. A segmented control switches between the virtual
-// and physical card; each shows an illustrative spend notification.
+// and physical card; each shows an illustrative spend notification led by the
+// merchant's logo, with the app's icon as a small badge (as iOS shows a
+// notification about someone else).
 import { useState } from "react";
 import { CARDS } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
-import Icon from "./ui/Icon.jsx";
+import MerchantLogo from "./ui/MerchantLogo.jsx";
+import appIcon from "../assets/logo-g.png";
 import virtualFront from "../assets/cards/card-virtual.svg";
 import virtualBack from "../assets/cards/card-virtual-alt.svg";
 import physicalFront from "../assets/cards/card-physical.svg";
@@ -60,8 +63,11 @@ export default function Cards() {
                   decoding="async"
                 />
                 <div className="cards-notice">
-                  <span className="cards-notice-icon">
-                    <Icon name="credit-card" size={16} strokeWidth={2.2} />
+                  <span className="cards-notice-avatar">
+                    <MerchantLogo id={s.notice.merchant} size={36} className="cards-notice-merchant" />
+                    <span className="cards-notice-badge">
+                      <img src={appIcon} alt="" width="6" height="8" />
+                    </span>
                   </span>
                   <span className="cards-notice-text">
                     <span className="cards-notice-head">
