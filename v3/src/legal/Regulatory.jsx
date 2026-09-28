@@ -61,7 +61,7 @@ const SECTIONS = [
         <p>
           Joining our waitlist is not an application for an account or any regulated service. If we are authorised, this
           page will show our FCA Firm Reference Number (FRN), and you will be able to check our entry on the{" "}
-          <a href="https://register.fca.org.uk/">FCA Register</a>.
+          <a href="https://register.fca.org.uk/s/">FCA Register</a>.
         </p>
       </>
     ),
@@ -88,7 +88,7 @@ const SECTIONS = [
           </li>
           <li>
             <strong>No interest.</strong> E-money institutions are not allowed to pay interest, or give any other
-            benefit, for the length of time you hold e-money.
+            benefit, based on how long you hold e-money.
           </li>
         </ul>
       </>
@@ -146,7 +146,10 @@ const SECTIONS = [
     title: "Protect yourself from fraud",
     body: (
       <>
-        <p>Fraudsters sometimes pretend to be financial firms. To protect yourself:</p>
+        <p>
+          Fraudsters sometimes pretend to be financial firms, or copy a real firm’s name and details (a “clone firm”).
+          To protect yourself:
+        </p>
         <ul>
           <li>
             We are not accepting money from anyone yet. We will never ask you to transfer money to us, or to a “safe
@@ -154,12 +157,19 @@ const SECTIONS = [
           </li>
           <li>We will never ask for your passwords, full card details or one-time security codes.</li>
           <li>
-            Check any financial firm on the <a href="https://register.fca.org.uk/">FCA Register</a>, and contact it
-            using the details listed there rather than details you were sent.
+            Before dealing with any financial firm, check it on the FCA’s{" "}
+            <a href="https://www.fca.org.uk/consumers/fca-firm-checker">Firm Checker</a> or the{" "}
+            <a href="https://register.fca.org.uk/s/">Financial Services Register</a>, and contact it only using the
+            details listed there. Until we are authorised, we will not appear there as an authorised firm.
           </li>
           <li>
-            Visit the FCA’s <a href="https://www.fca.org.uk/scamsmart">ScamSmart</a> pages to learn how to spot scams
-            and clone firms.
+            If someone contacts you claiming to be from {COMPANY.brand} or the FCA and asks for money or security
+            details, stop, do not reply, and contact us using the details on this website.
+          </li>
+          <li>
+            The FCA explains how to spot scams and clone firms on its{" "}
+            <a href="https://www.fca.org.uk/consumers/protect-yourself-scams">Protect yourself from scams</a> page. If
+            in doubt, call the FCA Consumer Helpline on 0800 111 6768.
           </li>
         </ul>
         <p>

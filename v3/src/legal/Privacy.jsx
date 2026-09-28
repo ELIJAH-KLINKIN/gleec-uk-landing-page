@@ -222,13 +222,15 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          If you are unhappy with how we have used your personal data, please tell us first so we can put it right. We
-          will acknowledge your complaint within 30 days and investigate it without undue delay.
+          You have the right to complain to us about how we use your personal data. To do so,{" "}
+          <WriteToUs subject="Data protection complaint" />. We will acknowledge your complaint within 30 days,
+          investigate it without undue delay, keep you updated, and tell you the outcome.
         </p>
         <p>
           You also have the right to complain to the Information Commissioner’s Office (ICO), the UK data protection
-          regulator: <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a>, telephone 0303 123
-          1113.
+          regulator:{" "}
+          <a href="https://ico.org.uk/make-a-complaint/data-protection-complaints/">ico.org.uk/make-a-complaint</a>,
+          telephone 0303 123 1113. The ICO usually asks you to raise your concern with us first.
         </p>
       </>
     ),

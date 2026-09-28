@@ -674,6 +674,7 @@ export const FOOTER = {
         { label: "FAQ", href: "#faq" },
         { label: "Regulatory information", href: "/regulatory/" },
         { label: "How your money will be protected", href: "/safeguarding/" },
+        { label: "Fraud and scams", href: "/regulatory/#fraud" },
       ],
     },
     {

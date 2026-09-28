@@ -66,13 +66,23 @@ const SECTIONS = [
     ),
   },
   {
+    id: "status",
+    title: "How accessible this website is",
+    body: (
+      <p>
+        We believe the website meets most WCAG 2.2 level AA success criteria. The known limitations are listed above.
+        This statement was prepared on 28 September 2026, when we last tested the website.
+      </p>
+    ),
+  },
+  {
     id: "testing",
     title: "How we test",
     body: (
       <p>
         Every change to the website runs through automated tests that check keyboard use, Reduce Motion behaviour and
         layout on desktop and mobile screen sizes. We also check pages by hand with a keyboard and at different text
-        sizes. We last reviewed this statement on 28 September 2026.
+        sizes.
       </p>
     ),
   },
@@ -87,11 +97,13 @@ const SECTIONS = [
         </p>
         <Address />
         <p>
-          Tell us the page, what you were trying to do and the format you need. We will reply within five working days.
+          Tell us the page, what you were trying to do and the format you need. We will reply within five working days
+          and make reasonable adjustments where we can.
         </p>
         <p>
           If you are not happy with our response, you can contact the{" "}
-          <a href="https://www.equalityadvisoryservice.com/">Equality Advisory and Support Service</a> for advice.
+          <a href="https://www.equalityadvisoryservice.com/">Equality Advisory and Support Service</a> on 0808 800 0082
+          (free; Monday to Friday 9am to 7pm, Saturday 10am to 2pm).
         </p>
       </>
     ),

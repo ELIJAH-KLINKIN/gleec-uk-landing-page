@@ -83,6 +83,19 @@ test("footer links open every legal page", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy policy");
 });
 
+test("the site stores nothing on the device (matches the cookie policy)", async ({ page, context }) => {
+  for (const path of ["./", "/privacy/", "/cookies/"]) {
+    await page.goto(path);
+    await page.mouse.wheel(0, 2000);
+    await page.waitForTimeout(300);
+  }
+  await page.goto("./#waitlist");
+  await page.getByRole("textbox", { name: "Work email" }).fill("someone@example.com");
+  expect(await context.cookies(), "cookies").toEqual([]);
+  const stored = await page.evaluate(() => localStorage.length + sessionStorage.length);
+  expect(stored, "local/session storage entries").toBe(0);
+});
+
 for (const [path, title, text] of LEGAL) {
   test(`legal page ${path}: prerendered, titled, linked back home`, async ({ page, request }, testInfo) => {
     const html = await (await request.get(path)).text();
