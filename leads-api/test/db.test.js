@@ -227,10 +227,10 @@ describe('createLeadRepo', () => {
 });
 
 describe('splitSqlStatements', () => {
-  it('splits db/schema.sql into its six statements', () => {
+  it('splits db/schema.sql into its eleven statements', () => {
     const schema = readFileSync(new URL('../db/schema.sql', import.meta.url), 'utf8');
     const statements = splitSqlStatements(schema);
-    assert.equal(statements.length, 6);
+    assert.equal(statements.length, 11);
     assert.match(statements[0], /^(--[^\n]*\n\s*)*create table if not exists leads/);
     assert.match(statements[0], /constraint leads_email_lowercase_check check \(email = lower\(email\)\)\n\)$/);
     assert.match(statements[0], /full_name\s+text,/);
@@ -241,7 +241,12 @@ describe('splitSqlStatements', () => {
     }
     assert.match(statements[1], /add column if not exists details_at timestamptz/);
     assert.match(statements[1], /add column if not exists details_ip_hash text$/);
-    for (const s of statements.slice(2)) assert.match(s, /create index if not exists/);
+    for (const s of statements.slice(2, 6)) assert.match(s, /create index if not exists/);
+    // "Talk to a human": hosts, call requests and their indexes (the unique one blocks double booking).
+    assert.match(statements[6], /create table if not exists calendar_hosts/);
+    assert.match(statements[7], /create table if not exists call_requests/);
+    assert.match(statements[8], /create unique index if not exists call_requests_host_start_uidx/);
+    for (const s of statements.slice(9)) assert.match(s, /create index if not exists call_requests_/);
   });
 
   it('ignores semicolons inside strings, identifiers, comments and dollar quotes', () => {

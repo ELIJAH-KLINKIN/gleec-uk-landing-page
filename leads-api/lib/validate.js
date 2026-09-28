@@ -203,3 +203,65 @@ export function hasAnyDetail(details) {
     return Array.isArray(value) ? value.length > 0 : value != null;
   });
 }
+
+// ---------------------------------------------------------------------------
+// "Talk to a human" (POST /api/talk)
+// ---------------------------------------------------------------------------
+
+export const TALK_MESSAGES = {
+  firstName: 'Please enter your first name.',
+  lastName: 'Please enter your last name.',
+  companyWebsite: 'Please enter a valid website, e.g. acme.com.',
+  start: 'Please choose one of the times offered.',
+};
+
+const HOSTNAME_RE = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+/** "acme.com", "www.acme.com/about" or "https://acme.com" → "https://acme.com/…"; else error. */
+export function normalizeWebsite(value) {
+  if (isBlank(value)) return { value: null };
+  if (typeof value !== 'string') return { error: true };
+  const raw = value.trim();
+  if (raw.length > 200 || /\s/.test(raw)) return { error: true };
+  let url;
+  try {
+    url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+  } catch {
+    return { error: true };
+  }
+  if (!['http:', 'https:'].includes(url.protocol) || !HOSTNAME_RE.test(url.hostname.toLowerCase())) return { error: true };
+  if (url.username || url.password) return { error: true };
+  url.hash = '';
+  return { value: url.toString().replace(/\/$/, '') };
+}
+
+/**
+ * Validates a POST /api/talk body: email, first and last name are required; phone,
+ * company, company website and message are optional but checked when present.
+ * @returns {{ ok: true, request: object } | { ok: false, fields: Record<string, string> }}
+ */
+export function validateTalkRequest(body) {
+  if (!isPlainObject(body)) return { ok: false, fields: { body: MESSAGES.body } };
+  const fields = {};
+  const request = {};
+  const check = createChecker(request, fields);
+
+  check('email', validateEmail(body.email), MESSAGES.email);
+  const name = (value, message) => {
+    const r = optionalText(value, 1, 60);
+    return r.value == null && !r.error ? { error: message } : r.error ? { error: message } : r;
+  };
+  check('firstName', name(body.firstName, TALK_MESSAGES.firstName), TALK_MESSAGES.firstName);
+  check('lastName', name(body.lastName, TALK_MESSAGES.lastName), TALK_MESSAGES.lastName);
+  check('phone', validatePhone(body.phone), MESSAGES.phoneChars);
+  check('company', optionalText(body.company, 1, 160), MESSAGES.company);
+  check('companyWebsite', normalizeWebsite(body.companyWebsite), TALK_MESSAGES.companyWebsite);
+  check('message', validateMessage(body.message), MESSAGES.message);
+
+  if (typeof body.startedAt === 'number' && Number.isFinite(body.startedAt)) request.startedAt = body.startedAt;
+  else fields.startedAt = MESSAGES.startedAt;
+  request.source = normalizeSource(body.source);
+
+  if (Object.keys(fields).length > 0) return { ok: false, fields };
+  return { ok: true, request };
+}

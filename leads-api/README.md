@@ -243,6 +243,32 @@ const valid = expected.length === signature.length &&
   crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 ```
 
+## Talk to a human (book a call)
+
+The website's "Talk to a human" section books a 20-minute Google Meet call with one of the
+hosts (round robin). All logic is in `lib/talk-handler.js`; slot maths in `lib/schedule.js`.
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/talk` | `{ email, firstName, lastName, phone?, company?, companyWebsite?, message?, website (honeypot), startedAt, source }` → `201 { ok, id, token, booking }`. Stores the request, pings Telegram. |
+| `GET /api/talk?id&token` | Free times: `{ ok, available, timeZone, durationMinutes, days: [{ date, slots: [iso] }] }`. `available: false` when no host is connected or Google isn't set up. |
+| `POST /api/talk/book` | `{ id, token, start }` → `{ ok, booking: { start, end, meetUrl, hostName } }`. Creates the event on the host's calendar with a Meet link; Google emails the invitation. `409 slot_taken` if the time went meanwhile; idempotent once booked. |
+| `GET /api/talk/connect` | A host opens this once: Google consent screen (calendar free/busy + events). |
+| `GET /api/talk/callback` | Google's redirect. Stores the host's refresh token (AES-256-GCM) if their email is in `TALK_HOSTS`. |
+
+Environment (in addition to the ones above):
+
+| Variable | Required | Notes |
+|---|---|---|
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | for booking | OAuth client (Web). Redirect URI: `https://<api-domain>/api/talk/callback`. |
+| `TALK_TOKEN_KEY` | for booking | 32 random bytes, base64 (`openssl rand -base64 32`). Encrypts hosts' refresh tokens. |
+| `TALK_HOSTS` | for booking | Comma-separated Google emails allowed to connect as hosts. |
+| `TALK_PUBLIC_URL` | no | Override the API origin used in the OAuth redirect URI. |
+| `TALK_TIMEZONE`, `TALK_DAY_START`, `TALK_DAY_END`, `TALK_CALL_MINUTES`, `TALK_BUFFER_MINUTES`, `TALK_MIN_NOTICE_MINUTES`, `TALK_HORIZON_DAYS` | no | Defaults: Europe/London, 10:00–17:00 Mon–Fri, 20-min calls, 10-min gaps, 4 h notice, 14 days. |
+
+Double booking is prevented by a unique index on `(host_email, start_at)`; the slot is claimed
+in the database before the calendar event is created, and released if Google fails.
+
 ## Database
 
 One table, `leads` (see `db/schema.sql`). `status` defaults to `new` and is limited to

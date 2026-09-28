@@ -208,3 +208,158 @@ export function createLeadRepo(db) {
     },
   };
 }
+
+// ---------------------------------------------------------------------------
+// "Talk to a human"
+// ---------------------------------------------------------------------------
+
+export const TALK_SQL = {
+  countRecentByIpHash: `
+    SELECT count(*)::int AS count
+    FROM call_requests
+    WHERE ip_hash = $1 AND created_at > $2::timestamptz`,
+
+  insertRequest: `
+    INSERT INTO call_requests (
+      email, first_name, last_name, phone, company, company_website, message, source, ip_hash, user_agent
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10)
+    RETURNING id, created_at`,
+
+  getRequest: `
+    SELECT id, created_at, email, first_name, last_name, phone, company, company_website, message, source,
+           status, host_email, start_at, end_at, meet_url
+    FROM call_requests
+    WHERE id = $1::uuid`,
+
+  // Claims the slot for one host. Fails with a unique violation when that host already
+  // has a call then; matches nothing when this request is no longer 'requested'.
+  claimSlot: `
+    UPDATE call_requests
+    SET status = 'booking', host_email = $2, start_at = $3::timestamptz, end_at = $4::timestamptz
+    WHERE id = $1::uuid AND status = 'requested'
+    RETURNING id`,
+
+  releaseSlot: `
+    UPDATE call_requests
+    SET status = 'requested', host_email = NULL, start_at = NULL, end_at = NULL
+    WHERE id = $1::uuid AND status = 'booking'`,
+
+  confirmBooking: `
+    UPDATE call_requests
+    SET status = 'booked', google_event_id = $2, meet_url = $3, booked_at = now()
+    WHERE id = $1::uuid AND status = 'booking'`,
+
+  recordTelegram: `UPDATE call_requests SET telegram_status = $2 WHERE id = $1::uuid`,
+
+  upcomingCountsByHost: `
+    SELECT host_email, count(*)::int AS count
+    FROM call_requests
+    WHERE status = 'booked' AND start_at > $1::timestamptz
+    GROUP BY host_email`,
+
+  activeHosts: `
+    SELECT email, display_name, refresh_token_enc, calendar_id
+    FROM calendar_hosts
+    WHERE active
+    ORDER BY email`,
+
+  upsertHost: `
+    INSERT INTO calendar_hosts (email, display_name, refresh_token_enc, calendar_id, active, connected_at)
+    VALUES ($1, $2, $3, 'primary', true, now())
+    ON CONFLICT (email) DO UPDATE
+    SET display_name = EXCLUDED.display_name, refresh_token_enc = EXCLUDED.refresh_token_enc,
+        active = true, connected_at = now()`,
+};
+
+function toCallRequest(row) {
+  return {
+    id: row.id,
+    createdAt: toIso(row.created_at),
+    email: row.email,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    phone: row.phone ?? null,
+    company: row.company ?? null,
+    companyWebsite: row.company_website ?? null,
+    message: row.message ?? null,
+    source: row.source ?? {},
+    status: row.status,
+    hostEmail: row.host_email ?? null,
+    startAt: toIso(row.start_at),
+    endAt: toIso(row.end_at),
+    meetUrl: row.meet_url ?? null,
+  };
+}
+
+/** True for Postgres "unique_violation" (the slot was taken a moment ago). */
+export function isUniqueViolation(error) {
+  return error?.code === '23505' || /duplicate key|unique constraint/i.test(String(error?.message));
+}
+
+export function createTalkRepo(db) {
+  return {
+    async countRecentByIpHash(ipHash, since) {
+      const rows = await db.query(TALK_SQL.countRecentByIpHash, [ipHash, toIso(since)]);
+      return Number(rows[0]?.count ?? 0);
+    },
+    /** @returns {Promise<{ id: string, createdAt: string }>} */
+    async insertRequest(r) {
+      const rows = await db.query(TALK_SQL.insertRequest, [
+        r.email,
+        r.firstName,
+        r.lastName,
+        r.phone ?? null,
+        r.company ?? null,
+        r.companyWebsite ?? null,
+        r.message ?? null,
+        JSON.stringify(r.source ?? {}),
+        r.ipHash ?? null,
+        r.userAgent ?? null,
+      ]);
+      if (!rows[0]?.id) throw new Error('insert returned no row');
+      return { id: rows[0].id, createdAt: toIso(rows[0].created_at) };
+    },
+    async getRequest(id) {
+      const rows = await db.query(TALK_SQL.getRequest, [id]);
+      return rows[0] ? toCallRequest(rows[0]) : null;
+    },
+    /** @returns {Promise<'claimed' | 'slot_taken' | 'not_requested'>} */
+    async claimSlot(id, { hostEmail, startAt, endAt }) {
+      try {
+        const rows = await db.query(TALK_SQL.claimSlot, [id, hostEmail, toIso(startAt), toIso(endAt)]);
+        return rows.length ? 'claimed' : 'not_requested';
+      } catch (error) {
+        if (isUniqueViolation(error)) return 'slot_taken';
+        throw error;
+      }
+    },
+    async releaseSlot(id) {
+      await db.query(TALK_SQL.releaseSlot, [id]);
+    },
+    async confirmBooking(id, { eventId, meetUrl }) {
+      await db.query(TALK_SQL.confirmBooking, [id, eventId ?? null, meetUrl ?? null]);
+    },
+    async recordTelegram(id, status) {
+      await db.query(TALK_SQL.recordTelegram, [id, status]);
+    },
+    /** { 'host@x': 3, … } — booked calls from `since` on. */
+    async upcomingCountsByHost(since) {
+      const rows = await db.query(TALK_SQL.upcomingCountsByHost, [toIso(since)]);
+      return Object.fromEntries(rows.map((r) => [r.host_email, Number(r.count)]));
+    },
+    async activeHosts() {
+      const rows = await db.query(TALK_SQL.activeHosts, []);
+      return rows.map((r) => ({
+        email: r.email,
+        displayName: r.display_name ?? null,
+        refreshTokenEnc: r.refresh_token_enc,
+        calendarId: r.calendar_id || 'primary',
+      }));
+    },
+    async upsertHost({ email, displayName, refreshTokenEnc }) {
+      await db.query(TALK_SQL.upsertHost, [email, displayName ?? null, refreshTokenEnc]);
+    },
+  };
+}
+
