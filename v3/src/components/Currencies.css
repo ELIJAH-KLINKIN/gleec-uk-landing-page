@@ -13,25 +13,10 @@
   background: var(--surface);
   text-align: center;
 }
-.cur-symbol {
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 96px;
+.cur-flag {
   margin-bottom: var(--s-5);
-  border-radius: 26px;
-  background: linear-gradient(160deg, #a46bff 0%, var(--tint) 55%, #6a1fe3 100%);
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 3rem;
-  font-weight: 600;
-  line-height: 1;
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--tint) 30%, transparent);
 }
 .cur-code {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
   font-family: var(--font-display);
   font-size: var(--t-title-3);
   font-weight: 700;
@@ -93,13 +78,11 @@
     padding: var(--s-5);
     text-align: left;
   }
-  .cur-symbol {
+  .cur-flag {
     grid-row: span 3;
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     margin: 0;
-    border-radius: 20px;
-    font-size: 2.25rem;
   }
   .cur-routes {
     margin-top: var(--s-1);

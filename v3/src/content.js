@@ -396,9 +396,9 @@ export const CURRENCIES = {
   title: "GBP, EUR and USD at the core. More currencies when you need them.",
   lead: "Run your operating balances in the currencies that matter most, with additional currency coverage through partner banking.",
   core: [
-    { symbol: "£", code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
-    { symbol: "€", code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },
-    { symbol: "$", code: "USD", name: "US dollar", routes: "SWIFT · Fedwire" },
+    { code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
+    { code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },
+    { code: "USD", name: "US dollar", routes: "SWIFT · Fedwire" },
   ],
   soonLabel: "Coming soon",
   soon: ["CHF", "CAD", "AUD", "DKK", "SEK", "NOK", "PLN", "CZK", "HUF", "JPY"],

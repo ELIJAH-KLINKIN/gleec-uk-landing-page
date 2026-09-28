@@ -1,4 +1,5 @@
-// Currencies.jsx — the three core currencies as large symbol tiles, then the
+// Currencies.jsx — the three core currencies, each led by its flag (the same
+// round flags as the account tiles and the coming-soon chips), then the
 // currencies planned next.
 import { CURRENCIES } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
@@ -21,13 +22,8 @@ export default function Currencies() {
         <ul className="cur-core">
           {CURRENCIES.core.map((c) => (
             <li key={c.code} className="cur-tile squircle">
-              <span className="cur-symbol" aria-hidden="true">
-                {c.symbol}
-              </span>
-              <span className="cur-code">
-                <Flag code={CURRENCY_FLAG[c.code]} size={22} />
-                {c.code}
-              </span>
+              <Flag code={CURRENCY_FLAG[c.code]} size={72} className="flag cur-flag" />
+              <span className="cur-code">{c.code}</span>
               <span className="cur-name">{c.name}</span>
               <span className="cur-routes">{c.routes}</span>
             </li>
