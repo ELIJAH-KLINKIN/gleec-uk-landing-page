@@ -7,7 +7,7 @@ import "./Plans.css";
 
 export default function Plans() {
   return (
-    <section id="plans" className="section plans" aria-labelledby="plans-title">
+    <section id="pricing" className="section plans" aria-labelledby="plans-title">
       <div className="container-wide">
         <SectionHeader id="plans-title" eyebrow={PLANS.eyebrow} title={PLANS.title} lead={PLANS.lead} />
         <div className="plans-grid">

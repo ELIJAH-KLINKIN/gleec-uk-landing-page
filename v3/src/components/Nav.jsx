@@ -97,9 +97,16 @@ export default function Nav({ home = true }) {
       <nav className="nav-bar container-wide" aria-label="Main">
         <a
           className="nav-brand"
-          href={home ? "#top" : "/"}
+          href="/"
           aria-label={home ? "GLEEC Business, back to top" : "GLEEC Business, home"}
-          onClick={() => setOpen(false)}
+          onClick={(e) => {
+            setOpen(false);
+            if (!home) return;
+            // Stay on the page: glide to the top and show the plain address, like apple.com.
+            e.preventDefault();
+            window.scrollTo({ top: 0 });
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          }}
         >
           <img src={logo} alt="" width="15" height="20" />
           <span>

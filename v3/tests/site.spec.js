@@ -81,6 +81,29 @@ test("logo returns to the very top from anywhere, in one click", async ({ page }
   await settle(page);
   await page.locator(".nav-brand").click();
   expect(await settle(page)).toBe(0);
+  await expect(page).not.toHaveURL(/#/);
+});
+
+test("section anchors match the menu labels; old links still land", async ({ page }) => {
+  await page.goto("./");
+  const links = await page
+    .locator(".nav-links a")
+    .evaluateAll((as) => as.map((a) => [a.textContent.trim(), a.getAttribute("href")]));
+  expect(links).toHaveLength(6);
+  for (const [label, href] of links) {
+    expect(href).toBe(`#${label.toLowerCase()}`);
+    await expect(page.locator(href)).toHaveCount(1);
+  }
+  for (const [old, now] of [
+    ["highlights", "product"],
+    ["plans", "pricing"],
+  ]) {
+    await page.goto(`./#${old}`);
+    await expect(page).toHaveURL(new RegExp(`#${now}$`));
+    await expect(page.locator(`#${now}`)).toBeInViewport();
+  }
+  await page.goto("./#top");
+  await expect(page).not.toHaveURL(/#/);
 });
 
 test("menu links land each section with its heading below the bar", async ({ page }, testInfo) => {
@@ -259,9 +282,9 @@ test("navigation bar links scroll to their sections", async ({ page }, testInfo)
   test.skip(isMobile(testInfo), "desktop navigation");
   await page.goto("./");
   for (const [label, id] of [
-    ["Product", "highlights"],
+    ["Product", "product"],
     ["Payments", "payments"],
-    ["Pricing", "plans"],
+    ["Pricing", "pricing"],
     ["FAQ", "faq"],
   ]) {
     await page.locator(".nav-links").getByRole("link", { name: label }).click();
@@ -310,7 +333,7 @@ test("headline reads as one sentence and its first line follows the demo tab", a
 });
 
 test("highlights gallery: dots and paddles move it; it never moves on its own", async ({ page }, testInfo) => {
-  await page.goto("./#highlights");
+  await page.goto("./#product");
   const gallery = page.locator(".hl");
   const current = gallery.locator(".hl-dot[aria-current='true']");
   await expect(current).toHaveAttribute("aria-label", /highlight 1:/);

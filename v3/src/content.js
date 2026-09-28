@@ -2,11 +2,11 @@
 // Copy is carried over from version 1 of the site. Components only lay it out.
 
 export const NAV = [
-  { label: "Product", href: "#highlights" },
+  { label: "Product", href: "#product" },
   { label: "Accounts", href: "#accounts" },
   { label: "Payments", href: "#payments" },
   { label: "Cards", href: "#cards" },
-  { label: "Pricing", href: "#plans" },
+  { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -670,7 +670,7 @@ export const FOOTER = {
     {
       title: "Resources",
       links: [
-        { label: "Plans & pricing", href: "#plans" },
+        { label: "Plans & pricing", href: "#pricing" },
         { label: "FAQ", href: "#faq" },
         { label: "Regulatory information", href: "/regulatory/" },
         { label: "How your money will be protected", href: "/safeguarding/" },

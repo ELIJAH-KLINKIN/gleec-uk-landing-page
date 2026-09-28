@@ -89,7 +89,7 @@ export default function Highlights() {
   }, [measure]);
 
   return (
-    <section id="highlights" className="section alt highlights" aria-labelledby="highlights-title">
+    <section id="product" className="section alt highlights" aria-labelledby="highlights-title">
       <div className="container">
         <SectionHeader
           id="highlights-title"
