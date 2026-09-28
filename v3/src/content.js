@@ -141,7 +141,7 @@ export const PARTNERS = {
   eyebrow: "Infrastructure",
   title: "Built upon experienced financial infrastructure partners.",
   lead: "GLEEC Business is being built upon regulated banking, payment, card and compliance infrastructure. Logos reflect intended integrations and ongoing provider discussions — not confirmed or live partnerships, and not an endorsement by any provider.",
-  names: ["Card scheme", "Thredd", "Banking Circle", "sumsub", "TAG", "Stanhope"],
+  names: ["ClearBank", "Banking Circle", "Sumsub", "Card scheme"],
 };
 
 export const ACCOUNTS = {
