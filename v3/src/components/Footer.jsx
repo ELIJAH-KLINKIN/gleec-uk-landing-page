@@ -1,10 +1,11 @@
 // Footer.jsx — legal notices first (as Apple places footnotes), then the
-// site directory and the copyright line. Pages that don't exist yet are shown
-// as plain text marked "Coming soon", never as dead links.
+// site directory and the copyright line. Section links ("#faq") stay on the
+// landing page; on the legal pages (home={false}) they lead back to it.
 import { FOOTER } from "../content.js";
 import "./Footer.css";
 
-export default function Footer() {
+export default function Footer({ home = true }) {
+  const to = (href) => (!home && href.startsWith("#") ? `/${href}` : href);
   return (
     <footer className="footer">
       <div className="container-wide">
@@ -21,13 +22,7 @@ export default function Footer() {
               <ul>
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    {l.soon ? (
-                      <span className="footer-soon">
-                        {l.label} <span className="soon">Coming soon</span>
-                      </span>
-                    ) : (
-                      <a href={l.href}>{l.label}</a>
-                    )}
+                    <a href={to(l.href)}>{l.label}</a>
                   </li>
                 ))}
               </ul>

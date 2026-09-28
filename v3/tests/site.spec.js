@@ -48,7 +48,7 @@ test("follows the system appearance (light and dark)", async ({ page }) => {
   expect(dark[1]).toBe("rgb(245, 245, 247)");
 });
 
-test("every in-page link resolves; no dead links", async ({ page }) => {
+test("every in-page link resolves; no dead links", async ({ page, request }) => {
   await page.goto("./");
   const hrefs = await page.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")));
   expect(hrefs.length).toBeGreaterThan(20);
@@ -56,8 +56,56 @@ test("every in-page link resolves; no dead links", async ({ page }) => {
     expect(href, "dead link").not.toBe("#");
     expect(href, "link to a page that does not exist").not.toMatch(/\.html/);
     if (href.startsWith("#")) await expect(page.locator(href), `target for ${href}`).toHaveCount(1);
+    if (/^\/[a-z]/.test(href)) expect((await request.get(href)).status(), `page ${href}`).toBe(200);
   }
 });
+
+// ---------------- Legal and regulatory pages ----------------
+const LEGAL = [
+  ["/regulatory/", "Regulatory information", "not currently authorised by the FCA"],
+  ["/safeguarding/", "How your money will be protected", "not covered by the FSCS"],
+  ["/privacy/", "Privacy policy", "ico.org.uk/make-a-complaint"],
+  ["/cookies/", "Cookie policy", "does not use cookies"],
+  ["/terms/", "Website terms of use", "laws of England and Wales"],
+  ["/complaints/", "Complaints", "financial-ombudsman.org.uk"],
+  ["/contact/", "Contact us", "14776628"],
+  ["/accessibility/", "Accessibility statement", "WCAG"],
+];
+
+test("footer links open every legal page", async ({ page }) => {
+  await page.goto("./");
+  for (const [path] of LEGAL) {
+    await expect(page.locator(`footer a[href="${path}"]`), `footer link to ${path}`).toHaveCount(1);
+  }
+  await expect(page.locator("footer .soon"), "no 'coming soon' placeholders in the footer").toHaveCount(0);
+  await page.locator('footer a[href="/privacy/"]').click();
+  await expect(page).toHaveURL(/\/privacy\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy policy");
+});
+
+for (const [path, title, text] of LEGAL) {
+  test(`legal page ${path}: prerendered, titled, linked back home`, async ({ page, request }, testInfo) => {
+    const html = await (await request.get(path)).text();
+    expect(html, "own <title>").toContain(`<title>${title} — GLEEC Business</title>`);
+    expect(html, "own canonical URL").toMatch(new RegExp(`rel="canonical" href="[^"]*${path}"`));
+    expect(html, "prerendered body").toContain(text);
+
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    await expect(page.locator("main")).toContainText(text);
+    // Section links in the nav and footer lead back to the landing page.
+    await expect(page.locator(".nav-cta")).toHaveAttribute("href", "/#waitlist");
+    await expect(page.locator('footer a[href="/#faq"]')).toHaveCount(1);
+    // Company details and status are on every page.
+    await expect(page.locator("#legal")).toContainText("company number 14776628");
+    // "On this page" links point at real sections.
+    for (const href of await page.$$eval(".legal-toc a", (as) => as.map((a) => a.getAttribute("href")))) {
+      await expect(page.locator(href), `section ${href}`).toHaveCount(1);
+    }
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, `horizontal overflow on ${testInfo.project.name}`).toBeLessThanOrEqual(0);
+  });
+}
 
 test("all images load and nothing overflows horizontally", async ({ page }) => {
   await page.goto("./");

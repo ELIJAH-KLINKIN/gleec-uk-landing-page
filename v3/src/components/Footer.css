@@ -35,14 +35,6 @@
 .footer-directory a:hover {
   color: var(--label);
 }
-.footer-soon {
-  color: var(--label-2);
-}
-.footer-soon .soon {
-  margin-left: var(--s-1);
-  font-size: 0.6875rem;
-  padding: 1px 7px;
-}
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;

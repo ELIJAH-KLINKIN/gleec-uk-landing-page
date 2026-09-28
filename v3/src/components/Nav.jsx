@@ -1,11 +1,13 @@
 // Nav.jsx — translucent global navigation bar. On narrow screens the links
-// collapse into a full-width menu opened by a two-line button.
+// collapse into a full-width menu opened by a two-line button. On the legal
+// pages (home={false}) the section links point back to the home page.
 import { useEffect, useRef, useState } from "react";
 import { NAV } from "../content.js";
 import logo from "../assets/logo-g.png";
 import "./Nav.css";
 
-export default function Nav() {
+export default function Nav({ home = true }) {
+  const to = (hash) => (home ? hash : `/${hash}`);
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
 
@@ -32,7 +34,11 @@ export default function Nav() {
   return (
     <header id="top" className={"nav" + (open ? " is-open" : "")}>
       <nav className="nav-bar container-wide" aria-label="Main">
-        <a className="nav-brand" href="#top" aria-label="GLEEC Business, back to top">
+        <a
+          className="nav-brand"
+          href={home ? "#top" : "/"}
+          aria-label={home ? "GLEEC Business, back to top" : "GLEEC Business, home"}
+        >
           <img src={logo} alt="" width="15" height="20" />
           <span>
             GLEEC <span className="nav-brand-accent">Business</span>
@@ -41,11 +47,11 @@ export default function Nav() {
         <ul className="nav-links">
           {NAV.map((l) => (
             <li key={l.href}>
-              <a href={l.href}>{l.label}</a>
+              <a href={to(l.href)}>{l.label}</a>
             </li>
           ))}
         </ul>
-        <a className="btn btn-filled btn-small nav-cta" href="#waitlist">
+        <a className="btn btn-filled btn-small nav-cta" href={to("#waitlist")}>
           Join the Waitlist
         </a>
         <button
@@ -65,13 +71,13 @@ export default function Nav() {
         <ul className="container-wide">
           {NAV.map((l) => (
             <li key={l.href}>
-              <a href={l.href} onClick={() => setOpen(false)}>
+              <a href={to(l.href)} onClick={() => setOpen(false)}>
                 {l.label}
               </a>
             </li>
           ))}
           <li>
-            <a href="#waitlist" onClick={() => setOpen(false)}>
+            <a href={to("#waitlist")} onClick={() => setOpen(false)}>
               Join the Waitlist
             </a>
           </li>

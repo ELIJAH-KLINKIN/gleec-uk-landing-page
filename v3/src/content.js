@@ -10,6 +10,18 @@ export const NAV = [
   { label: "FAQ", href: "#faq" },
 ];
 
+// The legal entity behind the site. Used by the footer and the legal pages.
+export const COMPANY = {
+  name: "Gleec Pay Ltd",
+  brand: "GLEEC Business",
+  number: "14776628",
+  registeredIn: "England and Wales",
+  office: ["Tower 42", "25 Old Broad Street", "London EC2N 1HN", "United Kingdom"],
+  // Set once a mailbox exists on gleecpay.co.uk; until then the legal pages
+  // give the postal address as the contact route.
+  email: null,
+};
+
 export const DISCLAIMER_SHORT =
   "Gleec Pay Ltd is preparing an application to the FCA to become an Authorised Electronic Money Institution. Products and services shown are subject to authorisation, onboarding approval, partner availability and final terms.";
 
@@ -660,14 +672,15 @@ export const FOOTER = {
       links: [
         { label: "Plans & pricing", href: "#plans" },
         { label: "FAQ", href: "#faq" },
-        { label: "Regulatory information", href: "#legal" },
-        { label: "Help centre", soon: true },
+        { label: "Regulatory information", href: "/regulatory/" },
+        { label: "How your money will be protected", href: "/safeguarding/" },
       ],
     },
     {
       title: "Company",
       links: [
-        { label: "About Gleec Pay", soon: true },
+        { label: "Contact us", href: "/contact/" },
+        { label: "Complaints", href: "/complaints/" },
         { label: "Compliance", href: "#controls" },
         { label: "Join the waitlist", href: "#waitlist" },
       ],
@@ -675,9 +688,10 @@ export const FOOTER = {
     {
       title: "Legal",
       links: [
-        { label: "Terms of use", soon: true },
-        { label: "Privacy policy", soon: true },
-        { label: "Cookies", soon: true },
+        { label: "Terms of use", href: "/terms/" },
+        { label: "Privacy policy", href: "/privacy/" },
+        { label: "Cookies", href: "/cookies/" },
+        { label: "Accessibility", href: "/accessibility/" },
       ],
     },
   ],

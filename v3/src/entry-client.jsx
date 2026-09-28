@@ -2,12 +2,12 @@ import { StrictMode } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import "./styles/tokens.css";
 import "./styles/base.css";
-import App from "./App.jsx";
+import Root from "./Root.jsx";
 
 const root = document.getElementById("root");
 const app = (
   <StrictMode>
-    <App />
+    <Root path={window.location.pathname} />
   </StrictMode>
 );
 
