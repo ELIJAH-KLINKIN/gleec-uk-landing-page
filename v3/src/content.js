@@ -178,7 +178,7 @@ export const EXPLORER = {
   eyebrow: "Global accounts & transfers",
   title: "Open global accounts. Move money the right way.",
   lead: "Receive, hold and move funds across key markets with multi-currency global accounts, local account details and trusted domestic and international transfer methods.",
-  stat: { value: "70+", label: "payout markets via SWIFT & partners" },
+  stat: { value: "60+", label: "payout markets via SWIFT & partners" },
   markets: [
     {
       id: "uk",
@@ -340,7 +340,7 @@ export const EXPLORER = {
         ["Correspondent", "Through approved partners"],
       ],
       supports: ["SWIFT"],
-      note: "Send and receive across 70+ markets through the SWIFT network.",
+      note: "Send and receive across 60+ markets through the SWIFT network.",
     },
   },
   explainers: {
@@ -486,7 +486,7 @@ export const SEGMENTS = {
         "Multi-layer ownership",
         "Holding companies",
         "Regulated or financial counterparties",
-        "Declined or offboarded elsewhere for complexity",
+        "Payments between group entities",
         "Bespoke limits and approval model",
       ],
       cta: "Contact Us",
