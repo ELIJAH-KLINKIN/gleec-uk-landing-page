@@ -71,7 +71,7 @@ export const HIGHLIGHTS = {
       eyebrow: "Multi-currency",
       title: "GBP, EUR & USD business accounts",
       body: "Designed to support GBP, EUR and USD business accounts in one place, with fiat-to-fiat FX through approved partners — subject to authorisation, onboarding approval and provider availability.",
-      notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250.00" },
+      notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250" },
     },
     {
       id: "ibans",
@@ -96,7 +96,7 @@ export const HIGHLIGHTS = {
         kind: "event",
         flag: "GB", // a flag, not the Faster Payments logo (scheme marks are for participants)
         title: "FPS payment · Illustrative",
-        detail: "Sample inflow · £12,480.00",
+        detail: "Sample inflow · £12,480",
       },
     },
     {
@@ -108,7 +108,7 @@ export const HIGHLIGHTS = {
         kind: "event",
         flag: "EU",
         title: "EUR → SEPA · Illustrative",
-        detail: "Sample outflow · €4,210.00",
+        detail: "Sample outflow · €4,210",
       },
     },
     {
@@ -120,7 +120,7 @@ export const HIGHLIGHTS = {
         kind: "event",
         flag: "US",
         title: "USD wire · Illustrative",
-        detail: "Sample beneficiary · $9,184.00",
+        detail: "Sample beneficiary · $9,184",
       },
     },
     {
@@ -175,13 +175,13 @@ export const ACCOUNTS = {
   link: { label: "Explore Global Accounts", href: "#payments" },
   mock: {
     balances: [
-      { code: "GBP", symbol: "£", amount: "84,250.00" },
+      { code: "GBP", symbol: "£", amount: "84,250" },
       { code: "EUR", symbol: "€", amount: "36,902.18" },
       { code: "USD", symbol: "$", amount: "9,184.40" },
     ],
     activity: [
-      { dir: "in", name: "Acme Studios Ltd", detail: "Faster Payments · GBP · Today 11:42", amount: "+£12,480.00" },
-      { dir: "out", name: "Linde GmbH", detail: "SEPA Instant · EUR · Yesterday", amount: "−€4,210.00" },
+      { dir: "in", name: "Acme Studios Ltd", detail: "Faster Payments · GBP · Today 11:42", amount: "+£12,480" },
+      { dir: "out", name: "Linde GmbH", detail: "SEPA Instant · EUR · Yesterday", amount: "−€4,210" },
       { dir: "fx", name: "FX · GBP → USD", detail: "Conversion · 1.2734 · Auto-route", amount: "$9,184.40" },
       { dir: "review", name: "Counterparty review", detail: "New beneficiary · Under screening", amount: "Review" },
     ],
@@ -439,7 +439,7 @@ export const CARDS = {
         merchant: "openai",
         title: "OpenAI · Subscription",
         detail: "Virtual · Marketing · within limit",
-        amount: "−£82.00",
+        amount: "−£82",
       },
     },
     {
@@ -456,7 +456,7 @@ export const CARDS = {
         merchant: "booking",
         title: "Booking.com · Travel",
         detail: "Physical · Travel team · within limit",
-        amount: "−£420.00",
+        amount: "−£420",
       },
     },
   ],
@@ -505,6 +505,7 @@ export const SEGMENTS = {
         "Bespoke limits and approval model",
       ],
       cta: "Contact Us",
+      href: "#talk",
     },
   ],
 };
@@ -544,7 +545,7 @@ export const PLANS = {
     body: "Holdings, platforms and multi-layer groups are reviewed case by case.",
     cta: "Speak to Us",
   },
-  cta: { label: "Request Pricing", href: "#waitlist" },
+  cta: { label: "Request Pricing", href: "#talk" },
   note: "Pricing is indicative — final fees depend on profile, volumes, corridors, partner availability and approval.",
 };
 
@@ -602,6 +603,33 @@ export const WAITLIST = {
   skip: "Not Now",
   doneTitle: "Thanks — we’ll be in touch.",
   doneBody: "We’ll use these details to prepare for your onboarding once GLEEC Business opens.",
+};
+
+// "Talk to a human": email → about you → pick a time (Google Meet), after the FAQ.
+export const TALK = {
+  eyebrow: "Talk to a human",
+  title: "Still have questions? Talk to a human.",
+  lead: "No bots and no scripts. Book a 20-minute video call with someone from our team, at a time that suits you.",
+  steps: ["Your email", "About you", "Pick a time"],
+  emailLabel: "Work email",
+  start: "Talk to a Human",
+  detailsTitle: "Who are we meeting?",
+  detailsLead: "Only your name is required. Anything else helps us prepare.",
+  book: "Book a Call",
+  finding: "Finding times…",
+  pickTitle: "Pick a time",
+  pickLead: (minutes) => `${minutes}-minute Google Meet call.`,
+  timeZoneNote: (zone) => `Times are in your time zone (${zone}).`,
+  confirm: (time) => `Book ${time}`,
+  confirming: "Booking…",
+  taken: "That time was just taken. Please pick another.",
+  doneTitle: "You’re booked.",
+  doneInvite: (email) => `A Google Meet invitation is on its way to ${email}.`,
+  join: "Join the call",
+  laterTitle: "We’ll email you to arrange a time.",
+  laterBody: "Online booking isn’t available right now, but we have your details and will be in touch shortly.",
+  notLive: "Call booking isn’t open on this preview yet. Join the waitlist and we’ll be in touch.",
+  note: "Calls are introductory. Gleec Pay Ltd is not yet authorised by the FCA, so we can’t open accounts or accept money yet. We use your details only to arrange and hold the call.",
 };
 
 export const FAQ = {

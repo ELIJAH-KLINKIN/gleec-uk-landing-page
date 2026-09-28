@@ -5,6 +5,16 @@ import { Address, LegalSections } from "./parts.jsx";
 
 const SECTIONS = [
   {
+    id: "talk",
+    title: "Talk to a human",
+    body: (
+      <p>
+        Book a 20-minute video call with someone from our team: <a href="/#talk">choose a time</a>. You will get a
+        Google Meet invitation by email.
+      </p>
+    ),
+  },
+  {
     id: "interest",
     title: "Register your interest",
     body: (

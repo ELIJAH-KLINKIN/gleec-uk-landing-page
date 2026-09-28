@@ -1,0 +1,266 @@
+/* Talk to a human — stepper, email pill, the card that opens underneath, time picker. */
+.tk {
+  display: grid;
+  gap: var(--s-6);
+  max-width: 640px;
+  margin: 0 auto;
+}
+/* Grid items may shrink below their content (the scrolling row of days would
+   otherwise stretch the card past the screen on phones). */
+.tk > *,
+.tk-card form {
+  min-width: 0;
+}
+
+/* ---------- Stepper: three dots joined by a line; done = tint + check ---------- */
+.tk-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  counter-reset: none;
+}
+.tk-step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-footnote);
+  color: var(--label-3);
+  text-align: center;
+}
+/* The line to the next step, drawn from this dot's centre. */
+.tk-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: calc(50% + 20px);
+  right: calc(-50% + 20px);
+  height: 2px;
+  border-radius: 1px;
+  background: var(--separator-strong);
+  transition: background-color var(--dur-3) var(--ease);
+}
+.tk-step[data-state="done"]::after {
+  background: var(--tint);
+}
+.tk-step-dot {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--separator-strong);
+  background: var(--bg);
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--label-2);
+  transition:
+    background-color var(--dur-3) var(--ease),
+    border-color var(--dur-3) var(--ease),
+    color var(--dur-3) var(--ease);
+}
+.tk-step[data-state="current"] {
+  color: var(--label);
+  font-weight: 600;
+}
+.tk-step[data-state="current"] .tk-step-dot {
+  border-color: var(--tint);
+  color: var(--tint-text);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 18%, transparent);
+}
+.tk-step[data-state="done"] {
+  color: var(--label-2);
+}
+.tk-step[data-state="done"] .tk-step-dot {
+  border-color: var(--tint);
+  background: var(--tint);
+  color: var(--on-tint);
+}
+
+/* ---------- Step 1: the pill (shared with the waitlist) ---------- */
+/* Full width of the column (the waitlist's auto margins would shrink it to fit
+   its text), so the pill lines up with the card that opens underneath. */
+.tk-join {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+.tk-start {
+  white-space: nowrap;
+}
+.tk-pill-check {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin-right: 2px;
+  border-radius: 50%;
+  background: var(--tint-fill);
+  color: var(--tint-text);
+}
+
+/* ---------- The card opens underneath ---------- */
+.tk-card {
+  width: 100%;
+  max-width: none;
+  scroll-margin: 96px 0 24px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tk-card {
+    animation: tk-open 520ms var(--ease-out) both;
+  }
+}
+@keyframes tk-open {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    clip-path: inset(0 0 100% 0 round var(--r-card-l));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0 round var(--r-card-l));
+  }
+}
+.tk-card-title {
+  outline: none;
+}
+.tk-card-lead {
+  margin: var(--s-2) 0 var(--s-6);
+}
+.tk-form {
+  gap: var(--s-5);
+}
+.tk-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5) var(--s-4);
+}
+.tk-optional {
+  font-weight: 400;
+  color: var(--label-3);
+}
+.tk-note {
+  margin-top: var(--s-2);
+  font-size: var(--t-footnote);
+  line-height: 1.45;
+  color: var(--label-2);
+}
+
+/* ---------- Step 3: days and times as chips (radio buttons underneath) ---------- */
+.tk-days,
+.tk-times {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.tk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-chip);
+}
+.tk-chips-days {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 0 calc(-1 * var(--s-2));
+  padding: var(--s-1) var(--s-2) var(--s-3);
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.tk-chips-days::-webkit-scrollbar {
+  display: none;
+}
+.tk-chip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-height: var(--hit);
+  border: 1px solid var(--separator-strong);
+  border-radius: 14px;
+  background: var(--field);
+  color: var(--label);
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1),
+    border-color var(--dur-1),
+    color var(--dur-1);
+}
+.tk-chip:hover {
+  background: var(--fill);
+}
+.tk-chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.tk-chip:has(input:focus-visible) {
+  outline: 2px solid var(--tint);
+  outline-offset: 2px;
+}
+.tk-chip.is-on {
+  border-color: var(--tint);
+  background: var(--tint);
+  color: var(--on-tint);
+}
+.tk-day {
+  flex: 0 0 auto;
+  min-width: 72px;
+  padding: 8px 12px;
+  line-height: 1.2;
+  scroll-snap-align: start;
+}
+.tk-day-name {
+  font-size: var(--t-footnote);
+  font-weight: 500;
+  color: var(--label-2);
+}
+.tk-day.is-on .tk-day-name {
+  color: inherit;
+  opacity: 0.85;
+}
+.tk-day-date {
+  font-weight: 600;
+}
+.tk-times {
+  margin-top: var(--s-4);
+}
+.tk-chips-times {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+}
+.tk-time {
+  padding: 8px 10px;
+}
+.tk-confirm {
+  margin-top: var(--s-6);
+}
+
+/* ---------- Done ---------- */
+.tk-when-time {
+  white-space: nowrap;
+}
+.tk-when {
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  color: var(--label);
+}
+
+@media (max-width: 600px) {
+  .tk-row {
+    grid-template-columns: 1fr;
+  }
+  .tk-step-label {
+    font-size: var(--t-caption);
+  }
+  .tk-start {
+    padding-inline: 18px;
+  }
+}

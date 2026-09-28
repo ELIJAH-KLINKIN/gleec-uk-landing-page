@@ -179,6 +179,136 @@ test("phone menu marks the current section", async ({ page }, testInfo) => {
   await expect(page.locator('#nav-menu a[aria-current="location"]')).toHaveText("Cards");
 });
 
+// ---------------- Talk to a human ----------------
+const TALK_API = "https://leads-api.test/api/talk";
+const TALK_ID = "3f1c2b1e-7a1d-4a55-9d0b-6a8c1e2f4b77";
+const TALK_DAYS = [
+  { date: "2026-09-29", slots: ["2026-09-29T09:00:00.000Z", "2026-09-29T09:30:00.000Z"] },
+  { date: "2026-09-30", slots: ["2026-09-30T13:00:00.000Z"] },
+  // A full week of days, so the scrolling day row is wider than a phone screen.
+  ...["2026-10-01", "2026-10-02", "2026-10-05", "2026-10-06"].map((date) => ({ date, slots: [`${date}T09:00:00.000Z`] })),
+];
+
+async function mockTalk(page, { available = true, bookStatus = 200 } = {}) {
+  const calls = { request: null, book: [], slots: 0 };
+  await page.route(TALK_API, (route) => {
+    calls.request = route.request().postDataJSON();
+    return route.fulfill({ status: 201, json: { ok: true, id: TALK_ID, token: "t".repeat(43), booking: true } });
+  });
+  await page.route(`${TALK_API}?*`, (route) => {
+    calls.slots += 1;
+    return route.fulfill({
+      json: available
+        ? { ok: true, available: true, timeZone: "Europe/London", durationMinutes: 20, days: TALK_DAYS }
+        : { ok: true, available: false, days: [] },
+    });
+  });
+  await page.route(`${TALK_API}/book`, (route) => {
+    const body = route.request().postDataJSON();
+    calls.book.push(body);
+    if (bookStatus !== 200 && calls.book.length === 1)
+      return route.fulfill({ status: bookStatus, json: { ok: false, error: "slot_taken" } });
+    const end = new Date(Date.parse(body.start) + 20 * 60000).toISOString();
+    return route.fulfill({
+      json: {
+        ok: true,
+        booking: { start: body.start, end, meetUrl: "https://meet.google.com/abc-defg-hij", hostName: "Andrey" },
+      },
+    });
+  });
+  return calls;
+}
+
+test.describe("talk to a human", () => {
+  test.use({ timezoneId: "Europe/London" });
+
+  test("email → about you → pick a time → booked with a Meet link", async ({ page }) => {
+    const calls = await mockTalk(page);
+    await page.goto("./#talk");
+    const section = page.locator("#talk");
+    const current = () => section.locator('.tk-step[aria-current="step"]');
+    await expect(current()).toContainText("Your email");
+
+    await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+    await section.getByRole("button", { name: "Talk to a Human" }).click();
+    await expect(current()).toContainText("About you");
+    await expect(section.getByRole("heading", { name: "Who are we meeting?" })).toBeFocused();
+
+    // Names are required; the rest is optional.
+    await section.getByRole("button", { name: "Book a Call" }).click();
+    await expect(section.getByText("Enter your first name.")).toBeVisible();
+    await section.getByLabel("First name").fill("Ada");
+    await section.getByLabel("Last name").fill("Lovelace");
+    await section.getByLabel("Company website (optional)").fill("analytical.example");
+    await page.waitForTimeout(2600); // time trap on the API side is mocked, but keep it realistic
+    await section.getByRole("button", { name: "Book a Call" }).click();
+
+    await expect(current()).toContainText("Pick a time");
+    expect(calls.request).toMatchObject({
+      email: "ada@example.co.uk",
+      firstName: "Ada",
+      lastName: "Lovelace",
+      companyWebsite: "analytical.example",
+    });
+    await expect(section.getByText("Times are in your time zone (Europe/London).")).toBeVisible();
+    await expect(section.locator(".tk-day")).toHaveCount(6);
+    // The page clips sideways overflow, so check the card's own right edge.
+    const card = await section.locator(".tk-card").boundingBox();
+    const width = page.viewportSize().width;
+    expect(card.x + card.width, "time picker fits the screen").toBeLessThanOrEqual(width);
+    await section.locator(".tk-time", { hasText: "10:30" }).click();
+    await section.getByRole("button", { name: /^Book Tue 10:30$/ }).click();
+
+    expect(calls.book[0]).toEqual({ id: TALK_ID, token: "t".repeat(43), start: "2026-09-29T09:30:00.000Z" });
+    await expect(section.getByRole("heading", { name: "You’re booked." })).toBeVisible();
+    await expect(section.locator(".tk-when")).toHaveText("Tuesday 29 September, 10:30–10:50");
+    await expect(section.getByText("You’ll be talking to Andrey.")).toBeVisible();
+    await expect(section.getByRole("link", { name: "Join the call" })).toHaveAttribute(
+      "href",
+      "https://meet.google.com/abc-defg-hij",
+    );
+    await expect(section.locator('.tk-step[data-state="done"]')).toHaveCount(3);
+  });
+
+  test("a time taken a moment ago: message, fresh list, pick again", async ({ page }) => {
+    const calls = await mockTalk(page, { bookStatus: 409 });
+    await page.goto("./#talk");
+    const section = page.locator("#talk");
+    await section.getByRole("textbox", { name: "Work email" }).fill("grace@example.com");
+    await section.getByRole("button", { name: "Talk to a Human" }).click();
+    await section.getByLabel("First name").fill("Grace");
+    await section.getByLabel("Last name").fill("Hopper");
+    await section.getByRole("button", { name: "Book a Call" }).click();
+    await section.locator(".tk-time", { hasText: "10:00" }).click();
+    await section.getByRole("button", { name: /^Book / }).click();
+    await expect(section.getByText("That time was just taken. Please pick another.")).toBeVisible();
+    expect(calls.slots).toBe(2);
+    await section.locator(".tk-day", { hasText: "30 Sep" }).click();
+    await section.locator(".tk-time", { hasText: "14:00" }).click();
+    await section.getByRole("button", { name: /^Book Wed 14:00$/ }).click();
+    await expect(section.getByRole("heading", { name: "You’re booked." })).toBeVisible();
+  });
+
+  test("no free times: we keep the details and email to arrange", async ({ page }) => {
+    await mockTalk(page, { available: false });
+    await page.goto("./#talk");
+    const section = page.locator("#talk");
+    await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+    await section.getByRole("button", { name: "Talk to a Human" }).click();
+    await section.getByLabel("First name").fill("Ada");
+    await section.getByLabel("Last name").fill("Lovelace");
+    await section.getByRole("button", { name: "Book a Call" }).click();
+    await expect(section.getByRole("heading", { name: "We’ll email you to arrange a time." })).toBeVisible();
+  });
+});
+
+test("'Speak to Us', 'Contact Us' and 'Request Pricing' lead to Talk to a human", async ({ page }) => {
+  await page.goto("./");
+  for (const name of ["Speak to Us", "Contact Us", "Request Pricing"]) {
+    await expect(page.getByRole("link", { name }).first()).toHaveAttribute("href", "#talk");
+  }
+});
+
 // ---------------- Legal and regulatory pages ----------------
 const LEGAL = [
   ["/regulatory/", "Regulatory information", "not currently authorised by the FCA"],
@@ -218,7 +348,8 @@ test("the site stores nothing on the device (matches the cookie policy)", async 
     await page.waitForTimeout(300);
   }
   await page.goto("./#waitlist");
-  await page.getByRole("textbox", { name: "Work email" }).fill("someone@example.com");
+  await page.locator("#waitlist").getByRole("textbox", { name: "Work email" }).fill("someone@example.com");
+  await page.locator("#talk").getByRole("textbox", { name: "Work email" }).fill("someone@example.com");
   expect(await context.cookies(), "cookies").toEqual([]);
   const stored = await page.evaluate(() => localStorage.length + sessionStorage.length);
   expect(stored, "local/session storage entries").toBe(0);

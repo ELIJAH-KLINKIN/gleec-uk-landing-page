@@ -11,6 +11,7 @@ import Plans from "./components/Plans.jsx";
 import Controls from "./components/Controls.jsx";
 import Waitlist from "./components/Waitlist.jsx";
 import Faq from "./components/Faq.jsx";
+import TalkToHuman from "./components/TalkToHuman.jsx";
 import Footer from "./components/Footer.jsx";
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
         <Controls />
         <Waitlist />
         <Faq />
+        <TalkToHuman />
       </main>
       <Footer />
     </>

@@ -1,6 +1,5 @@
 // Plans.jsx — two indicative plans plus a case-by-case option.
 import { PLANS } from "../content.js";
-import { prefillWaitlist } from "../lib/prefill.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
 import "./Plans.css";
@@ -33,7 +32,7 @@ export default function Plans() {
               {PLANS.bespoke.audience}
             </h3>
             <p className="plan-bespoke-body">{PLANS.bespoke.body}</p>
-            <a className="link-chevron" href="#waitlist" onClick={() => prefillWaitlist("group")}>
+            <a className="link-chevron" href="#talk">
               {PLANS.bespoke.cta}
               <Icon name="chevron-right" size={18} />
             </a>

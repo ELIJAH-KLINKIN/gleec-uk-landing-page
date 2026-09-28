@@ -7,8 +7,8 @@ import { Address, LegalSections, LegalTable, WriteToUs } from "./parts.jsx";
 const SUMMARY = (
   <ul>
     <li>
-      {COMPANY.name} is responsible for your personal data. We collect what you give us when you join the waitlist or
-      contact us, plus limited technical data to keep the website secure.
+      {COMPANY.name} is responsible for your personal data. We collect what you give us when you join the waitlist, book
+      a call or contact us, plus limited technical data to keep the website secure.
     </li>
     <li>We use it to tell you about our launch and to talk to eligible businesses about opening an account.</li>
     <li>We don’t sell your data, and the website uses no cookies or trackers.</li>
@@ -40,8 +40,8 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          This policy covers people who visit our website, join our waitlist, or contact us. Most of the people we hear
-          from are directors, employees or representatives of businesses.
+          This policy covers people who visit our website, join our waitlist, book a call with us, or contact us. Most
+          of the people we hear from are directors, employees or representatives of businesses.
         </p>
         <p>
           If we are authorised and your business applies for an account, we will give you a separate customer privacy
@@ -82,6 +82,11 @@ const SECTIONS = [
             "Your IP address and the pages requested, processed by our hosting provider to deliver the website securely.",
             "Your browser, when you visit",
           ],
+          [
+            "Call bookings",
+            "Your first and last name, and optionally your phone number, company name, company website and notes; the time you choose; and the Google Meet link for the call.",
+            "You",
+          ],
           ["Correspondence", "Anything you tell us when you write to us, and our replies.", "You"],
         ]}
       />
@@ -96,6 +101,10 @@ const SECTIONS = [
         <LegalTable
           head={["What we do", "Lawful basis"]}
           rows={[
+            [
+              "Arrange and hold the video call you book, including sending the calendar invitation",
+              "Legitimate interests: arranging the call you asked for",
+            ],
             [
               "Keep a record of your registration and tell you when the service becomes available",
               "Legitimate interests: responding to the interest you have shown in our service",
@@ -138,11 +147,12 @@ const SECTIONS = [
           <li>
             <strong>Service providers who process it for us</strong>, under contracts that require them to keep it
             secure and use it only on our instructions: website and application hosting (Vercel), database hosting
-            (Neon), and the customer relationship management system our team uses.
+            (Neon), calendar and video calls (Google Calendar and Google Meet), and the customer relationship management
+            system our team uses. When you book a call, your name and email appear in the calendar invitation.
           </li>
           <li>
-            <strong>Our team’s notification channel.</strong> When someone joins the waitlist, our team is alerted
-            through a private Telegram channel. The alert contains the details you submitted.
+            <strong>Our team’s notification channel.</strong> When someone joins the waitlist or books a call, our team
+            is alerted through a private Telegram channel. The alert contains the details you submitted.
           </li>
           <li>
             <strong>Other Gleec group companies</strong> that provide technical support to us under written agreements,
@@ -183,7 +193,7 @@ const SECTIONS = [
         head={["Data", "How long"]}
         rows={[
           [
-            "Waitlist and correspondence",
+            "Waitlist, call bookings and correspondence",
             "Up to 24 months after our last contact with you, or until you ask us to delete it, whichever is sooner. If your business becomes a customer, the customer privacy notice applies instead.",
           ],
           ["Security data (coded IP address, browser type)", "Kept with your registration and deleted with it"],

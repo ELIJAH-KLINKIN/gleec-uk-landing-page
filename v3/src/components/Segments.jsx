@@ -22,7 +22,11 @@ export default function Segments() {
                   <li key={p}>{p}</li>
                 ))}
               </ul>
-              <a className="link-chevron seg-link" href="#waitlist" onClick={() => prefillWaitlist(s.id)}>
+              <a
+                className="link-chevron seg-link"
+                href={s.href || "#waitlist"}
+                onClick={s.href ? undefined : () => prefillWaitlist(s.id)}
+              >
                 {s.cta}
                 <span className="visually-hidden"> — {s.title}</span>
                 <Icon name="chevron-right" size={18} />
