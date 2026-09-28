@@ -270,6 +270,14 @@ test("FAQ rows open and close; several can be open", async ({ page }) => {
   await expect(items.nth(3)).not.toHaveAttribute("open");
 });
 
+test("footer carries the company's legal details", async ({ page }) => {
+  await page.goto("./#legal");
+  const legal = page.locator("#legal");
+  await expect(legal).toContainText("company number 14776628");
+  await expect(legal).toContainText("Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN");
+  await expect(legal).not.toContainText("[insert");
+});
+
 // ---------------- Waitlist form ----------------
 const STATS_API = "https://leads-api.test/api/stats";
 const DETAILS_API = `${LEADS_API}/details`;
