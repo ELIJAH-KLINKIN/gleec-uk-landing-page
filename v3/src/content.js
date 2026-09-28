@@ -452,7 +452,7 @@ export const CARDS = {
 export const SEGMENTS = {
   eyebrow: "Who it’s for",
   title: "Built for businesses traditional banking leaves behind.",
-  lead: "GLEEC Business is for companies that often struggle to open or keep a business bank account — including those that need to accept and make third-party supported cryptocurrency payments. Where high-street banks see complexity, we see customers worth serving.",
+  lead: "GLEEC Business is for companies that often struggle to open or keep a business bank account. Where high-street banks see complexity, we see customers worth serving.",
   items: [
     {
       id: "local",
@@ -475,7 +475,6 @@ export const SEGMENTS = {
         "Multiple operating currencies",
         "International suppliers and customers",
         "Higher payment volumes",
-        "Accepting and making third-party supported cryptocurrency payments",
         "Enhanced onboarding where required",
       ],
       cta: "See If It Fits",
