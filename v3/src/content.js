@@ -556,7 +556,7 @@ export const CONTROLS = {
     {
       icon: "vault",
       title: "Safeguarding & reconciliation",
-      body: "Client funds are held in line with safeguarding requirements and reconciled on a controlled cadence.",
+      body: "If authorised, funds will be kept in a segregated safeguarding account at a UK bank and reconciled daily.",
     },
   ],
 };
