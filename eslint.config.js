@@ -5,7 +5,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 
 export default [
-  { ignores: ["dist", "dist-*", "node_modules", "leads-api", "v2", "playwright-report", "test-results"] },
+  { ignores: ["dist", "dist-*", "node_modules", "leads-api", "v2", "v3", "playwright-report", "test-results"] },
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {

@@ -61,6 +61,32 @@ jobs:
           path: v2/test-results/
           retention-days: 7
 
+  site-v3:
+    name: Site v3 — lint, build, end-to-end tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: v3/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-v3
+          path: v3/test-results/
+          retention-days: 7
+
   leads-api:
     name: Leads API — unit tests
     runs-on: ubuntu-latest

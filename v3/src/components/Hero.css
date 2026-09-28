@@ -1,0 +1,204 @@
+/* Hero */
+.hero {
+  padding-top: clamp(56px, 3rem + 4vw, 104px);
+  padding-bottom: var(--s-16);
+  overflow: hidden;
+  background: var(--bg);
+}
+.hero-copy {
+  text-align: center;
+}
+.hero-copy .title-hero {
+  max-width: 17ch;
+  margin-inline: auto;
+}
+.hero-em {
+  color: var(--tint-text);
+}
+.hero-lead {
+  max-width: 640px;
+  margin: var(--s-6) auto 0;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4) var(--s-8);
+  margin-top: var(--s-8);
+}
+
+/* ---------- Product demo ---------- */
+.demo {
+  margin-top: clamp(40px, 2.5rem + 2vw, 72px);
+  text-align: center;
+}
+
+/* Pill tab bar — same track + thumb language as the segmented control,
+   plus a progress fill in the current pill while auto-advancing. */
+.demo-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+}
+.demo-tab {
+  position: relative;
+  min-height: var(--hit);
+  min-width: 112px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  overflow: hidden;
+  font-size: var(--t-callout);
+  font-weight: 500;
+  color: var(--label);
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    opacity var(--dur-1);
+}
+.demo-tab:not(.is-selected):hover {
+  opacity: 0.7;
+}
+.demo-tab.is-selected {
+  background: var(--surface);
+  font-weight: 600;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 3px 1px rgba(0, 0, 0, 0.04);
+}
+@media (prefers-color-scheme: dark) {
+  .demo-tab.is-selected {
+    background: #636366;
+  }
+}
+.demo-tab-label {
+  position: relative;
+}
+.demo-tab-progress {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: var(--tint-fill);
+  animation-name: demo-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes demo-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Backdrop the app window floats on (soft, painterly, theme-aware). */
+.demo-stage {
+  --stage-pad: clamp(16px, 5%, 64px);
+  margin-top: var(--s-6);
+  padding: var(--stage-pad) var(--stage-pad) 0;
+  border-radius: var(--r-card-l);
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 12% 18%, #e7dcff 0%, transparent 60%),
+    radial-gradient(55% 60% at 88% 12%, #ffe1ee 0%, transparent 60%),
+    radial-gradient(70% 70% at 70% 100%, #d9ecff 0%, transparent 60%),
+    radial-gradient(50% 50% at 20% 100%, #fff1d9 0%, transparent 60%), #f1ecfa;
+}
+@media (prefers-color-scheme: dark) {
+  .demo-stage {
+    background:
+      radial-gradient(60% 70% at 12% 18%, #2c1a52 0%, transparent 60%),
+      radial-gradient(55% 60% at 88% 12%, #3a1630 0%, transparent 60%),
+      radial-gradient(70% 70% at 70% 100%, #10243f 0%, transparent 60%),
+      radial-gradient(50% 50% at 20% 100%, #33230c 0%, transparent 60%), #121016;
+  }
+}
+
+.demo-window {
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow:
+    0 0 0 1px var(--separator),
+    0 30px 80px rgba(40, 20, 80, 0.25);
+  text-align: left;
+}
+.demo-window-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--separator);
+}
+.demo-window-dots {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  gap: 7px;
+}
+.demo-window-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--fill-2);
+}
+.demo-window-title {
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--label-2);
+}
+
+.demo-screens {
+  position: relative;
+  width: 100%;
+  background: var(--surface);
+}
+.demo-screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+}
+.demo-screen.is-active {
+  opacity: 1;
+}
+.demo-screen img,
+.demo-screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.demo-caption {
+  margin-top: var(--s-5);
+  font-size: var(--t-body);
+  color: var(--label-2);
+}
+
+.hero-disclaimer {
+  max-width: 720px;
+  margin-top: var(--s-8);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .demo-tab {
+    min-width: 0;
+    padding-inline: 16px;
+    font-size: var(--t-subhead);
+  }
+  .demo-window-bar {
+    height: 28px;
+  }
+  .demo-window-dots span {
+    width: 8px;
+    height: 8px;
+  }
+}
