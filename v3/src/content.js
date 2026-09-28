@@ -242,7 +242,7 @@ export const EXPLORER = {
   details: {
     "uk/gbp-local": {
       currency: "GBP",
-      bank: "GLEEC Business",
+      provider: "GLEEC Business",
       rows: [
         ["Account number", "938206"],
         ["Sort code", "12-34-56"],
@@ -252,7 +252,7 @@ export const EXPLORER = {
     },
     "uk/swift": {
       currency: "GBP",
-      bank: "GLEEC Business",
+      provider: "GLEEC Business",
       rows: [
         ["SWIFT / BIC", "GLECGB2LXXX"],
         ["Account number", "938206"],
@@ -263,7 +263,7 @@ export const EXPLORER = {
     },
     "eu/eur-local": {
       currency: "EUR",
-      bank: "GLEEC Business EU",
+      provider: "GLEEC Business EU",
       rows: [
         ["IBAN", "DE89 3704 0044 0532 0130 00"],
         ["BIC", "GLECDEFFXXX"],
@@ -273,7 +273,7 @@ export const EXPLORER = {
     },
     "eu/sepa": {
       currency: "EUR",
-      bank: "GLEEC Business EU",
+      provider: "GLEEC Business EU",
       rows: [
         ["IBAN", "DE89 3704 0044 0532 0130 00"],
         ["BIC", "GLECDEFFXXX"],
@@ -283,7 +283,7 @@ export const EXPLORER = {
     },
     "eu/sepa-instant": {
       currency: "EUR",
-      bank: "GLEEC Business EU",
+      provider: "GLEEC Business EU",
       rows: [
         ["IBAN", "DE89 3704 0044 0532 0130 00"],
         ["BIC", "GLECDEFFXXX"],
@@ -293,7 +293,7 @@ export const EXPLORER = {
     },
     "eu/swift": {
       currency: "EUR",
-      bank: "GLEEC Business EU",
+      provider: "GLEEC Business EU",
       rows: [
         ["SWIFT / BIC", "GLECDEFFXXX"],
         ["IBAN", "DE89 3704 0044 0532 0130 00"],
@@ -303,7 +303,7 @@ export const EXPLORER = {
     },
     "us/ach": {
       currency: "USD",
-      bank: "GLEEC Business (US partner)",
+      provider: "GLEEC Business (US partner)",
       rows: [
         ["Routing number", "026 073 008"],
         ["Account number", "9202 1838 47"],
@@ -314,7 +314,7 @@ export const EXPLORER = {
     },
     "us/fedwire": {
       currency: "USD",
-      bank: "GLEEC Business (US partner)",
+      provider: "GLEEC Business (US partner)",
       rows: [
         ["Routing number", "026 073 008"],
         ["Account number", "9202 1838 47"],
@@ -324,7 +324,7 @@ export const EXPLORER = {
     },
     "us/swift": {
       currency: "USD",
-      bank: "GLEEC Business (US partner)",
+      provider: "GLEEC Business (US partner)",
       rows: [
         ["SWIFT / BIC", "GLECUS33XXX"],
         ["Routing number", "026 073 008"],
@@ -335,7 +335,7 @@ export const EXPLORER = {
     },
     "global/swift": {
       currency: "Multi-currency",
-      bank: "GLEEC Business",
+      provider: "GLEEC Business",
       rows: [
         ["SWIFT / BIC", "GLECGB2LXXX"],
         ["Correspondent", "Through approved partners"],
@@ -348,7 +348,7 @@ export const EXPLORER = {
     sort: {
       title: "Sort code",
       parts: [
-        ["12", "Bank code"],
+        ["12", "Institution"],
         ["34", "Sub-office"],
         ["56", "Branch"],
       ],
@@ -359,14 +359,14 @@ export const EXPLORER = {
       parts: [
         ["DE", "Country"],
         ["89", "Check digits"],
-        ["3704 0044 0532 0130 00", "Bank & account"],
+        ["3704 0044 0532 0130 00", "Institution & account"],
       ],
       joiner: " ",
     },
     swift: {
       title: "SWIFT / BIC",
       parts: [
-        ["GLEC", "Bank"],
+        ["GLEC", "Institution"],
         ["GB", "Country"],
         ["2L", "Location"],
         ["XXX", "Branch"],
@@ -394,7 +394,7 @@ export const EXPLORER = {
 export const CURRENCIES = {
   eyebrow: "Multi-currency",
   title: "GBP, EUR and USD at the core. More currencies when you need them.",
-  lead: "Run your operating balances in the currencies that matter most, with additional currency coverage through partner banking.",
+  lead: "Run your operating balances in the currencies that matter most, with additional currency coverage through our payment partners.",
   core: [
     { code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
     { code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },

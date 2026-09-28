@@ -96,11 +96,11 @@ export default function Explorer() {
 
               <div className="xp-groups">
                 <div className="xp-group">
-                  <h4 className="xp-group-title">Bank details</h4>
+                  <h4 className="xp-group-title">Account details</h4>
                   <dl className="kv">
                     <div>
-                      <dt>Bank name</dt>
-                      <dd>{details.bank}</dd>
+                      <dt>Account provider</dt>
+                      <dd>{details.provider}</dd>
                     </div>
                     {details.rows.map(([k, v]) => (
                       <div key={k}>
