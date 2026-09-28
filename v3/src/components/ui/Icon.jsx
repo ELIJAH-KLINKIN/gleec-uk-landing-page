@@ -11,15 +11,12 @@ import {
   ChevronRight,
   CircleAlert,
   CreditCard,
-  Globe,
   LoaderCircle,
   Search,
-  Send,
   ShieldCheck,
   TriangleAlert,
   Vault,
   X,
-  Zap,
 } from "lucide-react";
 
 const ICONS = {
@@ -33,15 +30,12 @@ const ICONS = {
   "chevron-right": ChevronRight,
   "circle-alert": CircleAlert,
   "credit-card": CreditCard,
-  globe: Globe,
   loader: LoaderCircle,
   search: Search,
-  send: Send,
   "shield-check": ShieldCheck,
   "triangle-alert": TriangleAlert,
   vault: Vault,
   x: X,
-  zap: Zap,
 };
 
 export default function Icon({ name, size = 20, strokeWidth = 2, className }) {

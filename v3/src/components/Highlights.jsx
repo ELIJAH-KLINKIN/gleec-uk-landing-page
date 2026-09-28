@@ -198,9 +198,13 @@ function Notice({ notice }) {
   }
   return (
     <div className="hl-notice" aria-hidden="true">
-      <span className={"hl-notice-icon " + notice.tone}>
-        <Icon name={notice.icon} size={18} />
-      </span>
+      {notice.flag ? (
+        <Flag code={notice.flag} size={36} />
+      ) : (
+        <span className={"hl-notice-icon " + notice.tone}>
+          <Icon name={notice.icon} size={18} />
+        </span>
+      )}
       <span className="hl-notice-text">
         <strong>{notice.title}</strong>
         <span>{notice.detail}</span>

@@ -79,8 +79,7 @@ export const HIGHLIGHTS = {
       body: "Domestic UK payment methods planned through standard and same-day routes, subject to authorisation, partner setup and operational readiness.",
       notice: {
         kind: "event",
-        icon: "zap",
-        tone: "orange",
+        flag: "GB", // a flag, not the Faster Payments logo (scheme marks are for participants)
         title: "FPS payment · Illustrative",
         detail: "Sample inflow · £12,480.00",
       },
@@ -92,8 +91,7 @@ export const HIGHLIGHTS = {
       body: "Planned support for sending and receiving euro payments via SEPA and, where available, SEPA Instant — subject to authorisation and partner availability.",
       notice: {
         kind: "event",
-        icon: "send",
-        tone: "purple",
+        flag: "EU",
         title: "EUR → SEPA · Illustrative",
         detail: "Sample outflow · €4,210.00",
       },
@@ -105,8 +103,7 @@ export const HIGHLIGHTS = {
       body: "Planned international and USD payment routes via correspondent and partner networks, subject to authorisation, corridor availability and onboarding approval.",
       notice: {
         kind: "event",
-        icon: "globe",
-        tone: "orange",
+        flag: "US",
         title: "USD wire · Illustrative",
         detail: "Sample beneficiary · $9,184.00",
       },
