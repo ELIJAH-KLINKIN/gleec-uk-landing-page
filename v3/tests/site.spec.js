@@ -191,12 +191,21 @@ const LEGAL = [
   ["/accessibility/", "Accessibility statement", "WCAG"],
 ];
 
+test("footer: LinkedIn slot is a placeholder until the page URL is set", async ({ page }) => {
+  await page.goto("./#legal");
+  const social = page.locator(".footer-social");
+  await expect(social).toContainText("LinkedIn");
+  // No URL yet: shown as "Soon", never as a dead link.
+  await expect(page.locator("footer a.footer-social")).toHaveCount(0);
+  await expect(social.locator(".soon")).toHaveText("Soon");
+});
+
 test("footer links open every legal page", async ({ page }) => {
   await page.goto("./");
   for (const [path] of LEGAL) {
     await expect(page.locator(`footer a[href="${path}"]`), `footer link to ${path}`).toHaveCount(1);
   }
-  await expect(page.locator("footer .soon"), "no 'coming soon' placeholders in the footer").toHaveCount(0);
+  await expect(page.locator("footer .footer-directory .soon"), "no 'coming soon' pages in the footer").toHaveCount(0);
   await page.locator('footer a[href="/privacy/"]').click();
   await expect(page).toHaveURL(/\/privacy\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy policy");

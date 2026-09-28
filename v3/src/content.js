@@ -20,6 +20,9 @@ export const COMPANY = {
   // Set once a mailbox exists on gleecpay.co.uk; until then the legal pages
   // give the postal address as the contact route.
   email: null,
+  // Company page URL. Until it is set, the footer shows a "Soon" placeholder
+  // instead of a link.
+  linkedin: null,
 };
 
 export const DISCLAIMER_SHORT =

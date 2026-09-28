@@ -47,6 +47,16 @@ const SECTIONS = [
         </dd>
         <dt>Registered office</dt>
         <dd>{COMPANY.office.join(", ")}</dd>
+        {COMPANY.linkedin ? (
+          <>
+            <dt>LinkedIn</dt>
+            <dd>
+              <a href={COMPANY.linkedin} rel="noopener noreferrer" target="_blank">
+                {COMPANY.brand} on LinkedIn
+              </a>
+            </dd>
+          </>
+        ) : null}
         <dt>Regulatory status</dt>
         <dd>
           Not currently authorised by the FCA. See <a href="/regulatory/">Regulatory information</a>.
