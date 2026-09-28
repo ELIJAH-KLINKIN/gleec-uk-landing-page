@@ -1,11 +1,13 @@
-// Hero.jsx — headline and actions above a framed product demo.
-// A pill tab bar (Accounts / Cards / Payments) picks the demo. It advances by
-// itself every 7 s — shown as a fill inside the current pill — until the
-// visitor picks a tab, then it stays on their choice. It never advances while
-// hovered, focused, off screen, in a background tab, or under Reduce Motion.
+// Hero.jsx — a compact header (headline left; intro and actions right) so the
+// product demo is on screen, and moving, the moment the page loads.
+// A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
+// the demo. It advances by itself every 7 s — shown as a fill inside the
+// current pill — until the visitor picks a tab, then stays on their choice.
+// It never advances while hovered, focused, off screen, in a background tab,
+// or under Reduce Motion.
 import { useRef, useState } from "react";
 import { DISCLAIMER_SHORT, HERO } from "../content.js";
-import { DEMO_MEDIA, DEMO_SIZE } from "../lib/demoMedia.js";
+import { DEMO_MEDIA, DEMO_SIZE, DEMO_SIZE_MOBILE } from "../lib/demoMedia.js";
 import { useAutoAdvance } from "../lib/useAutoAdvance.js";
 import Icon from "./ui/Icon.jsx";
 import DemoScreen from "./DemoScreen.jsx";
@@ -19,7 +21,7 @@ export default function Hero() {
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(true);
   const [runId, setRunId] = useState(0); // restarts the progress fill
-  const { ref, running, autoplayAllowed, pauseProps } = useAutoAdvance({ enabled: auto });
+  const { ref, running, autoplayAllowed, pauseProps } = useAutoAdvance({ enabled: auto, threshold: 0.2 });
   const tabsRef = useRef(null);
 
   const pick = (i) => {
@@ -47,59 +49,63 @@ export default function Hero() {
 
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <div className="container hero-copy">
-        <p className="eyebrow">{HERO.eyebrow}</p>
-        <h1 className="title-hero" id="hero-title">
-          {HERO.title} <span className="hero-em">{HERO.titleEmphasis}</span>
-        </h1>
-        <p className="lead hero-lead">{HERO.lead}</p>
-        <div className="hero-actions">
-          <a className="btn btn-filled btn-large" href={HERO.primary.href}>
-            {HERO.primary.label}
-          </a>
-          <a className="link-chevron" href={HERO.secondary.href}>
-            {HERO.secondary.label}
-            <Icon name="chevron-right" size={18} />
-          </a>
+      <div className="container-wide hero-top">
+        <div className="hero-heading">
+          <p className="eyebrow">{HERO.eyebrow}</p>
+          <h1 className="hero-title" id="hero-title">
+            {HERO.title} <span className="hero-em">{HERO.titleEmphasis}</span>
+          </h1>
+        </div>
+        <div className="hero-side">
+          <p className="hero-lead">{HERO.lead}</p>
+          <div className="hero-actions">
+            <a className="btn btn-filled btn-large" href={HERO.primary.href}>
+              {HERO.primary.label}
+            </a>
+            <a className="link-chevron" href={HERO.secondary.href}>
+              {HERO.secondary.label}
+              <Icon name="chevron-right" size={18} />
+            </a>
+          </div>
         </div>
       </div>
 
       <div className="container-wide demo" ref={ref} {...pauseProps}>
-        <div className="demo-tabs" role="tablist" aria-label="Product demo" ref={tabsRef}>
-          {demos.map((d, i) => {
-            const selected = i === active;
-            return (
-              <button
-                key={d.id}
-                type="button"
-                role="tab"
-                id={`demo-tab-${d.id}`}
-                aria-selected={selected}
-                aria-controls="demo-panel"
-                tabIndex={selected ? 0 : -1}
-                className={"demo-tab" + (selected ? " is-selected" : "")}
-                onClick={() => pick(i)}
-                onKeyDown={(e) => onTabKey(e, i)}
-              >
-                {selected && auto && autoplayAllowed ? (
-                  <span
-                    key={runId}
-                    className="demo-tab-progress"
-                    aria-hidden="true"
-                    onAnimationEnd={advance}
-                    style={{
-                      animationDuration: `${ADVANCE_MS}ms`,
-                      animationPlayState: running ? "running" : "paused",
-                    }}
-                  />
-                ) : null}
-                <span className="demo-tab-label">{d.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
         <div className="demo-stage squircle">
+          <div className="demo-tabs" role="tablist" aria-label="Product demo" ref={tabsRef}>
+            {demos.map((d, i) => {
+              const selected = i === active;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  role="tab"
+                  id={`demo-tab-${d.id}`}
+                  aria-selected={selected}
+                  aria-controls="demo-panel"
+                  tabIndex={selected ? 0 : -1}
+                  className={"demo-tab" + (selected ? " is-selected" : "")}
+                  onClick={() => pick(i)}
+                  onKeyDown={(e) => onTabKey(e, i)}
+                >
+                  {selected && auto && autoplayAllowed ? (
+                    <span
+                      key={runId}
+                      className="demo-tab-progress"
+                      aria-hidden="true"
+                      onAnimationEnd={advance}
+                      style={{
+                        animationDuration: `${ADVANCE_MS}ms`,
+                        animationPlayState: running ? "running" : "paused",
+                      }}
+                    />
+                  ) : null}
+                  <span className="demo-tab-label">{d.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="demo-window" id="demo-panel" role="tabpanel" aria-labelledby={`demo-tab-${current.id}`}>
             <div className="demo-window-bar" aria-hidden="true">
               <span className="demo-window-dots">
@@ -109,7 +115,13 @@ export default function Hero() {
               </span>
               <span className="demo-window-title">GLEEC Business</span>
             </div>
-            <div className="demo-screens" style={{ aspectRatio: `${DEMO_SIZE.width} / ${DEMO_SIZE.height}` }}>
+            <div
+              className="demo-screens"
+              style={{
+                "--demo-ar": `${DEMO_SIZE.width} / ${DEMO_SIZE.height}`,
+                "--demo-ar-phone": `${DEMO_SIZE_MOBILE.width} / ${DEMO_SIZE_MOBILE.height}`,
+              }}
+            >
               {demos.map((d, i) => (
                 <DemoScreen
                   key={d.id}

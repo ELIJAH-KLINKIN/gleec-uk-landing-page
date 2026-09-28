@@ -463,3 +463,16 @@ test("demo: never auto-advances under Reduce Motion", async ({ page }) => {
   await expect(page.locator(".demo-tab-progress")).toHaveCount(0);
   await expect(demoTab(page, "Accounts")).toHaveAttribute("aria-selected", "true");
 });
+
+test("demo: visible on first load, with phone-sized screens on phones", async ({ page }, testInfo) => {
+  await page.goto("./");
+  const r = await page.evaluate(() => {
+    const win = document.querySelector(".demo-window").getBoundingClientRect();
+    const img = document.querySelector(".demo-screen.is-active img");
+    return { visible: innerHeight - win.top, src: img.currentSrc };
+  });
+  // At least ~200px of the app window shows without scrolling.
+  expect(r.visible).toBeGreaterThan(200);
+  if (isMobile(testInfo)) expect(r.src).toMatch(/-mobile-/);
+  else expect(r.src).not.toMatch(/-mobile-/);
+});

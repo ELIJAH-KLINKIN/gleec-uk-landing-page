@@ -1,47 +1,91 @@
-/* Hero */
+/* Hero — compact so the product demo is visible on first load. */
 .hero {
-  padding-top: clamp(56px, 3rem + 4vw, 104px);
+  padding-top: clamp(28px, 1rem + 2.5vw, 64px);
   padding-bottom: var(--s-16);
   overflow: hidden;
   background: var(--bg);
 }
-.hero-copy {
-  text-align: center;
+
+/* Headline left; intro + actions right, aligned to the headline's last line. */
+.hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--s-6) clamp(32px, 5vw, 80px);
+  align-items: end;
 }
-.hero-copy .title-hero {
-  max-width: 17ch;
-  margin-inline: auto;
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.3rem + 2.4vw, 3.5rem); /* 36 → 56 */
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: var(--track-display);
+  color: var(--label);
+  text-wrap: balance;
 }
 .hero-em {
   color: var(--tint-text);
 }
 .hero-lead {
-  max-width: 640px;
-  margin: var(--s-6) auto 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--label-2);
+  text-wrap: pretty;
 }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: var(--s-4) var(--s-8);
-  margin-top: var(--s-8);
+  gap: var(--s-3) var(--s-6);
+  margin-top: var(--s-5);
 }
 
 /* ---------- Product demo ---------- */
 .demo {
-  margin-top: clamp(40px, 2.5rem + 2vw, 72px);
+  margin-top: clamp(24px, 1rem + 2vw, 44px);
   text-align: center;
 }
 
-/* Pill tab bar — same track + thumb language as the segmented control,
-   plus a progress fill in the current pill while auto-advancing. */
+/* Backdrop the app window floats on (soft, painterly, theme-aware). */
+.demo-stage {
+  --stage-pad: clamp(14px, 4.5%, 56px);
+  padding: 18px var(--stage-pad) 0;
+  border-radius: var(--r-card-l);
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 12% 18%, #e7dcff 0%, transparent 60%),
+    radial-gradient(55% 60% at 88% 12%, #ffe1ee 0%, transparent 60%),
+    radial-gradient(70% 70% at 70% 100%, #d9ecff 0%, transparent 60%),
+    radial-gradient(50% 50% at 20% 100%, #fff1d9 0%, transparent 60%), #f1ecfa;
+}
+@media (prefers-color-scheme: dark) {
+  .demo-stage {
+    background:
+      radial-gradient(60% 70% at 12% 18%, #2c1a52 0%, transparent 60%),
+      radial-gradient(55% 60% at 88% 12%, #3a1630 0%, transparent 60%),
+      radial-gradient(70% 70% at 70% 100%, #10243f 0%, transparent 60%),
+      radial-gradient(50% 50% at 20% 100%, #33230c 0%, transparent 60%), #121016;
+  }
+}
+
+/* Pill tab bar, floating on the backdrop — a control, so it may use glass.
+   A progress fill runs inside the current pill while auto-advancing. */
 .demo-tabs {
-  display: inline-flex;
+  display: flex;
+  width: max-content;
+  max-width: 100%;
   gap: 2px;
+  margin: 0 auto 18px;
   padding: 3px;
   border-radius: var(--r-pill);
-  background: var(--fill);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--label) 8%, transparent);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .demo-tabs {
+    background: var(--surface);
+  }
 }
 .demo-tab {
   position: relative;
@@ -94,29 +138,6 @@
   }
 }
 
-/* Backdrop the app window floats on (soft, painterly, theme-aware). */
-.demo-stage {
-  --stage-pad: clamp(16px, 5%, 64px);
-  margin-top: var(--s-6);
-  padding: var(--stage-pad) var(--stage-pad) 0;
-  border-radius: var(--r-card-l);
-  overflow: hidden;
-  background:
-    radial-gradient(60% 70% at 12% 18%, #e7dcff 0%, transparent 60%),
-    radial-gradient(55% 60% at 88% 12%, #ffe1ee 0%, transparent 60%),
-    radial-gradient(70% 70% at 70% 100%, #d9ecff 0%, transparent 60%),
-    radial-gradient(50% 50% at 20% 100%, #fff1d9 0%, transparent 60%), #f1ecfa;
-}
-@media (prefers-color-scheme: dark) {
-  .demo-stage {
-    background:
-      radial-gradient(60% 70% at 12% 18%, #2c1a52 0%, transparent 60%),
-      radial-gradient(55% 60% at 88% 12%, #3a1630 0%, transparent 60%),
-      radial-gradient(70% 70% at 70% 100%, #10243f 0%, transparent 60%),
-      radial-gradient(50% 50% at 20% 100%, #33230c 0%, transparent 60%), #121016;
-  }
-}
-
 .demo-window {
   border-radius: 14px 14px 0 0;
   overflow: hidden;
@@ -131,7 +152,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 34px;
   background: var(--surface-2);
   border-bottom: 1px solid var(--separator);
 }
@@ -156,6 +177,7 @@
 .demo-screens {
   position: relative;
   width: 100%;
+  aspect-ratio: var(--demo-ar);
   background: var(--surface);
 }
 .demo-screen {
@@ -177,28 +199,78 @@
 }
 
 .demo-caption {
-  margin-top: var(--s-5);
+  margin-top: var(--s-4);
   font-size: var(--t-body);
   color: var(--label-2);
 }
 
 .hero-disclaimer {
   max-width: 720px;
-  margin-top: var(--s-8);
+  margin-top: var(--s-6);
   text-align: center;
 }
 
+/* ---------- Tablet: stack the header ---------- */
+@media (max-width: 900px) {
+  .hero-top {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .hero-lead {
+    max-width: 600px;
+  }
+}
+
+/* ---------- Phone: phone-shaped screen, no window chrome ---------- */
 @media (max-width: 600px) {
+  .hero {
+    padding-top: 20px;
+  }
+  .hero-top {
+    gap: var(--s-4);
+  }
+  .hero-heading .eyebrow {
+    margin-bottom: var(--s-2);
+    font-size: var(--t-subhead);
+  }
+  .hero-title {
+    font-size: 2rem; /* 32 */
+    line-height: 1.06;
+  }
+  .hero-lead {
+    font-size: var(--t-callout);
+    line-height: 1.45;
+  }
+  .hero-actions {
+    margin-top: var(--s-4);
+  }
+  .hero-actions .btn {
+    flex: 1 1 auto;
+  }
+  .demo {
+    margin-top: var(--s-6);
+  }
+  .demo-stage {
+    --stage-pad: 14px;
+    padding-top: 14px;
+  }
   .demo-tab {
     min-width: 0;
     padding-inline: 16px;
     font-size: var(--t-subhead);
   }
-  .demo-window-bar {
-    height: 28px;
+  .demo-window {
+    max-width: 380px;
+    margin-inline: auto;
+    border-radius: 22px 22px 0 0;
   }
-  .demo-window-dots span {
-    width: 8px;
-    height: 8px;
+  .demo-window-bar {
+    display: none;
+  }
+  .demo-screens {
+    aspect-ratio: var(--demo-ar-phone);
+  }
+  .demo-screen img {
+    object-position: top center;
   }
 }

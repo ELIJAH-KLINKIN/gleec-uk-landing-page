@@ -14,6 +14,14 @@ npm run check      # lint + format + build + end-to-end tests
 
 ## The demo
 
+- It's visible, and moving, on first load. A compact header (headline left,
+  intro and actions right) keeps the app window on screen: about 300–620 px
+  of it on laptops and desktops, and 180–450 px on phones.
+- On phones (≤600 px) each tab shows that area's detail panel from the app,
+  which is phone-shaped and readable at phone width, instead of a shrunken
+  desktop window. Phones keep still images and don't play video, to save
+  mobile data.
+
 - It advances every **7 seconds**, with a progress fill inside the current pill.
 - Once a visitor picks a tab, it stays on their choice and stops auto-advancing.
 - It doesn't advance while hovered, keyboard-focused, off screen, in a
@@ -22,8 +30,10 @@ npm run check      # lint + format + build + end-to-end tests
 
 ### Media
 
-The stills live in `src/assets/demo/{accounts,cards,payments}-{light,dark}.webp`
-at 2000 × 1250. Dark-mode visitors get the `-dark` variant.
+The stills live in `src/assets/demo/`:
+`{accounts,cards,payments}-{light,dark}.webp` (2000 × 1250, the full app
+window) and `…-mobile.webp` (760 × 1292, the detail panel, for phones).
+Dark-mode visitors get the `-dark` variants.
 
 To switch to screen recordings, add them per demo in `src/lib/demoMedia.js`:
 
