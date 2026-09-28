@@ -259,7 +259,8 @@ test("explorer: every market and method shows matching details", async ({ page }
 test("FAQ rows open and close; several can be open", async ({ page }) => {
   await page.goto("./#faq");
   const items = page.locator("#faq details");
-  await expect(items).toHaveCount(9);
+  await expect(items).toHaveCount(10);
+  await expect(items.nth(4)).toContainText("separate legal entities");
   await expect(items.first()).toHaveAttribute("open", "");
   await items.nth(3).locator("summary").click();
   await expect(items.nth(3)).toHaveAttribute("open", "");
