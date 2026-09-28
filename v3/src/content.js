@@ -610,6 +610,10 @@ export const FAQ = {
       a: "No. Gleec Pay Ltd’s proposed UK services are fiat-only. Gleec Pay Ltd will not provide cryptoasset exchange, custody, brokerage, stablecoin issuance, staking, investment services or cryptoasset settlement.",
     },
     {
+      q: "How is Gleec Pay Ltd related to other Gleec companies?",
+      a: "Gleec Pay Ltd is the only Gleec company that would provide the services on this website. Other Gleec-branded companies, including those offering digital-asset services, are separate legal entities: their products are not offered by Gleec Pay Ltd and are not covered by its application to the FCA or, if granted, its authorisation. If authorised, customer funds would be safeguarded by Gleec Pay Ltd and never held by another Gleec company.",
+    },
+    {
       q: "Who can apply?",
       a: "The proposed service is designed for eligible businesses with more complex account and payment needs. Any future onboarding would be subject to customer due diligence, risk assessment, acceptance policy and final approval.",
     },
