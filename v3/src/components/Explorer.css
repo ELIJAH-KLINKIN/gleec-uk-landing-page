@@ -105,6 +105,17 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
+/* Marks the account numbers as sample data, not real details. */
+.xp-example {
+  margin-left: 7px;
+  padding: 1px 8px;
+  border-radius: var(--r-pill);
+  background: var(--fill-2);
+  font-size: var(--t-caption);
+  text-transform: none;
+  letter-spacing: 0;
+  vertical-align: 1px;
+}
 
 /* Label → value rows (grouped inset list). One constant gap everywhere. */
 .kv {

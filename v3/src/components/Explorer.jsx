@@ -96,7 +96,9 @@ export default function Explorer() {
 
               <div className="xp-groups">
                 <div className="xp-group">
-                  <h4 className="xp-group-title">Account details</h4>
+                  <h4 className="xp-group-title">
+                    Account details <span className="xp-example">Example</span>
+                  </h4>
                   <dl className="kv">
                     <div>
                       <dt>Account provider</dt>
