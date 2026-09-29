@@ -471,7 +471,8 @@ test("hero: the email pill joins the waitlist and carries on at the details step
   const hero = page.locator(".hero-top");
   await expect(hero.getByRole("link", { name: "Talk to a Human" })).toHaveCount(0);
   await expect(hero.getByRole("link", { name: /See the demo/ })).toHaveAttribute("href", "https://demo.test/");
-  await expect(hero.getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
+  await expect(hero.getByRole("link", { name: "How we use your email" })).toHaveAttribute("href", "/privacy/");
+  await expect(hero.getByText(/only to contact you/)).toHaveCount(0);
   // The pill fits the screen (the page clips sideways overflow, so measure it).
   const pill = await hero.locator(".wl-pill").boundingBox();
   expect(pill.x + pill.width).toBeLessThanOrEqual(page.viewportSize().width);

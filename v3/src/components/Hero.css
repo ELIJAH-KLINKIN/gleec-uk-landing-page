@@ -40,6 +40,17 @@
 .hero-join-note {
   color: var(--label-2);
 }
+/* Quiet on purpose: grey and underlined, so "See the demo" stays the only tinted link. */
+.hero-join-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+}
+.hero-join-note a:hover {
+  color: var(--label);
+  text-decoration-color: currentColor;
+}
 .hero-join-check {
   width: 44px;
   height: 44px;

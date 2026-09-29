@@ -122,7 +122,7 @@ export default function HeroJoin() {
       </div>
 
       <p className="footnote hero-join-note" id={id("note")}>
-        {HERO.consent} See our <a href="/privacy/">Privacy policy</a>.
+        <a href="/privacy/">{HERO.privacy}</a>
       </p>
 
       {HERO.demo.href ? (
