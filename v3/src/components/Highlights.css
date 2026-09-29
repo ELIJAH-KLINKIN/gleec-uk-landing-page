@@ -65,7 +65,7 @@
   min-height: 0;
   margin: calc(-1 * var(--s-4)) calc(-1 * var(--s-4)) calc(-1 * var(--s-2));
 }
-.hl-art img {
+picture.hl-art img {
   width: 100%;
   height: auto;
   max-height: 250px;

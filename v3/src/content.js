@@ -87,9 +87,9 @@ export const HIGHLIGHTS = {
       eyebrow: "Account details",
       title: "Named virtual IBANs",
       body: "Dedicated account details for each client, region or product, so every payment lands where it belongs.",
-      art: "ibans",
-      // One line, like the other cards: the art already shows the stack of details.
-      notice: { kind: "event", flag: "GB", title: "ACME Studios Ltd", detail: "Sort code 00-00-00 · 12345678" },
+      art: "accounts",
+      // The art shows the details; the notice shows what they're for.
+      notice: { kind: "event", flag: "EU", title: "Payment matched", detail: "Northwind Trading Ltd · €4,210" },
     },
     {
       id: "uk-rails",

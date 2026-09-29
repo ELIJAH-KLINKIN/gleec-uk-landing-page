@@ -8,6 +8,7 @@ import { usePrefersReducedMotion } from "../lib/motion.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
 import Flag from "./ui/Flag.jsx";
+import AccountStack from "./art/AccountStack.jsx";
 import "./Highlights.css";
 
 export default function Highlights() {
@@ -172,9 +173,20 @@ export default function Highlights() {
   );
 }
 
-// Pre-rendered 3D art (scripts/art), one image per colour scheme. Decorative:
-// the card's own text says what it shows.
+// Card art. Drawn in HTML/CSS where the thing is flat (account details), otherwise
+// pre-rendered 3D (scripts/art), one image per colour scheme. Decorative: the
+// card's own text says what it shows.
+const DRAWN = { accounts: AccountStack };
+
 function Art({ name }) {
+  const Drawn = DRAWN[name];
+  if (Drawn) {
+    return (
+      <div className="hl-art">
+        <Drawn />
+      </div>
+    );
+  }
   return (
     <picture className="hl-art">
       <source srcSet={`/art/${name}-dark.webp`} media="(prefers-color-scheme: dark)" />

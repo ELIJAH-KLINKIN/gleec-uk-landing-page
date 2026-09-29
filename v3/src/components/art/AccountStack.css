@@ -1,0 +1,111 @@
+/* Account details as a Wallet-style stack. Card proportions follow ISO/IEC 7810
+   ID-1 (85.60 × 53.98 mm). Colours are the card's own, not the page's, so they
+   read the same in light and dark mode. */
+.acs {
+  --w: min(272px, 82%);
+  --peek: 34px;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding-top: calc(var(--peek) * 2);
+  font-variant-numeric: tabular-nums;
+}
+.acs-card {
+  width: var(--w);
+  aspect-ratio: 85.6 / 53.98;
+  padding: 14px 16px;
+  border-radius: 13px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 12px 28px -12px rgba(18, 8, 40, 0.45),
+    0 2px 6px rgba(18, 8, 40, 0.12);
+}
+/* The cards behind show only their top strip. */
+.acs-card:not(.acs-front) {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+}
+.acs-card:nth-child(1) {
+  top: 0;
+  width: calc(var(--w) * 0.9);
+}
+.acs-card:nth-child(2) {
+  top: var(--peek);
+  width: calc(var(--w) * 0.95);
+}
+.acs-front {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.acs-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.acs-holder {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.acs-cur {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.acs-field {
+  display: grid;
+  gap: 1px;
+}
+.acs-label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+.acs-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.acs-iban {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.acs-logo {
+  width: auto;
+  height: 16px;
+  filter: brightness(0) invert(1);
+}
+
+/* Finishes: brand purple with a soft sheen and a fine line pattern; graphite; silver. */
+.acs-front {
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 7px),
+    linear-gradient(135deg, #9d5bff 0%, #8c41ff 45%, #6423d8 100%);
+}
+.acs-graphite {
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.14), transparent 55%),
+    linear-gradient(135deg, #4a4a52 0%, #2c2c31 55%, #1b1b1f 100%);
+}
+.acs-silver {
+  color: #1d1d1f;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
+    linear-gradient(135deg, #f2f2f5 0%, #dcdce2 60%, #c9c9d1 100%);
+}
