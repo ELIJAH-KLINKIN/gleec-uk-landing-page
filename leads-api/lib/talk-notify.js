@@ -18,37 +18,40 @@ export function formatCallTime(startIso, endIso, timeZone = 'Europe/London') {
   return `${day}, ${time(startIso)}–${time(endIso)} (${place})`;
 }
 
-function line(label, value) {
-  return value ? `<b>${label}:</b> ${escapeHtml(truncate(String(value), 400))}` : null;
-}
+const clip = (value) => escapeHtml(truncate(String(value), 400));
+const bullet = (value) => (value ? `• ${clip(value)}` : null);
 
-export function requestMessage(r) {
+/** Same shape as the lead ping: title, unlabelled bullets, the visitor's notes as a quote, then status. */
+export function requestMessage(r, { booking = true } = {}) {
   return [
-    '🙋 <b>Talk to a human — new request</b>',
-    line('Name', `${r.firstName} ${r.lastName}`),
-    line('Company', r.company),
-    line('Website', r.companyWebsite),
-    `<b>Email:</b> ${escapeHtml(r.email)}`,
-    line('Phone', r.phone),
-    line('Notes', r.message),
-    line('Page', r.source?.page),
-    line('Source', r.source?.utm_source),
-    '<i>Choosing a time…</i>',
+    '🇬🇧 <b>UK Business Banking Call Request</b>',
+    '',
+    bullet(`${r.firstName} ${r.lastName}`),
+    bullet(r.company),
+    bullet(r.companyWebsite),
+    bullet(r.email),
+    bullet(r.phone),
+    bullet(r.source?.page),
+    r.source?.utm_source ? bullet(`utm_source=${r.source.utm_source}`) : null,
+    r.message ? `\n<blockquote>${clip(r.message)}</blockquote>` : null,
+    '',
+    booking ? '<i>Choosing a time…</i>' : '<i>Online booking is off: email them to arrange a time.</i>',
   ]
-    .filter(Boolean)
+    .filter((l) => l !== null)
     .join('\n');
 }
 
 export function bookedMessage(r, { startAt, endAt, hostName, meetUrl, timeZone }) {
   return [
-    '📅 <b>Call booked</b>',
+    '🇬🇧 <b>UK Business Banking Call Booked</b>',
+    '',
     `<b>${escapeHtml(formatCallTime(startAt, endAt, timeZone))}</b>`,
-    line('With', hostName),
-    line('Guest', `${r.firstName} ${r.lastName}${r.company ? `, ${r.company}` : ''}`),
-    `<b>Email:</b> ${escapeHtml(r.email)}`,
-    meetUrl ? `<b>Meet:</b> ${escapeHtml(meetUrl)}` : null,
+    hostName ? `• with ${clip(hostName)}` : null,
+    bullet(`${r.firstName} ${r.lastName}${r.company ? `, ${r.company}` : ''}`),
+    bullet(r.email),
+    bullet(meetUrl),
   ]
-    .filter(Boolean)
+    .filter((l) => l !== null)
     .join('\n');
 }
 

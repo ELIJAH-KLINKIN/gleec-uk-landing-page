@@ -30,23 +30,30 @@ describe('escapeHtml', () => {
 });
 
 describe('formatTelegramMessage', () => {
-  it('renders a scannable message with human labels', () => {
+  it('renders title, unlabelled bullets, the message as a quote and the id', () => {
     const html = formatTelegramMessage(leadRecord());
-    const lines = html.split('\n');
-    assert.equal(lines[0], '🟣 <b>New GLEEC Business waitlist lead</b>');
-    assert.ok(html.includes('<b>Name:</b> Ada Lovelace'));
-    assert.ok(html.includes('<b>Company:</b> Analytical Engines Ltd'));
-    assert.ok(html.includes('<b>Country:</b> United Kingdom'));
-    assert.ok(html.includes('<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>'));
-    assert.ok(html.includes('<b>Phone:</b> +44 20 7946 0958'));
-    assert.ok(html.includes('<b>Business type:</b> International'));
-    assert.ok(html.includes('<b>Currencies:</b> GBP, EUR'));
-    assert.ok(html.includes('<b>Monthly volume:</b> £250k–£1m'));
-    assert.ok(html.includes('<b>Message:</b>\n<blockquote>We need multi-currency accounts.</blockquote>'));
-    assert.ok(html.includes('<b>Source page:</b> https://elijah-klinkin.github.io/gleec-uk-landing-page/'));
-    assert.ok(html.includes('<b>Referrer:</b> https://www.google.com/'));
-    assert.ok(html.includes('<b>UTM:</b> source=google · medium=cpc · campaign=launch'));
-    assert.ok(html.endsWith(`<b>Lead ID:</b> <code>${LEAD_ID}</code>`));
+    assert.equal(
+      html,
+      [
+        '🇬🇧 <b>UK Business Banking Lead</b>',
+        '',
+        '• Ada Lovelace',
+        '• Analytical Engines Ltd',
+        '• United Kingdom',
+        '• ada@example.co.uk',
+        '• +44 20 7946 0958',
+        '• International business',
+        '• GBP, EUR',
+        '• £250k–£1m',
+        '• https://elijah-klinkin.github.io/gleec-uk-landing-page/',
+        '• from https://www.google.com/',
+        '• utm_source=google · utm_medium=cpc · utm_campaign=launch',
+        '',
+        '<blockquote>We need multi-currency accounts.</blockquote>',
+        '',
+        `Lead ID: ${LEAD_ID}`,
+      ].join('\n'),
+    );
   });
 
   it('maps every business type and volume to a label', () => {
@@ -56,11 +63,11 @@ describe('formatTelegramMessage', () => {
       other: 'Other',
     };
     for (const [value, label] of Object.entries(expected)) {
-      assert.ok(formatTelegramMessage(leadRecord({ businessType: value })).includes(`<b>Business type:</b> ${label}`));
+      assert.ok(formatTelegramMessage(leadRecord({ businessType: value })).includes(`\n• ${label}\n`));
     }
     const volumes = { lt_50k: 'Under £50k', '50k_250k': '£50k–£250k', '1m_5m': '£1m–£5m', gt_5m: 'Over £5m' };
     for (const [value, label] of Object.entries(volumes)) {
-      assert.ok(formatTelegramMessage(leadRecord({ monthlyVolume: value })).includes(`<b>Monthly volume:</b> ${label}`));
+      assert.ok(formatTelegramMessage(leadRecord({ monthlyVolume: value })).includes(`\n• ${label}\n`));
     }
   });
 
@@ -68,43 +75,55 @@ describe('formatTelegramMessage', () => {
     const html = formatTelegramMessage(
       leadRecord({ phone: '', businessType: '', currencies: [], monthlyVolume: '', message: '', source: {} }),
     );
-    for (const label of ['Phone', 'Business type', 'Currencies', 'Monthly volume', 'Message', 'Source page', 'Referrer', 'UTM']) {
-      assert.equal(html.includes(`<b>${label}:</b>`), false, label);
-    }
-    assert.ok(html.includes('<b>Lead ID:</b>'));
+    assert.equal(
+      html,
+      [
+        '🇬🇧 <b>UK Business Banking Lead</b>',
+        '',
+        '• Ada Lovelace',
+        '• Analytical Engines Ltd',
+        '• United Kingdom',
+        '• ada@example.co.uk',
+        '',
+        `Lead ID: ${LEAD_ID}`,
+      ].join('\n'),
+    );
   });
 
-  it('email-first lead: no Name/Company/Country lines, no empty labels, same header', () => {
+  it('email-first lead: email and page as bullets, then the id', () => {
     const { lead } = validateLead(emailOnlyBody());
     const html = formatTelegramMessage({ ...lead, id: LEAD_ID, createdAt: '2026-09-26T12:00:00.000Z' });
     assert.equal(
       html,
       [
-        '🟣 <b>New GLEEC Business waitlist lead</b>',
+        '🇬🇧 <b>UK Business Banking Lead</b>',
         '',
-        '<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>',
+        '• ada@example.co.uk',
+        '• https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/',
         '',
-        '<b>Source page:</b> https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/',
-        '',
-        `<b>Lead ID:</b> <code>${LEAD_ID}</code>`,
+        `Lead ID: ${LEAD_ID}`,
       ].join('\n'),
     );
-    for (const label of ['Name', 'Company', 'Country']) assert.equal(html.includes(`<b>${label}:</b>`), false, label);
   });
 
-  it('details added: its own title, the stored details, email and id — no source block', () => {
+  it('details added: its own title, the stored details, email and id — no source lines', () => {
     const record = { ...leadRecord({ fullName: '', country: '', message: '' }), detailsAt: '2026-09-26T12:01:00.000Z' };
     const html = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' });
-    const lines = html.split('\n');
-    assert.equal(lines[0], '📝 <b>Lead details added</b>');
-    assert.ok(html.includes('<b>Company:</b> Analytical Engines Ltd'));
-    assert.ok(html.includes('<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>'));
-    assert.ok(html.includes('<b>Currencies:</b> GBP, EUR'));
-    assert.ok(html.endsWith(`<b>Lead ID:</b> <code>${LEAD_ID}</code>`));
-    for (const label of ['Name', 'Country', 'Message', 'Source page', 'Referrer', 'UTM']) {
-      assert.equal(html.includes(`<b>${label}:</b>`), false, label);
-    }
-    assert.equal(html.includes('New GLEEC Business waitlist lead'), false);
+    assert.equal(
+      html,
+      [
+        '🇬🇧 <b>UK Business Banking Lead · Details</b>',
+        '',
+        '• Analytical Engines Ltd',
+        '• ada@example.co.uk',
+        '• +44 20 7946 0958',
+        '• International business',
+        '• GBP, EUR',
+        '• £250k–£1m',
+        '',
+        `Lead ID: ${LEAD_ID}`,
+      ].join('\n'),
+    );
     assertEntitiesWellFormed(html);
   });
 
@@ -112,8 +131,8 @@ describe('formatTelegramMessage', () => {
     const record = leadRecord({ fullName: '<b>x</b>', company: '&'.repeat(160), message: '&<>"'.repeat(500) });
     const html = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' });
     assert.ok(html.length <= TELEGRAM_MAX_LENGTH);
-    assert.ok(html.includes('<b>Name:</b> &lt;b&gt;x&lt;/b&gt;'));
-    assert.ok(html.endsWith(`<code>${LEAD_ID}</code>`));
+    assert.ok(html.includes('• &lt;b&gt;x&lt;/b&gt;'));
+    assert.ok(html.endsWith(`Lead ID: ${LEAD_ID}`));
     assertEntitiesWellFormed(html);
   });
 
@@ -126,7 +145,7 @@ describe('formatTelegramMessage', () => {
         source: { page: 'https://x.example/?a=1&b=<2>', utm_source: '<script>' },
       }),
     );
-    assert.ok(html.includes('<b>Name:</b> &lt;b&gt;Eve&lt;/b&gt; &amp; &quot;Mallory&quot;'));
+    assert.ok(html.includes('• &lt;b&gt;Eve&lt;/b&gt; &amp; &quot;Mallory&quot;'));
     assert.ok(html.includes('&lt;a href=&quot;https://evil.example&quot;&gt;click&lt;/a&gt;'));
     assert.ok(html.includes('<blockquote>&lt;/blockquote&gt;&lt;i&gt;injected&lt;/i&gt; &amp; more</blockquote>'));
     assert.ok(html.includes('https://x.example/?a=1&amp;b=&lt;2&gt;'));
@@ -155,8 +174,8 @@ describe('formatTelegramMessage', () => {
     const html = formatTelegramMessage(lead);
     assert.ok(html.length <= TELEGRAM_MAX_LENGTH, `length ${html.length}`);
     assert.ok(html.includes('…'));
-    assert.ok(html.includes('<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>'));
-    assert.ok(html.endsWith(`<code>${LEAD_ID}</code>`));
+    assert.ok(html.includes('• ada@example.co.uk'));
+    assert.ok(html.endsWith(`Lead ID: ${LEAD_ID}`));
     assert.ok(html.includes('<blockquote>') && html.includes('</blockquote>'));
     assertEntitiesWellFormed(html);
   });
@@ -164,8 +183,8 @@ describe('formatTelegramMessage', () => {
   it('shortens the longest free-text value first and leaves short fields intact', () => {
     const html = formatTelegramMessage(leadRecord({ message: 'm'.repeat(2000) }), 800);
     assert.ok(html.length <= 800, `length ${html.length}`);
-    assert.ok(html.includes('<b>Name:</b> Ada Lovelace'));
-    assert.ok(html.includes('<b>Company:</b> Analytical Engines Ltd'));
+    assert.ok(html.includes('• Ada Lovelace'));
+    assert.ok(html.includes('• Analytical Engines Ltd'));
     assert.match(html, /<blockquote>m+…<\/blockquote>/);
   });
 

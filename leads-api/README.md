@@ -203,10 +203,12 @@ Telegram and the CRM webhook run in parallel **after the response is sent**, kep
 `telegram_status` / `crm_status` = `sent` | `not_configured` | `failed: <reason>`, plus
 `telegram_sent_at` / `crm_sent_at`. A failure never changes the response.
 
-A new lead posts "🟣 New GLEEC Business waitlist lead" (lines for missing name, company or country
-are left out) and sends `lead.created`. Added details post "📝 Lead details added" with the lead
-as now stored, its email and its id (so sales can match the two messages), and send
-`lead.updated`. The status columns always hold the outcome of the latest of the two.
+A new lead posts "🇬🇧 **UK Business Banking Lead**": one unlabelled bullet per known value
+(email, source page, …; missing ones are left out), the message as a quote, then `Lead ID: …`. It
+also sends `lead.created`. Added details post "🇬🇧 **UK Business Banking Lead · Details**" with the
+lead as now stored, its email and its id (so sales can match the two messages), and send
+`lead.updated`. Call requests and bookings use the same shape ("UK Business Banking Call Request" /
+"Call Booked"). The status columns always hold the outcome of the latest of the two.
 
 The IP is stored only as `HMAC-SHA256(IP_HASH_SALT, ip)` (first `x-forwarded-for` entry, else
 `x-real-ip`). Logs carry lead ids and statuses, never names, emails or IPs.

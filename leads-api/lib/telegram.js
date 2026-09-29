@@ -13,53 +13,54 @@ function part(value, render, { fixed = false } = {}) {
   return { value: value == null ? '' : String(value), render, fixed };
 }
 const staticLine = (html) => part('', () => html, { fixed: true });
-const labelled = (label) => (value) => `<b>${label}:</b> ${value}`;
+const bullet = (value) => `• ${value}`;
 
 const TITLES = {
-  created: '🟣 <b>New GLEEC Business waitlist lead</b>',
-  updated: '📝 <b>Lead details added</b>',
+  created: '🇬🇧 <b>UK Business Banking Lead</b>',
+  updated: '🇬🇧 <b>UK Business Banking Lead · Details</b>',
 };
 
 /**
+ * Title, one unlabelled bullet per known value, the visitor's message as a quote, the id:
+ *
+ *   🇬🇧 UK Business Banking Lead
+ *
+ *   • ada@example.co.uk
+ *   • https://gleecpay.co.uk/#waitlist
+ *
+ *   Lead ID: 3f1c…
+ *
  * @param {object} lead  the stored lead (camelCase), with id
  * @param {{ kind?: 'created' | 'updated' }} [options]  'updated' = second step of the email-first
- *        form: different title, no source block (it was in the first message).
+ *        form: different title, no source lines (they were in the first message).
  */
 export function buildTelegramParts(lead, { kind = 'created' } = {}) {
   // Name, company and country are optional since the email-first form: absent → no line.
   const parts = [staticLine(TITLES[kind] ?? TITLES.created), staticLine('')];
-  if (lead.fullName) parts.push(part(lead.fullName, labelled('Name')));
-  if (lead.company) parts.push(part(lead.company, labelled('Company')));
-  if (lead.country) parts.push(part(lead.country, labelled('Country')));
-  parts.push(part(lead.email, (email) => `<b>Email:</b> <a href="mailto:${email}">${email}</a>`, { fixed: true }));
-  if (lead.phone) parts.push(part(lead.phone, labelled('Phone')));
-  if (lead.businessType) {
-    parts.push(part(BUSINESS_TYPE_LABELS[lead.businessType] ?? lead.businessType, labelled('Business type')));
-  }
-  if (lead.currencies && lead.currencies.length > 0) {
-    parts.push(part(lead.currencies.join(', '), labelled('Currencies')));
-  }
-  if (lead.monthlyVolume) {
-    parts.push(part(MONTHLY_VOLUME_LABELS[lead.monthlyVolume] ?? lead.monthlyVolume, labelled('Monthly volume')));
-  }
-  if (lead.message) {
-    parts.push(staticLine(''));
-    parts.push(part(lead.message, (message) => `<b>Message:</b>\n<blockquote>${message}</blockquote>`));
-  }
+  if (lead.fullName) parts.push(part(lead.fullName, bullet));
+  if (lead.company) parts.push(part(lead.company, bullet));
+  if (lead.country) parts.push(part(lead.country, bullet));
+  parts.push(part(lead.email, bullet, { fixed: true }));
+  if (lead.phone) parts.push(part(lead.phone, bullet));
+  if (lead.businessType) parts.push(part(BUSINESS_TYPE_LABELS[lead.businessType] ?? lead.businessType, bullet));
+  if (lead.currencies && lead.currencies.length > 0) parts.push(part(lead.currencies.join(', '), bullet));
+  if (lead.monthlyVolume) parts.push(part(MONTHLY_VOLUME_LABELS[lead.monthlyVolume] ?? lead.monthlyVolume, bullet));
 
   const source = (kind === 'created' && lead.source) || {};
+  if (source.page) parts.push(part(source.page, bullet));
+  if (source.referrer) parts.push(part(source.referrer, (referrer) => `• from ${referrer}`));
   const utm = ['source', 'medium', 'campaign', 'term', 'content']
     .filter((key) => source[`utm_${key}`])
-    .map((key) => `${key}=${source[`utm_${key}`]}`);
-  if (source.page || source.referrer || utm.length > 0) {
+    .map((key) => `utm_${key}=${source[`utm_${key}`]}`);
+  if (utm.length > 0) parts.push(part(utm.join(' · '), bullet));
+
+  if (lead.message) {
     parts.push(staticLine(''));
-    if (source.page) parts.push(part(source.page, labelled('Source page')));
-    if (source.referrer) parts.push(part(source.referrer, labelled('Referrer')));
-    if (utm.length > 0) parts.push(part(utm.join(' · '), labelled('UTM')));
+    parts.push(part(lead.message, (message) => `<blockquote>${message}</blockquote>`));
   }
 
   parts.push(staticLine(''));
-  parts.push(part(lead.id, (id) => `<b>Lead ID:</b> <code>${id}</code>`, { fixed: true }));
+  parts.push(part(lead.id, (id) => `Lead ID: ${id}`, { fixed: true }));
   return parts;
 }
 

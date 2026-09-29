@@ -3,6 +3,7 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { describe, it } from 'node:test';
 import { open, parseKey, seal } from '../lib/secretbox.js';
 import { createTalkHandler } from '../lib/talk-handler.js';
+import { requestMessage } from '../lib/talk-notify.js';
 import { BASE_ENV, LEAD_TOKEN_SECRET, ORIGIN, TELEGRAM_ENV, createTestLogger, makeRequest } from './helpers.js';
 
 const NOW = Date.parse('2026-09-28T12:00:00Z'); // Monday 13:00 London
@@ -156,7 +157,9 @@ describe('POST /api/talk', () => {
     assert.equal(row.companyWebsite, 'https://analytical.example');
     assert.equal(row.telegramStatus, 'sent');
     const tg = ctx.google.calls.find((c) => c.url.includes('api.telegram.org'));
-    assert.match(JSON.parse(tg.body).text, /Talk to a human/);
+    const text = JSON.parse(tg.body).text;
+    assert.ok(text.startsWith('🇬🇧 <b>UK Business Banking Call Request</b>\n\n• Ada Lovelace\n'));
+    assert.ok(text.endsWith('<i>Choosing a time…</i>'));
   });
 
   it('rejects missing names and bad websites with field messages', async () => {
@@ -243,7 +246,7 @@ describe('POST /api/talk/book', () => {
     assert.match(event.description, /not currently authorised by the FCA/);
     assert.equal(ctx.repo.rows.get(data.id).status, 'booked');
     const pings = ctx.google.calls.filter((c) => c.url.includes('api.telegram.org'));
-    assert.match(JSON.parse(pings.at(-1).body).text, /Call booked/);
+    assert.match(JSON.parse(pings.at(-1).body).text, /^🇬🇧 <b>UK Business Banking Call Booked<\/b>\n\n<b>.+<\/b>\n• with /);
   });
 
   it('is idempotent: booking again returns the same call', async () => {
@@ -358,4 +361,36 @@ describe('secretbox', () => {
 
 it('talk handler origin constant matches the helpers', () => {
   assert.ok(ENV.ALLOWED_ORIGINS.includes(ORIGIN));
+});
+
+describe('talk: Telegram request message', () => {
+  const r = {
+    firstName: 'Ada',
+    lastName: 'Lovelace',
+    company: 'Analytical <Engines>',
+    email: 'ada@example.co.uk',
+    message: 'Hi & thanks',
+    source: { page: 'https://gleecpay.co.uk/#talk' },
+  };
+
+  it('lists the details as bullets and quotes the notes', () => {
+    assert.equal(
+      requestMessage(r),
+      [
+        '🇬🇧 <b>UK Business Banking Call Request</b>',
+        '',
+        '• Ada Lovelace',
+        '• Analytical &lt;Engines&gt;',
+        '• ada@example.co.uk',
+        '• https://gleecpay.co.uk/#talk',
+        '\n<blockquote>Hi &amp; thanks</blockquote>',
+        '',
+        '<i>Choosing a time…</i>',
+      ].join('\n'),
+    );
+  });
+
+  it('says to email them when online booking is off', () => {
+    assert.ok(requestMessage(r, { booking: false }).endsWith('<i>Online booking is off: email them to arrange a time.</i>'));
+  });
 });

@@ -170,8 +170,8 @@ describe('POST /api/leads — email-first (v2) and the details token', () => {
     const { handler } = setup({ env: TELEGRAM_ENV, fetch });
     await post(handler, { body: emailOnlyBody() });
     const { text } = fetch.calls[0].json;
-    assert.ok(text.startsWith('🟣 <b>New GLEEC Business waitlist lead</b>\n\n<b>Email:</b>'));
-    for (const label of ['Name', 'Company', 'Country']) assert.equal(text.includes(`<b>${label}:</b>`), false, label);
+    assert.ok(text.startsWith('🇬🇧 <b>UK Business Banking Lead</b>\n\n• ada@example.co.uk\n• '));
+    assert.equal(text.includes('• \n'), false);
   });
 
   it('CRM payload for an email-only lead keeps its shape with nulls', async () => {
@@ -201,8 +201,8 @@ describe('POST /api/leads — Telegram', () => {
     assert.equal(call.json.message_thread_id, 7);
     assert.equal(call.json.parse_mode, 'HTML');
     assert.equal(call.json.disable_web_page_preview, true);
-    assert.ok(call.json.text.includes(`<code>${body.id}</code>`));
-    assert.ok(call.json.text.includes('mailto:ada@example.co.uk'));
+    assert.ok(call.json.text.endsWith(`Lead ID: ${body.id}`));
+    assert.ok(call.json.text.includes('• ada@example.co.uk'));
 
     const [update] = repo.calls.update;
     assert.equal(update.id, body.id);

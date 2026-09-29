@@ -183,7 +183,7 @@ export function createTalkHandler({
 
       const note = notifyTalk({
         id: saved.id,
-        text: requestMessage(record),
+        text: requestMessage(record, { booking: bookingConfigured }),
         config,
         repo,
         fetch,

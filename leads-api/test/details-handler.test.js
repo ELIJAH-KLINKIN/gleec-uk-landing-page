@@ -153,7 +153,7 @@ describe('POST /api/leads/details — success', () => {
 });
 
 describe('POST /api/leads/details — notifications', () => {
-  it('Telegram "📝 Lead details added" with email and id; CRM lead.updated with the full record, signed', async () => {
+  it('Telegram "Lead · Details" with email and id; CRM lead.updated with the full record, signed', async () => {
     const fetch = createFakeFetch((url) =>
       url.startsWith('https://api.telegram.org') ? Response.json({ ok: true }) : new Response(null, { status: 202 }),
     );
@@ -163,10 +163,10 @@ describe('POST /api/leads/details — notifications', () => {
     const telegram = fetch.calls.find((c) => c.url.startsWith('https://api.telegram.org'));
     assert.equal(telegram.url, `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`);
     const { text } = telegram.json;
-    assert.ok(text.startsWith('📝 <b>Lead details added</b>\n'));
-    assert.ok(text.includes('<b>Email:</b> <a href="mailto:ada@example.co.uk">ada@example.co.uk</a>'));
-    assert.ok(text.includes('<b>Company:</b> Analytical Engines Ltd'));
-    assert.ok(text.endsWith(`<b>Lead ID:</b> <code>${LEAD_ID}</code>`));
+    assert.ok(text.startsWith('🇬🇧 <b>UK Business Banking Lead · Details</b>\n'));
+    assert.ok(text.includes('• ada@example.co.uk'));
+    assert.ok(text.includes('• Analytical Engines Ltd'));
+    assert.ok(text.endsWith(`Lead ID: ${LEAD_ID}`));
     assert.equal(text.includes('Source page'), false);
 
     const crm = fetch.calls.find((c) => c.url === CRM_ENV.CRM_WEBHOOK_URL);
