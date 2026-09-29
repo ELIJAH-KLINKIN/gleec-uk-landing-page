@@ -57,6 +57,26 @@
   color: var(--label-2);
 }
 
+/* 3D art: fills the space between the copy and the notice. */
+.hl-art {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 0;
+  margin: calc(-1 * var(--s-4)) calc(-1 * var(--s-4)) calc(-1 * var(--s-2));
+}
+.hl-art img {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+}
+.hl-note {
+  margin-top: var(--s-4);
+  text-align: center;
+  color: var(--label-2);
+}
+
 /* Illustrative notice */
 .hl-notice {
   display: flex;

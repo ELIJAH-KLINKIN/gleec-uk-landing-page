@@ -68,6 +68,8 @@ export const HERO = {
 
 export const HIGHLIGHTS = {
   eyebrow: "Product",
+  // One qualifier for the whole gallery, instead of one in every card.
+  note: "Products shown are planned and subject to FCA authorisation, onboarding approval and partner availability.",
   title: "The all-in-one account for complex business flows.",
   lead: "Accounts, payments, FX, payment cards and controls — designed for companies that need fiat payment routes across GBP, EUR and USD.",
   items: [
@@ -75,7 +77,9 @@ export const HIGHLIGHTS = {
       id: "accounts",
       eyebrow: "Global Account",
       title: "One IBAN, 24 currencies",
-      body: "Hold, receive and send GBP, EUR and USD from launch, with 21 more currencies planned — all under one IBAN in your company’s name, with fiat-to-fiat FX between them. Subject to authorisation, onboarding approval and partner availability.",
+      body: "GBP, EUR and USD from launch, 21 more planned — all on one IBAN in your company’s name.",
+      // 3D art rendered by scripts/art (public/art/<name>-light|dark.webp).
+      art: "coins",
       notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250" },
     },
     {

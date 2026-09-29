@@ -123,6 +123,7 @@ export default function Highlights() {
                 <h3 className="title-3">{item.title}</h3>
                 <p className="hl-tile-body">{item.body}</p>
               </div>
+              {item.art ? <Art name={item.art} /> : null}
               <Notice notice={item.notice} />
             </article>
           ))}
@@ -162,11 +163,23 @@ export default function Highlights() {
             </button>
           </div>
         </div>
+        {HIGHLIGHTS.note ? <p className="footnote hl-note container-wide">{HIGHLIGHTS.note}</p> : null}
         <p className="visually-hidden" aria-live="polite" aria-atomic="true">
           Highlight {active + 1} of {N}: {items[active].title}
         </p>
       </div>
     </section>
+  );
+}
+
+// Pre-rendered 3D art (scripts/art), one image per colour scheme. Decorative:
+// the card's own text says what it shows.
+function Art({ name }) {
+  return (
+    <picture className="hl-art">
+      <source srcSet={`/art/${name}-dark.webp`} media="(prefers-color-scheme: dark)" />
+      <img src={`/art/${name}-light.webp`} alt="" width="1008" height="720" loading="lazy" decoding="async" />
+    </picture>
   );
 }
 
