@@ -9,6 +9,10 @@
   border-radius: var(--r-card-l);
   background: var(--surface);
 }
+/* On a white section (Finance teams) the tiles take the grey card colour instead. */
+.section:not(.alt) .ctrl-card {
+  background: var(--bg-2);
+}
 .ctrl-icon {
   display: grid;
   place-items: center;

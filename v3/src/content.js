@@ -72,9 +72,9 @@ export const HIGHLIGHTS = {
   items: [
     {
       id: "accounts",
-      eyebrow: "Multi-currency",
-      title: "GBP, EUR & USD business accounts",
-      body: "Designed to support GBP, EUR and USD business accounts in one place, with fiat-to-fiat FX through approved partners — subject to authorisation, onboarding approval and provider availability.",
+      eyebrow: "Global Account",
+      title: "One IBAN, 24 currencies",
+      body: "Hold, receive and send GBP, EUR and USD from launch, with 21 more currencies planned — all under one IBAN in your company’s name, with fiat-to-fiat FX between them. Subject to authorisation, onboarding approval and partner availability.",
       notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250" },
     },
     {
@@ -95,12 +95,25 @@ export const HIGHLIGHTS = {
       id: "uk-rails",
       eyebrow: "Payments",
       title: "Faster Payments, CHAPS & BACS",
-      body: "Domestic UK payment methods planned through standard and same-day routes, subject to authorisation, partner setup and operational readiness.",
+      body: "Domestic UK payments planned through standard and same-day routes, with Confirmation of Payee on every payment you send. Subject to authorisation, partner setup and operational readiness.",
       notice: {
         kind: "event",
         flag: "GB", // a flag, not the Faster Payments logo (scheme marks are for participants)
         title: "FPS payment · Illustrative",
         detail: "Sample inflow · £12,480",
+      },
+    },
+    {
+      id: "cop",
+      eyebrow: "Fraud protection",
+      title: "Confirmation of Payee",
+      body: "Before a UK payment leaves your account, the recipient’s name is checked against their bank’s records. A mismatch is flagged before you send, so a misdirected payment or a fake invoice gets caught before it becomes a loss.",
+      notice: {
+        kind: "event",
+        icon: "check",
+        tone: "green",
+        title: "Name matches · Illustrative",
+        detail: "Hartwell & Frome Ltd · Confirmation of Payee",
       },
     },
     {
@@ -119,7 +132,7 @@ export const HIGHLIGHTS = {
       id: "swift",
       eyebrow: "International",
       title: "SWIFT & USD connectivity",
-      body: "Planned international and USD payment routes via correspondent and partner networks, subject to authorisation, corridor availability and onboarding approval.",
+      body: "Planned international and USD payments via SWIFT. You choose who pays the fees — you (OUR), the recipient (BEN) or shared (SHA) — and can follow each payment as it moves. Subject to authorisation, corridor availability and onboarding approval.",
       notice: {
         kind: "event",
         flag: "US",
@@ -316,8 +329,8 @@ export const EXPLORER = {
 
 export const CURRENCIES = {
   eyebrow: "Multi-currency",
-  title: "GBP, EUR and USD at the core. More currencies when you need them.",
-  lead: "Run your operating balances in the currencies that matter most, with additional currency coverage through our payment partners.",
+  title: "GBP, EUR and USD at launch. 24 currencies on one IBAN.",
+  lead: "Hold and receive up to 24 currencies under one IBAN through our banking partners. GBP, EUR and USD come first; the rest follow, subject to authorisation and partner availability.",
   core: [
     { code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
     { code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },
@@ -461,7 +474,7 @@ export const PLANS = {
 export const CONTROLS = {
   eyebrow: "Controls",
   title: "Designed for regulated, high-control payments.",
-  lead: "Gleec Business is being built with KYB, screening, monitoring, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
+  lead: "Gleec Business is being built with KYB, screening, monitoring, Confirmation of Payee, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
   items: [
     {
       icon: "shield-check",
@@ -482,6 +495,37 @@ export const CONTROLS = {
       icon: "vault",
       title: "Safeguarding & reconciliation",
       body: "If authorised, funds will be kept in a segregated safeguarding account at a UK bank and reconciled daily.",
+    },
+  ],
+};
+
+// "For finance teams": the tools corporate treasury and finance teams look for.
+// Backed by the banking partners' channels (bulk files, API + webhooks, ISO 20022
+// statements); roles and approvals are the platform's own.
+export const FINANCE = {
+  eyebrow: "Finance teams",
+  title: "Built for the way finance teams work.",
+  lead: "Pay in bulk, connect your systems and reconcile without copy and paste. Planned from launch, subject to authorisation.",
+  items: [
+    {
+      icon: "file-spreadsheet",
+      title: "Bulk payments",
+      body: "Pay hundreds of suppliers or staff from one CSV file, checked and approved in one go.",
+    },
+    {
+      icon: "code",
+      title: "API and instant notifications",
+      body: "Create payments, read balances and get a webhook the moment money arrives or leaves.",
+    },
+    {
+      icon: "file-text",
+      title: "Statements your systems read",
+      body: "Download statements as CSV, PDF or ISO 20022 (camt.053), ready for your accounting software.",
+    },
+    {
+      icon: "users",
+      title: "Roles and approvals",
+      body: "Give each person the access they need, and send payments over your limits for a second approval.",
     },
   ],
 };
@@ -577,7 +621,7 @@ export const FAQ = {
     },
     {
       q: "Which currencies and payment routes are planned?",
-      a: "The initial operating focus is GBP, EUR and USD, with planned support for Faster Payments, CHAPS, BACS, SEPA, SEPA Instant and SWIFT. Availability of any specific currency or route will depend on authorisation, onboarding outcome, customer profile, corridor and partner availability.",
+      a: "The initial operating focus is GBP, EUR and USD, with up to 24 currencies planned under one IBAN, and planned support for Faster Payments, CHAPS, BACS, SEPA, SEPA Instant and SWIFT. Availability of any specific currency or route will depend on authorisation, onboarding outcome, customer profile, corridor and partner availability.",
     },
     {
       q: "Are cards part of the proposed service?",

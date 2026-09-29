@@ -5,6 +5,7 @@ import Partners from "./components/Partners.jsx";
 import Accounts from "./components/Accounts.jsx";
 import Explorer from "./components/Explorer.jsx";
 import Currencies from "./components/Currencies.jsx";
+import FinanceTools from "./components/FinanceTools.jsx";
 import Cards from "./components/Cards.jsx";
 import Segments from "./components/Segments.jsx";
 import Plans from "./components/Plans.jsx";
@@ -28,6 +29,7 @@ export default function App() {
         <Accounts />
         <Explorer />
         <Currencies />
+        <FinanceTools />
         <Cards />
         <Segments />
         <Plans />

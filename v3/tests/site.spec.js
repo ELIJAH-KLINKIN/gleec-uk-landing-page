@@ -511,6 +511,19 @@ test("headline reads as one sentence and its first line follows the demo tab", a
   await expect(page.locator(".rot-phrase")).toHaveCount(3);
 });
 
+test("product story: Global Account, Confirmation of Payee, SWIFT fee choice, finance tools", async ({ page }) => {
+  await page.goto("./");
+  const product = page.locator("#product");
+  await expect(product.getByRole("heading", { name: "One IBAN, 24 currencies" })).toHaveCount(1);
+  await expect(product.getByRole("heading", { name: "Confirmation of Payee" })).toHaveCount(1);
+  await expect(product.locator(".hl-tile", { hasText: "SWIFT" }).first()).toContainText("OUR");
+  await expect(page.locator("#currencies h2")).toContainText("24 currencies on one IBAN");
+  const finance = page.locator("#finance");
+  await expect(finance.getByRole("heading", { level: 2 })).toHaveText("Built for the way finance teams work.");
+  await expect(finance.locator(".ctrl-card")).toHaveCount(4);
+  await expect(finance).toContainText("camt.053");
+});
+
 test("highlights gallery: dots and paddles move it; it never moves on its own", async ({ page }, testInfo) => {
   await page.goto("./#product");
   const gallery = page.locator(".hl");
@@ -546,8 +559,9 @@ test("highlights gallery: dots and paddles move it; it never moves on its own", 
   }
 
   // Scrolling the gallery directly (swipe / trackpad) updates the page control.
+  const last = await gallery.locator(".hl-tile").count();
   await gallery.locator(".hl-scroller").evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: "instant" }));
-  await expect(current).toHaveAttribute("aria-label", /highlight 7:/);
+  await expect(current).toHaveAttribute("aria-label", new RegExp(`highlight ${last}:`));
 });
 
 test("cards: segmented control switches card (click + arrow keys)", async ({ page }, testInfo) => {

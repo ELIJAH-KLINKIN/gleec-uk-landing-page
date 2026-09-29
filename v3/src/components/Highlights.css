@@ -105,6 +105,10 @@
   background: var(--blue-fill);
   color: var(--blue);
 }
+.hl-notice-icon.green {
+  background: var(--green-fill);
+  color: var(--green);
+}
 .hl-notice-details {
   display: grid;
   gap: 0;
