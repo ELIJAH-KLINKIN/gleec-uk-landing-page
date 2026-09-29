@@ -25,7 +25,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--s-3) var(--s-6);
+  gap: var(--s-3);
 }
 
 /* ---------- Product demo ---------- */

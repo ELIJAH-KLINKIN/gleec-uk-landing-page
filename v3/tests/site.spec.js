@@ -461,12 +461,15 @@ test("mobile menu opens, navigates, locks scroll and closes", async ({ page }, t
   await expect(menu).toBeHidden();
 });
 
-test("hero has a single action: Join the Waitlist", async ({ page }) => {
+test("hero has two actions: Join the Waitlist and Talk to a Human", async ({ page }) => {
   await page.goto("./");
   const hero = page.locator(".hero-top");
-  await expect(hero.getByRole("link")).toHaveCount(1);
+  await expect(hero.getByRole("link")).toHaveCount(2);
   await hero.getByRole("link", { name: "Join the Waitlist" }).click();
   await expect(page.locator("#waitlist form")).toBeInViewport();
+  await page.goto("./");
+  await page.locator(".hero-top").getByRole("link", { name: "Talk to a Human" }).click();
+  await expect(page.locator("#talk").getByRole("textbox", { name: "Work email" })).toBeInViewport();
 });
 
 test("headline reads as one sentence and its first line follows the demo tab", async ({ page }) => {

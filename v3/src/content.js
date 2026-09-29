@@ -34,6 +34,7 @@ export const HERO = {
   // What screen readers hear: one stable sentence.
   titleSpoken: "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
   primary: { label: "Join the Waitlist", href: "#waitlist" },
+  secondary: { label: "Talk to a Human", href: "#talk" },
   // Product demo under the headline: one tab per area, auto-advancing every 7 s.
   demoNote: "Product preview. Features shown are illustrative and subject to authorisation.",
   demos: [

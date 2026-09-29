@@ -1,5 +1,5 @@
 // Hero.jsx — a quiet header in the Cursor manner: a modest two-line headline and
-// the single action under it, so the product demo is on screen, and moving, the
+// two actions under it (Join the Waitlist, Talk to a Human), so the product demo is on screen, and moving, the
 // moment the page loads. The headline's first line rotates with the demo tab ("Business
 // accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Global payments" ↔ Payments).
 // A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
@@ -60,6 +60,9 @@ export default function Hero() {
         <div className="hero-actions">
           <a className="btn btn-filled" href={HERO.primary.href}>
             {HERO.primary.label}
+          </a>
+          <a className="btn btn-tinted" href={HERO.secondary.href}>
+            {HERO.secondary.label}
           </a>
         </div>
       </div>
