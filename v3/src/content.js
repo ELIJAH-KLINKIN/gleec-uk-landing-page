@@ -540,8 +540,8 @@ export const WAITLIST = {
   count: (n) => `${n.toLocaleString("en-GB")} ${n === 1 ? "company" : "companies"} on the list`,
   // Joining only means "tell me when onboarding opens"; marketing is a separate, unticked box.
   updates: "Send me product updates",
-  consent:
-    "We’ll use your email only to contact you about onboarding, and to send product updates if you tick the box. The service isn’t available yet and is subject to FCA authorisation and onboarding approval. Registering interest is not an application for a regulated service.",
+  // No privacy paragraph under the form: the footer's Privacy policy link covers it,
+  // and the launch line above keeps the FCA qualifier.
 
   // Step 2 — optional details (sales uses these to prepare a setup).
   joinedTitle: "You’re on the list.",

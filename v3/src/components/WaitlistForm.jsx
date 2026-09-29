@@ -323,7 +323,7 @@ export default function WaitlistForm() {
             if (emailError) setEmailError(validateEmail(e.target.value) || "");
           }}
           aria-invalid={emailError ? true : undefined}
-          aria-describedby={[emailError ? id("email-err") : null, id("consent")].filter(Boolean).join(" ")}
+          aria-describedby={emailError ? id("email-err") : undefined}
         />
         <button type="submit" className="btn btn-filled wl-join-btn" disabled={busy || !email.trim()}>
           {busy ? (
@@ -372,9 +372,6 @@ export default function WaitlistForm() {
           </>
         ) : null}
         <span>{WAITLIST.launch}</span>
-      </p>
-      <p className="footnote wl-consent-note" id={id("consent")}>
-        {WAITLIST.consent} See our <a href="/privacy/">Privacy policy</a>.
       </p>
     </form>
   );
