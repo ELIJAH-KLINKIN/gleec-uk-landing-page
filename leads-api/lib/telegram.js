@@ -37,8 +37,10 @@ const TITLES = {
 export function buildTelegramParts(lead, { kind = 'created' } = {}) {
   // Name, company and country are optional since the email-first form: absent → no line.
   const parts = [staticLine(TITLES[kind] ?? TITLES.created), staticLine('')];
-  if (lead.fullName) parts.push(part(lead.fullName, bullet));
+  const name = lead.fullName || [lead.firstName, lead.lastName].filter(Boolean).join(' ');
+  if (name) parts.push(part(name, bullet));
   if (lead.company) parts.push(part(lead.company, bullet));
+  if (lead.companyWebsite) parts.push(part(lead.companyWebsite, bullet));
   if (lead.country) parts.push(part(lead.country, bullet));
   parts.push(part(lead.email, bullet, { fixed: true }));
   if (lead.phone) parts.push(part(lead.phone, bullet));

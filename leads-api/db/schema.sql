@@ -44,7 +44,11 @@ alter table leads
   alter column company drop not null,
   alter column country drop not null,
   add column if not exists details_at timestamptz,
-  add column if not exists details_ip_hash text;
+  add column if not exists details_ip_hash text,
+  -- The details step asks for first and last name and the company website (v3).
+  add column if not exists first_name text,
+  add column if not exists last_name text,
+  add column if not exists company_website text;
 
 -- Duplicate check: same email within 24h.
 create index if not exists leads_email_created_at_idx on leads (email, created_at desc);

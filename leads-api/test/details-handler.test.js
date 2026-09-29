@@ -117,7 +117,10 @@ describe('POST /api/leads/details — success', () => {
     assert.equal(repo.rows[0].fullName, null);
     assert.deepEqual(repo.calls.details[0].details, {
       fullName: null,
+      firstName: null,
+      lastName: null,
       company: 'Analytical Engines',
+      companyWebsite: null,
       country: null,
       phone: null,
       businessType: null,
@@ -125,6 +128,35 @@ describe('POST /api/leads/details — success', () => {
       monthlyVolume: null,
       message: null,
     });
+  });
+
+  it('accepts first and last name, country and a company website (normalised)', async () => {
+    const { handler, repo } = setup();
+    const { status } = await post(handler, {
+      body: {
+        id: LEAD_ID,
+        token: tokenFor(LEAD_ID),
+        firstName: ' Ada ',
+        lastName: 'Lovelace',
+        country: 'Germany',
+        companyWebsite: 'analytical.example/',
+      },
+    });
+    assert.equal(status, 200);
+    const { details } = repo.calls.details[0];
+    assert.equal(details.firstName, 'Ada');
+    assert.equal(details.lastName, 'Lovelace');
+    assert.equal(details.country, 'Germany');
+    assert.equal(details.companyWebsite, 'https://analytical.example');
+  });
+
+  it('rejects a website that is not a web address', async () => {
+    const { handler } = setup();
+    const { status, body } = await post(handler, {
+      body: { id: LEAD_ID, token: tokenFor(LEAD_ID), firstName: 'Ada', companyWebsite: 'not a site' },
+    });
+    assert.equal(status, 400);
+    assert.equal(body.fields.companyWebsite, MESSAGES.companyWebsite);
   });
 
   it('accepts the id in upper case (and uses the canonical form)', async () => {
@@ -178,8 +210,11 @@ describe('POST /api/leads/details — notifications', () => {
       createdAt: new Date(NOW - 60_000).toISOString(),
       status: 'new',
       fullName: 'Ada Lovelace',
+      firstName: null,
+      lastName: null,
       email: 'ada@example.co.uk',
       company: 'Analytical Engines Ltd',
+      companyWebsite: null,
       country: 'United Kingdom',
       phone: '+44 20 7946 0958',
       businessType: 'international',

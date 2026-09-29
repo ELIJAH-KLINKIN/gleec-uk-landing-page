@@ -104,7 +104,9 @@ Version 1 sends the full form in the same request (unchanged):
 | `startedAt` | required number: ms epoch when the form was rendered |
 | `website` | honeypot: must be empty |
 | `fullName` | optional, 2–120 chars after trimming |
+| `firstName`, `lastName` | optional, 1–60 chars each (the v3 details step sends these instead of `fullName`) |
 | `company` | optional, 1–160 chars |
+| `companyWebsite` | optional, a web address; `acme.com` is stored as `https://acme.com` |
 | `country` | optional, 2–80 chars (country of incorporation) |
 | `phone` | optional, ≤ 40 chars, only digits, spaces and `+ ( ) - .`, at least 5 digits |
 | `businessType` | optional: `local` \| `international` \| `group` \| `other` |
@@ -225,8 +227,8 @@ The IP is stored only as `HMAC-SHA256(IP_HASH_SALT, ip)` (first `x-forwarded-for
 
 ### CRM webhook
 
-`POST CRM_WEBHOOK_URL` with the lead as JSON (`id, createdAt, status, fullName, email, company,
-country, phone, businessType, currencies, monthlyVolume, message, consent, consentAt, source`;
+`POST CRM_WEBHOOK_URL` with the lead as JSON (`id, createdAt, status, fullName, firstName, lastName, email,
+company, companyWebsite, country, phone, businessType, currencies, monthlyVolume, message, consent, consentAt, source`;
 fields that were not given are `null`, `currencies` is `[]`) and headers:
 
 ```

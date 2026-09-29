@@ -39,10 +39,12 @@ export const SQL = {
     ), inserted AS (
       INSERT INTO leads (
         full_name, email, company, country, phone, business_type, currencies,
-        monthly_volume, message, consent, consent_at, source, ip_hash, user_agent
+        monthly_volume, message, consent, consent_at, source, ip_hash, user_agent,
+        first_name, last_name, company_website
       )
       SELECT $1::text, $2::text, $3::text, $4::text, $5::text, $6::text, $7::text[],
-             $8::text, $9::text, $10::boolean, $11::timestamptz, $12::jsonb, $13::text, $14::text
+             $8::text, $9::text, $10::boolean, $11::timestamptz, $12::jsonb, $13::text, $14::text,
+             $16::text, $17::text, $18::text
       WHERE NOT EXISTS (SELECT 1 FROM existing)
       RETURNING id, created_at
     )
@@ -79,11 +81,15 @@ export const SQL = {
           currencies      = CASE WHEN cardinality(currencies) = 0 THEN $7::text[] ELSE currencies END,
           monthly_volume  = COALESCE(NULLIF(monthly_volume, ''), $8::text, monthly_volume),
           message         = COALESCE(NULLIF(message, ''), $9::text, message),
+          first_name      = COALESCE(NULLIF(first_name, ''), $11::text, first_name),
+          last_name       = COALESCE(NULLIF(last_name, ''), $12::text, last_name),
+          company_website = COALESCE(NULLIF(company_website, ''), $13::text, company_website),
           details_ip_hash = $10::text,
           details_at      = now()
       WHERE id = $1::uuid AND details_at IS NULL
       RETURNING id, created_at, status, full_name, email, company, country, phone, business_type,
-                currencies, monthly_volume, message, consent, consent_at, source, details_at
+                currencies, monthly_volume, message, consent, consent_at, source, details_at,
+                first_name, last_name, company_website
     )
     SELECT CASE
              WHEN EXISTS (SELECT 1 FROM updated) THEN 'updated'
@@ -110,8 +116,11 @@ function toRecord(row) {
     createdAt: toIso(row.created_at),
     status: row.status,
     fullName: row.full_name ?? null,
+    firstName: row.first_name ?? null,
+    lastName: row.last_name ?? null,
     email: row.email,
     company: row.company ?? null,
+    companyWebsite: row.company_website ?? null,
     country: row.country ?? null,
     phone: row.phone ?? null,
     businessType: row.business_type ?? null,
@@ -150,6 +159,9 @@ export function createLeadRepo(db) {
         lead.ipHash ?? null,
         lead.userAgent ?? null,
         toIso(duplicateSince),
+        lead.firstName ?? null,
+        lead.lastName ?? null,
+        lead.companyWebsite ?? null,
       ];
       const results = await db.transaction(
         [
@@ -195,6 +207,9 @@ export function createLeadRepo(db) {
         details.monthlyVolume ?? null,
         details.message ?? null,
         ipHash,
+        details.firstName ?? null,
+        details.lastName ?? null,
+        details.companyWebsite ?? null,
       ]);
       const row = rows[0];
       if (!row || !row.outcome) throw new Error('details update returned no row');

@@ -127,6 +127,34 @@ describe('formatTelegramMessage', () => {
     assertEntitiesWellFormed(html);
   });
 
+  it('details from the v3 form: first + last name as one bullet, then company and website', () => {
+    const record = {
+      id: LEAD_ID,
+      email: 'ada@example.co.uk',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      company: 'Analytical Engines Ltd',
+      companyWebsite: 'https://analytical.example',
+      country: 'Germany',
+      currencies: [],
+      source: {},
+    };
+    assert.equal(
+      formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' }),
+      [
+        '🇬🇧 <b>UK Business Banking Lead · Details</b>',
+        '',
+        '• Ada Lovelace',
+        '• Analytical Engines Ltd',
+        '• https://analytical.example',
+        '• Germany',
+        '• ada@example.co.uk',
+        '',
+        `Lead ID: ${LEAD_ID}`,
+      ].join('\n'),
+    );
+  });
+
   it('details message escapes input and stays within the limit too', () => {
     const record = leadRecord({ fullName: '<b>x</b>', company: '&'.repeat(160), message: '&<>"'.repeat(500) });
     const html = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'updated' });

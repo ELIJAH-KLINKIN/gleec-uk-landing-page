@@ -17,6 +17,9 @@ const MIN_PHONE_DIGITS = 5;
 export const MESSAGES = {
   body: 'Request body must be a JSON object.',
   fullName: 'Please enter your full name (2–120 characters).',
+  firstName: 'Please enter your first name (up to 60 characters).',
+  lastName: 'Please enter your last name (up to 60 characters).',
+  companyWebsite: 'Please enter a valid website, e.g. acme.com.',
   email: 'Please enter a valid email address.',
   company: 'Please enter your company name (up to 160 characters).',
   country: 'Please enter your country of incorporation (2–80 characters).',
@@ -35,7 +38,10 @@ export const MESSAGES = {
 // Fields that POST /api/leads/details may add (all optional on POST /api/leads too).
 export const DETAIL_FIELDS = [
   'fullName',
+  'firstName',
+  'lastName',
   'company',
+  'companyWebsite',
   'country',
   'phone',
   'businessType',
@@ -144,7 +150,10 @@ function createChecker(out, fields) {
 /** The optional company details, with the same rules on both endpoints. */
 function checkDetailFields(body, check) {
   check('fullName', optionalText(body.fullName, 2, 120), MESSAGES.fullName);
+  check('firstName', optionalText(body.firstName, 1, 60), MESSAGES.firstName);
+  check('lastName', optionalText(body.lastName, 1, 60), MESSAGES.lastName);
   check('company', optionalText(body.company, 1, 160), MESSAGES.company);
+  check('companyWebsite', normalizeWebsite(body.companyWebsite), MESSAGES.companyWebsite);
   check('country', optionalText(body.country, 2, 80), MESSAGES.country);
   check('phone', validatePhone(body.phone));
   check('businessType', optionalEnum(body.businessType, BUSINESS_TYPES), MESSAGES.businessType);

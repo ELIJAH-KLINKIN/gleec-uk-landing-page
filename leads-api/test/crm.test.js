@@ -65,7 +65,8 @@ describe('buildCrmPayload', () => {
 
 describe('buildCrmPayload — email-first and updates', () => {
   const KEYS = [
-    'id', 'createdAt', 'status', 'fullName', 'email', 'company', 'country', 'phone', 'businessType',
+    'id', 'createdAt', 'status', 'fullName', 'firstName', 'lastName', 'email', 'company', 'companyWebsite', 'country',
+    'phone', 'businessType',
     'currencies', 'monthlyVolume', 'message', 'consent', 'consentAt', 'source',
   ];
 
@@ -73,7 +74,7 @@ describe('buildCrmPayload — email-first and updates', () => {
     const payload = buildCrmPayload({ id: record.id, createdAt: record.createdAt, email: 'zoe@example.com', consent: true });
     assert.deepEqual(Object.keys(payload), KEYS);
     assert.equal(payload.status, 'new');
-    for (const key of ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message', 'consentAt']) {
+    for (const key of ['fullName', 'firstName', 'lastName', 'company', 'companyWebsite', 'country', 'phone', 'businessType', 'monthlyVolume', 'message', 'consentAt']) {
       assert.equal(payload[key], null, key);
     }
     assert.deepEqual(payload.currencies, []);

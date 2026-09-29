@@ -76,6 +76,9 @@ describe('createLeadRepo', () => {
       'abc',
       'UA',
       '2026-09-25T12:00:00.000Z',
+      null,
+      null,
+      null,
     ]);
   });
 
@@ -141,13 +144,24 @@ describe('createLeadRepo', () => {
       consent_at: new Date('2026-09-26T12:00:00.000Z'),
       source: { page: 'https://example.com/' },
       details_at: new Date('2026-09-26T12:01:00.000Z'),
+      first_name: 'Ada',
+      last_name: 'Lovelace',
+      company_website: 'https://analytical.example',
     };
 
     it('runs one parameterised statement and maps the updated row to a camelCase record', async () => {
       const db = recordingDb({ queryRows: [updatedRow] });
       const result = await createLeadRepo(db).addDetailsOnce(
         ID,
-        { fullName: 'Ada Lovelace', company: 'Analytical Engines Ltd', phone: '+44 20 7946 0958', currencies: ['GBP'] },
+        {
+          fullName: 'Ada Lovelace',
+          firstName: 'Ada',
+          lastName: 'Lovelace',
+          company: 'Analytical Engines Ltd',
+          companyWebsite: 'https://analytical.example',
+          phone: '+44 20 7946 0958',
+          currencies: ['GBP'],
+        },
         { ipHash: 'abc' },
       );
       assert.equal(db.calls.length, 1);
@@ -164,6 +178,9 @@ describe('createLeadRepo', () => {
         null,
         null,
         'abc',
+        'Ada',
+        'Lovelace',
+        'https://analytical.example',
       ]);
       assert.deepEqual(result, {
         outcome: 'updated',
@@ -172,8 +189,11 @@ describe('createLeadRepo', () => {
           createdAt: '2026-09-26T12:00:00.000Z',
           status: 'new',
           fullName: 'Ada Lovelace',
+          firstName: 'Ada',
+          lastName: 'Lovelace',
           email: 'ada@example.co.uk',
           company: 'Analytical Engines Ltd',
+          companyWebsite: 'https://analytical.example',
           country: null,
           phone: '+44 20 7946 0958',
           businessType: null,
@@ -192,7 +212,7 @@ describe('createLeadRepo', () => {
       for (const outcome of ['already_submitted', 'not_found']) {
         const db = recordingDb({ queryRows: [{ outcome, id: null }] });
         assert.deepEqual(await createLeadRepo(db).addDetailsOnce(ID, {}, {}), { outcome });
-        assert.deepEqual(db.calls[0].params, [ID, null, null, null, null, null, [], null, null, null]);
+        assert.deepEqual(db.calls[0].params, [ID, null, null, null, null, null, [], null, null, null, null, null, null]);
       }
     });
 
@@ -240,7 +260,7 @@ describe('splitSqlStatements', () => {
       assert.match(statements[1], new RegExp(`alter column ${column} drop not null`));
     }
     assert.match(statements[1], /add column if not exists details_at timestamptz/);
-    assert.match(statements[1], /add column if not exists details_ip_hash text$/);
+    assert.match(statements[1], /add column if not exists company_website text$/);
     for (const s of statements.slice(2, 6)) assert.match(s, /create index if not exists/);
     // "Talk to a human": hosts, call requests and their indexes (the unique one blocks double booking).
     assert.match(statements[6], /create table if not exists calendar_hosts/);
