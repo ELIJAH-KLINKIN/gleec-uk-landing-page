@@ -165,6 +165,27 @@ describe('POST /api/leads — email-first (v2) and the details token', () => {
     assert.equal(JSON.stringify(log.entries).includes(body.token), false);
   });
 
+  it('"Send me product updates" is a separate opt-in: stored with its time and shown in the ping', async () => {
+    const fetch = createFakeFetch();
+    const { handler, repo } = setup({ env: TELEGRAM_ENV, fetch });
+    await post(handler, { body: emailOnlyBody({ updates: true }) });
+    assert.equal(repo.rows[0].updatesOptIn, true);
+    assert.equal(repo.rows[0].updatesOptInAt, new Date(NOW).toISOString());
+    assert.ok(fetch.calls[0].json.text.includes('\n• Wants product updates\n'));
+  });
+
+  it('without the box ticked there is no opt-in (and anything but true is not an opt-in)', async () => {
+    for (const updates of [undefined, false, 'yes', 1]) {
+      const fetch = createFakeFetch();
+      const { handler, repo } = setup({ env: TELEGRAM_ENV, fetch });
+      const { status } = await post(handler, { body: emailOnlyBody({ updates }) });
+      assert.equal(status, 201);
+      assert.equal(repo.rows[0].updatesOptIn, false, String(updates));
+      assert.equal(repo.rows[0].updatesOptInAt, null);
+      assert.equal(fetch.calls[0].json.text.includes('product updates'), false);
+    }
+  });
+
   it('stores the first ping\'s chat and message id so the details can edit it', async () => {
     const fetch = createFakeFetch(() => Response.json({ ok: true, result: { message_id: 77 } }));
     const { handler, repo } = setup({ env: TELEGRAM_ENV, fetch });

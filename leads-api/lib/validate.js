@@ -179,6 +179,8 @@ export function validateLead(body) {
 
   if (body.consent === true) lead.consent = true;
   else fields.consent = MESSAGES.consent;
+  // "Send me product updates": a separate, unticked box. Only an explicit true opts in.
+  lead.updatesOptIn = body.updates === true;
 
   if (typeof body.startedAt === 'number' && Number.isFinite(body.startedAt)) lead.startedAt = body.startedAt;
   else fields.startedAt = MESSAGES.startedAt;

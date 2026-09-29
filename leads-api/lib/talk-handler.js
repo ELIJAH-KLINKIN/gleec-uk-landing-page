@@ -35,7 +35,7 @@ const STATE_MAX_AGE_MS = 15 * MINUTE;
 
 // Shown to the guest in the calendar invitation. Keep in step with the website's status line.
 export const EVENT_STATUS_NOTE =
-  'GLEEC Business is a brand of Gleec Pay Ltd, which is preparing an application to the Financial Conduct ' +
+  'Gleec Business is a brand of Gleec Pay Ltd, which is preparing an application to the Financial Conduct ' +
   'Authority to become an Authorised Electronic Money Institution. Gleec Pay Ltd is not currently authorised ' +
   'by the FCA and does not currently provide regulated e-money or payment services.';
 
@@ -288,9 +288,9 @@ export function createTalkHandler({
             calendarId: host.calendarId,
             requestId: id,
             event: {
-              summary: `GLEEC Business intro call · ${r.firstName} ${r.lastName}${r.company ? ` (${r.company})` : ''}`,
+              summary: `Gleec Business intro call · ${r.firstName} ${r.lastName}${r.company ? ` (${r.company})` : ''}`,
               description: [
-                'Introductory call booked on the GLEEC Business website.',
+                'Introductory call booked on the Gleec Business website.',
                 '',
                 `Name: ${r.firstName} ${r.lastName}`,
                 `Email: ${r.email}`,
@@ -401,7 +401,7 @@ export function createTalkHandler({
       });
       accessCache.delete(email);
       log.info('talk.host_connected', { email });
-      return html(200, 'Calendar connected', `${email} will now receive calls booked on the GLEEC Business website. You can close this page.`);
+      return html(200, 'Calendar connected', `${email} will now receive calls booked on the Gleec Business website. You can close this page.`);
     } catch (error) {
       log.error('talk.connect_failed', { error: describeError(error) });
       return html(500, 'Not connected', 'Something went wrong. Please try again.');

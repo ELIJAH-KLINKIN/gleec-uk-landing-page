@@ -1,4 +1,4 @@
-# GLEEC Business — leads API
+# Gleec Business — leads API
 
 Receives "Join waitlist" submissions from the landing page and:
 
@@ -101,6 +101,7 @@ Version 1 sends the full form in the same request (unchanged):
 |---|---|
 | `email` | required, valid, ≤ 254 chars; stored lower-cased |
 | `consent` | required, must be `true` |
+| `updates` | optional: `true` only when the visitor ticked "Send me product updates" (stored as `updates_opt_in` + `updates_opt_in_at`); anything else = no |
 | `startedAt` | required number: ms epoch when the form was rendered |
 | `website` | honeypot: must be empty |
 | `fullName` | optional, 2–120 chars after trimming |
@@ -230,7 +231,7 @@ The IP is stored only as `HMAC-SHA256(IP_HASH_SALT, ip)` (first `x-forwarded-for
 ### CRM webhook
 
 `POST CRM_WEBHOOK_URL` with the lead as JSON (`id, createdAt, status, fullName, firstName, lastName, email,
-company, companyWebsite, country, phone, businessType, currencies, monthlyVolume, message, consent, consentAt, source`;
+company, companyWebsite, country, phone, businessType, currencies, monthlyVolume, message, consent, consentAt, updatesOptIn, source`;
 fields that were not given are `null`, `currencies` is `[]`) and headers:
 
 ```

@@ -43,6 +43,7 @@ export function buildTelegramParts(lead, { kind = 'created' } = {}) {
   if (lead.companyWebsite) parts.push(part(lead.companyWebsite, bullet));
   if (lead.country) parts.push(part(lead.country, bullet));
   parts.push(part(lead.email, bullet, { fixed: true }));
+  if (lead.updatesOptIn) parts.push(staticLine('• Wants product updates'));
   if (lead.phone) parts.push(part(lead.phone, bullet));
   if (lead.businessType) parts.push(part(BUSINESS_TYPE_LABELS[lead.businessType] ?? lead.businessType, bullet));
   if (lead.currencies && lead.currencies.length > 0) parts.push(part(lead.currencies.join(', '), bullet));

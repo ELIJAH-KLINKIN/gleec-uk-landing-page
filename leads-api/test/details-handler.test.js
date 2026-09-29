@@ -223,6 +223,7 @@ describe('POST /api/leads/details — notifications', () => {
       message: 'We need multi-currency accounts.',
       consent: true,
       consentAt: new Date(NOW - 60_000).toISOString(),
+      updatesOptIn: false,
       source: { page: 'https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/' },
       detailsAt: new Date(NOW).toISOString(),
     });

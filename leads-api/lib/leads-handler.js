@@ -81,6 +81,7 @@ export function createLeadsHandler({
       const lead = {
         ...validation.lead,
         consentAt: new Date(receivedAt).toISOString(),
+        updatesOptInAt: validation.lead.updatesOptIn ? new Date(receivedAt).toISOString() : null,
         ipHash,
         userAgent: userAgent(request.headers),
       };

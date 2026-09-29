@@ -79,6 +79,8 @@ describe('createLeadRepo', () => {
       null,
       null,
       null,
+      false,
+      null,
     ]);
   });
 
@@ -218,6 +220,7 @@ describe('createLeadRepo', () => {
           message: null,
           consent: true,
           consentAt: '2026-09-26T12:00:00.000Z',
+          updatesOptIn: false,
           source: { page: 'https://example.com/' },
           detailsAt: '2026-09-26T12:01:00.000Z',
           telegramChatId: '-1001234',
@@ -278,7 +281,9 @@ describe('splitSqlStatements', () => {
       assert.match(statements[1], new RegExp(`alter column ${column} drop not null`));
     }
     assert.match(statements[1], /add column if not exists details_at timestamptz/);
-    assert.match(statements[1], /add column if not exists telegram_message_id bigint$/);
+    assert.match(statements[1], /add column if not exists telegram_message_id bigint,/);
+    assert.match(statements[1], /add column if not exists updates_opt_in boolean not null default false,/);
+    assert.match(statements[1], /add column if not exists updates_opt_in_at timestamptz$/);
     for (const s of statements.slice(2, 6)) assert.match(s, /create index if not exists/);
     // "Talk to a human": hosts, call requests and their indexes (the unique one blocks double booking).
     assert.match(statements[6], /create table if not exists calendar_hosts/);

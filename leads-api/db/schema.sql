@@ -51,7 +51,10 @@ alter table leads
   add column if not exists company_website text,
   -- The first Telegram ping, so the details step can edit it instead of posting again.
   add column if not exists telegram_chat_id text,
-  add column if not exists telegram_message_id bigint;
+  add column if not exists telegram_message_id bigint,
+  -- "Send me product updates": separate, unticked opt-in (consent for marketing), and when.
+  add column if not exists updates_opt_in boolean not null default false,
+  add column if not exists updates_opt_in_at timestamptz;
 
 -- Duplicate check: same email within 24h.
 create index if not exists leads_email_created_at_idx on leads (email, created_at desc);

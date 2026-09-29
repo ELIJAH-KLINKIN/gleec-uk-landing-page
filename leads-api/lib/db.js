@@ -40,11 +40,11 @@ export const SQL = {
       INSERT INTO leads (
         full_name, email, company, country, phone, business_type, currencies,
         monthly_volume, message, consent, consent_at, source, ip_hash, user_agent,
-        first_name, last_name, company_website
+        first_name, last_name, company_website, updates_opt_in, updates_opt_in_at
       )
       SELECT $1::text, $2::text, $3::text, $4::text, $5::text, $6::text, $7::text[],
              $8::text, $9::text, $10::boolean, $11::timestamptz, $12::jsonb, $13::text, $14::text,
-             $16::text, $17::text, $18::text
+             $16::text, $17::text, $18::text, $19::boolean, $20::timestamptz
       WHERE NOT EXISTS (SELECT 1 FROM existing)
       RETURNING id, created_at
     )
@@ -92,7 +92,8 @@ export const SQL = {
       WHERE id = $1::uuid AND details_at IS NULL
       RETURNING id, created_at, status, full_name, email, company, country, phone, business_type,
                 currencies, monthly_volume, message, consent, consent_at, source, details_at,
-                first_name, last_name, company_website, telegram_chat_id, telegram_message_id
+                first_name, last_name, company_website, telegram_chat_id, telegram_message_id,
+                updates_opt_in
     )
     SELECT CASE
              WHEN EXISTS (SELECT 1 FROM updated) THEN 'updated'
@@ -132,6 +133,7 @@ function toRecord(row) {
     message: row.message ?? null,
     consent: row.consent === true,
     consentAt: toIso(row.consent_at),
+    updatesOptIn: row.updates_opt_in === true,
     source: row.source ?? {},
     detailsAt: toIso(row.details_at),
     telegramChatId: row.telegram_chat_id ?? null,
@@ -167,6 +169,8 @@ export function createLeadRepo(db) {
         lead.firstName ?? null,
         lead.lastName ?? null,
         lead.companyWebsite ?? null,
+        lead.updatesOptIn === true,
+        toIso(lead.updatesOptInAt),
       ];
       const results = await db.transaction(
         [

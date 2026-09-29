@@ -34,6 +34,7 @@ export function buildCrmPayload(record) {
     message: record.message ?? null,
     consent: record.consent === true,
     consentAt: record.consentAt ?? null,
+    updatesOptIn: record.updatesOptIn === true,
     source: record.source ?? {},
   };
 }

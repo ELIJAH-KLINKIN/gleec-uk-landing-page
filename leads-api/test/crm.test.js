@@ -67,7 +67,7 @@ describe('buildCrmPayload — email-first and updates', () => {
   const KEYS = [
     'id', 'createdAt', 'status', 'fullName', 'firstName', 'lastName', 'email', 'company', 'companyWebsite', 'country',
     'phone', 'businessType',
-    'currencies', 'monthlyVolume', 'message', 'consent', 'consentAt', 'source',
+    'currencies', 'monthlyVolume', 'message', 'consent', 'consentAt', 'updatesOptIn', 'source',
   ];
 
   it('keeps the same shape for an email-only lead, missing fields null', () => {
