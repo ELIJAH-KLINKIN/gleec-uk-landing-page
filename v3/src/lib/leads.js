@@ -20,6 +20,15 @@ export function validateEmail(email) {
 // Step two: first and last name, then optional country, company, website and a note.
 export { validateContactDetails as validateDetails } from "./contact.js";
 
+// What each API outcome means to a visitor (shared by every waitlist form).
+export const LEAD_ERROR_MESSAGES = {
+  rate_limited: "Too many attempts from this connection. Wait a few minutes, then try again.",
+  network: "Unable to reach the server. Check your connection and try again.",
+  server: "Unable to send right now. Try again in a moment.",
+  not_configured: "Waitlist sign-ups aren’t open on this preview yet.",
+  validation: "Check the highlighted fields.",
+};
+
 export class LeadError extends Error {
   constructor(kind, fields) {
     super(kind);

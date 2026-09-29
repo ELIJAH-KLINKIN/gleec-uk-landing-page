@@ -8,6 +8,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { WAITLIST } from "../content.js";
 import {
+  LEAD_ERROR_MESSAGES as SERVER_MESSAGES,
   LeadError,
   fetchWaitlistCount,
   joinWaitlist,
@@ -15,7 +16,7 @@ import {
   validateDetails,
   validateEmail,
 } from "../lib/leads.js";
-import { PREFILL_EVENT } from "../lib/prefill.js";
+import { JOINED_EVENT, PREFILL_EVENT } from "../lib/prefill.js";
 import CountrySelect from "./ui/CountrySelect.jsx";
 import Icon from "./ui/Icon.jsx";
 import "./WaitlistForm.css";
@@ -34,14 +35,6 @@ const EMPTY_DETAILS = {
   businessType: "", // set by a segment CTA, never shown
 };
 
-const SERVER_MESSAGES = {
-  rate_limited: "Too many attempts from this connection. Wait a few minutes, then try again.",
-  network: "Unable to reach the server. Check your connection and try again.",
-  server: "Unable to send right now. Try again in a moment.",
-  not_configured: "Waitlist sign-ups aren’t open on this preview yet.",
-  validation: "Check the highlighted fields.",
-};
-
 export default function WaitlistForm() {
   const uid = useId();
   const id = (name) => `${uid}-${name}`;
@@ -49,6 +42,7 @@ export default function WaitlistForm() {
   const statusRef = useRef(null);
   const emailRef = useRef(null);
   const detailsRef = useRef(null);
+  const fromHero = useRef(false); // joined in the hero: the hero glides here, don't jump
 
   const [step, setStep] = useState("join"); // join | details | done
   const [skipped, setSkipped] = useState(false);
@@ -72,16 +66,29 @@ export default function WaitlistForm() {
       const businessType = e.detail?.businessType;
       if (businessType) setDetails((d) => ({ ...d, businessType }));
     };
+    // Joined from the hero pill: carry on here with the optional details.
+    const onJoined = (e) => {
+      const { id, token, email: joinedEmail } = e.detail || {};
+      if (!id) return;
+      fromHero.current = true;
+      setEmail(joinedEmail || "");
+      setLead({ id, token });
+      setSkipped(!token);
+      setStep(token ? "details" : "done");
+    };
     window.addEventListener(PREFILL_EVENT, onPrefill);
+    window.addEventListener(JOINED_EVENT, onJoined);
     return () => {
       alive = false;
       window.removeEventListener(PREFILL_EVENT, onPrefill);
+      window.removeEventListener(JOINED_EVENT, onJoined);
     };
   }, []);
 
   // Move focus to the new content when the step changes (not on first render).
   useEffect(() => {
-    if (step !== "join") statusRef.current?.focus();
+    if (step !== "join") statusRef.current?.focus({ preventScroll: fromHero.current });
+    fromHero.current = false;
   }, [step]);
 
   const failWith = (err) => {

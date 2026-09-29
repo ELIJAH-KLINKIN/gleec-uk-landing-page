@@ -33,8 +33,14 @@ export const HERO = {
   titleRest: "for companies that don’t fit the default box.",
   // What screen readers hear: one stable sentence.
   titleSpoken: "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
+  // The hero's email pill (field + button in one) and the link to the product demo.
   primary: { label: "Join the Waitlist", href: "#waitlist" },
-  secondary: { label: "Talk to a Human", href: "#talk" },
+  emailLabel: "Work email",
+  emailPlaceholder: "Work email",
+  consent: "We’ll use your email only to contact you about onboarding.",
+  joined: "You’re on the list.",
+  // Set VITE_DEMO_URL to show "See the demo"; without it the link is hidden.
+  demo: { label: "See the demo", href: import.meta.env.VITE_DEMO_URL || "" },
   // Product demo under the headline: one tab per area, auto-advancing every 7 s.
   demoNote: "Product preview. Features shown are illustrative and subject to authorisation.",
   demos: [

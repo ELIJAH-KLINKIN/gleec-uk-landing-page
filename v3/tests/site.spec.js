@@ -461,15 +461,40 @@ test("mobile menu opens, navigates, locks scroll and closes", async ({ page }, t
   await expect(menu).toBeHidden();
 });
 
-test("hero has two actions: Join the Waitlist and Talk to a Human", async ({ page }) => {
+test("hero: the email pill joins the waitlist and carries on at the details step", async ({ page }) => {
+  let body;
+  await page.route(LEADS_API, async (route) => {
+    body = route.request().postDataJSON();
+    await route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' });
+  });
   await page.goto("./");
   const hero = page.locator(".hero-top");
-  await expect(hero.getByRole("link")).toHaveCount(2);
-  await hero.getByRole("link", { name: "Join the Waitlist" }).click();
-  await expect(page.locator("#waitlist form")).toBeInViewport();
+  await expect(hero.getByRole("link", { name: "Talk to a Human" })).toHaveCount(0);
+  await expect(hero.getByRole("link", { name: /See the demo/ })).toHaveAttribute("href", "https://demo.test/");
+  await expect(hero.getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
+  // The pill fits the screen (the page clips sideways overflow, so measure it).
+  const pill = await hero.locator(".wl-pill").boundingBox();
+  expect(pill.x + pill.width).toBeLessThanOrEqual(page.viewportSize().width);
+  await hero.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await hero.getByRole("button", { name: "Join the Waitlist" }).click();
+  const details = page.locator("#waitlist").getByRole("heading", { name: "Need a tailored setup?" });
+  await expect(details).toBeVisible();
+  await expect(details).toBeInViewport();
+  expect(body).toMatchObject({ email: "ada@example.co.uk", consent: true, updates: false });
+});
+
+test("hero: a bad email is explained and nothing is sent", async ({ page }) => {
+  let called = false;
+  await page.route(LEADS_API, (route) => {
+    called = true;
+    return route.abort();
+  });
   await page.goto("./");
-  await page.locator(".hero-top").getByRole("link", { name: "Talk to a Human" }).click();
-  await expect(page.locator("#talk").getByRole("textbox", { name: "Work email" })).toBeInViewport();
+  const hero = page.locator(".hero-top");
+  await hero.getByRole("textbox", { name: "Work email" }).fill("not-an-email");
+  await hero.getByRole("button", { name: "Join the Waitlist" }).click();
+  await expect(hero.getByText("Enter an email address like name@company.com.")).toBeVisible();
+  expect(called).toBe(false);
 });
 
 test("headline reads as one sentence and its first line follows the demo tab", async ({ page }) => {

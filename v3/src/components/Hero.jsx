@@ -1,5 +1,5 @@
-// Hero.jsx — a quiet header in the Cursor manner: a modest two-line headline and
-// two actions under it (Join the Waitlist, Talk to a Human), so the product demo is on screen, and moving, the
+// Hero.jsx — a quiet header in the Cursor manner: a modest two-line headline, the
+// email pill (field + Join the Waitlist, as on ramp.com) and "See the demo" under it, so the product demo is on screen, and moving, the
 // moment the page loads. The headline's first line rotates with the demo tab ("Business
 // accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Global payments" ↔ Payments).
 // A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
@@ -11,6 +11,7 @@ import { useRef, useState } from "react";
 import { DISCLAIMER_SHORT, HERO } from "../content.js";
 import { DEMO_MEDIA, DEMO_SIZE, DEMO_SIZE_MOBILE } from "../lib/demoMedia.js";
 import { useAutoAdvance } from "../lib/useAutoAdvance.js";
+import HeroJoin from "./HeroJoin.jsx";
 import RotatingPhrase from "./RotatingPhrase.jsx";
 import DemoScreen from "./DemoScreen.jsx";
 import "./Hero.css";
@@ -57,14 +58,7 @@ export default function Hero() {
           <RotatingPhrase phrases={demos.map((d) => d.phrase)} index={active} />
           <span aria-hidden="true">{HERO.titleRest}</span>
         </h1>
-        <div className="hero-actions">
-          <a className="btn btn-filled" href={HERO.primary.href}>
-            {HERO.primary.label}
-          </a>
-          <a className="btn btn-tinted" href={HERO.secondary.href}>
-            {HERO.secondary.label}
-          </a>
-        </div>
+        <HeroJoin />
       </div>
 
       <div className="container-wide demo" ref={ref} {...pauseProps}>

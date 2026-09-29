@@ -9,6 +9,7 @@
 
 .hero-top {
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* the pill may never widen the column */
   justify-items: start;
   gap: var(--s-6);
 }
@@ -21,11 +22,31 @@
   color: var(--label);
   text-wrap: balance;
 }
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+/* The email pill: field + Join the Waitlist in one (the Ramp pattern). */
+.hero-join {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
   gap: var(--s-3);
+  width: 100%;
+}
+.hero-join form {
+  width: 100%;
+  max-width: 480px;
+}
+.hero-join .wl-pill {
+  box-shadow: none;
+}
+.hero-join-note {
+  color: var(--label-2);
+}
+.hero-join-check {
+  width: 44px;
+  height: 44px;
+  margin-right: 2px;
+}
+.hero-demo {
+  margin-top: var(--s-1);
 }
 
 /* ---------- Product demo ---------- */
@@ -207,12 +228,8 @@
   .hero-top {
     gap: var(--s-5);
   }
-  /* One full-width action on phones. */
-  .hero-actions {
-    justify-self: stretch;
-  }
-  .hero-actions .btn {
-    flex: 1 1 auto;
+  .hero-join form {
+    max-width: none;
   }
   .demo {
     margin-top: var(--s-6);
