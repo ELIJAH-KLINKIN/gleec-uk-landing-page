@@ -210,6 +210,20 @@ describe('sendTelegramMessage', () => {
     assert.deepEqual(result, { ok: false, error: '400 Bad Request: chat not found' });
   });
 
+  it('resends once to the new id when the group became a supergroup', async () => {
+    const fetch = createFakeFetch((url, init) =>
+      JSON.parse(init.body).chat_id === '-4001'
+        ? Response.json(
+            { ok: false, error_code: 400, description: 'Bad Request: group chat was upgraded to a supergroup chat', parameters: { migrate_to_chat_id: -1004001 } },
+            { status: 400 },
+          )
+        : Response.json({ ok: true, result: {} }),
+    );
+    const result = await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-4001', text: 'hi', fetch });
+    assert.deepEqual(result, { ok: true, migratedTo: '-1004001' });
+    assert.deepEqual(fetch.calls.map((c) => c.json.chat_id), ['-4001', '-1004001']);
+  });
+
   it('reports non-JSON error pages by status', async () => {
     const fetch = createFakeFetch(() => new Response('<html>Bad gateway</html>', { status: 502 }));
     const result = await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-100', text: 'hi', fetch });

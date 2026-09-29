@@ -59,6 +59,7 @@ export async function notifyTalk({ id, text, config, repo, fetch, log, timeoutMs
     const result = await sendTelegramMessage({ ...config.telegram, text, fetch, timeoutMs });
     status = result.ok ? 'sent' : `failed: ${result.error}`;
     if (!result.ok) log.warn('talk.telegram_failed', { id, error: result.error });
+    if (result.migratedTo) log.warn('telegram.chat_moved', { id, setTelegramChatIdTo: result.migratedTo });
   }
   try {
     await repo.recordTelegram(id, status);

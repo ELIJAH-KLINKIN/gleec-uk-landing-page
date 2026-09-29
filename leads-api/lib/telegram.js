@@ -96,10 +96,11 @@ function redact(text, token) {
 }
 
 /**
- * Sends one message. Never throws.
- * @returns {Promise<{ ok: true } | { ok: false, error: string }>}
+ * Sends one message. Never throws. If the group was upgraded to a supergroup (its chat id
+ * changes), Telegram names the new id and the message is resent there once.
+ * @returns {Promise<{ ok: true, migratedTo?: string } | { ok: false, error: string }>}
  */
-export async function sendTelegramMessage({ token, chatId, threadId = null, text, fetch, timeoutMs = NOTIFY_TIMEOUT_MS }) {
+export async function sendTelegramMessage({ token, chatId, threadId = null, text, fetch, timeoutMs = NOTIFY_TIMEOUT_MS, retried = false }) {
   const payload = {
     chat_id: chatId,
     text,
@@ -126,6 +127,11 @@ export async function sendTelegramMessage({ token, chatId, threadId = null, text
       // non-JSON error page
     }
     if (response.ok && data && data.ok === true) return { ok: true };
+    const migrateTo = data && data.parameters && data.parameters.migrate_to_chat_id;
+    if (migrateTo && !retried) {
+      const result = await sendTelegramMessage({ token, chatId: String(migrateTo), threadId, text, fetch, timeoutMs, retried: true });
+      return result.ok ? { ok: true, migratedTo: String(migrateTo) } : result;
+    }
     const detail = data && data.description ? `${response.status} ${data.description}` : `HTTP ${response.status}`;
     return { ok: false, error: redact(detail, token) };
   } catch (error) {

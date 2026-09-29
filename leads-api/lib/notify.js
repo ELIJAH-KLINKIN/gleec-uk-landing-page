@@ -52,6 +52,8 @@ export async function notifyLead({ kind = 'created', record, config, repo, fetch
     ]);
 
     const telegram = toOutcome(telegramSettled, now);
+    const movedTo = telegramSettled.status === 'fulfilled' && telegramSettled.value?.migratedTo;
+    if (movedTo) log.warn('telegram.chat_moved', { id: record.id, setTelegramChatIdTo: movedTo });
     const crm = toOutcome(crmSettled, now);
     const level = telegram.status.startsWith('failed') || crm.status.startsWith('failed') ? 'error' : 'info';
     log[level](`${logPrefix}.notified`, { id: record.id, telegram: telegram.status, crm: crm.status });
