@@ -100,7 +100,7 @@ export const HIGHLIGHTS = {
       notice: {
         kind: "event",
         flag: "GB", // a flag, not the Faster Payments logo (scheme marks are for participants)
-        title: "FPS payment · Illustrative",
+        title: "FPS payment",
         detail: "Sample inflow · £12,480",
       },
     },
@@ -113,7 +113,7 @@ export const HIGHLIGHTS = {
         kind: "event",
         icon: "check",
         tone: "green",
-        title: "Name matches · Illustrative",
+        title: "Name matches",
         detail: "Hartwell & Frome Ltd · Confirmation of Payee",
       },
     },
@@ -125,7 +125,7 @@ export const HIGHLIGHTS = {
       notice: {
         kind: "event",
         flag: "EU",
-        title: "EUR → SEPA · Illustrative",
+        title: "EUR → SEPA",
         detail: "Sample outflow · €4,210",
       },
     },
@@ -137,7 +137,7 @@ export const HIGHLIGHTS = {
       notice: {
         kind: "event",
         flag: "US",
-        title: "USD wire · Illustrative",
+        title: "USD wire",
         detail: "Sample beneficiary · $9,184",
       },
     },
@@ -150,7 +150,7 @@ export const HIGHLIGHTS = {
         kind: "event",
         icon: "credit-card",
         tone: "blue",
-        title: "Virtual card · Illustrative",
+        title: "Virtual card",
         detail: "Marketing · •••• 7421",
       },
     },
