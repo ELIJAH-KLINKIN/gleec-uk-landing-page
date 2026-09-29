@@ -335,7 +335,9 @@ const LEGAL = [
 test("footer: LinkedIn slot is a placeholder until the page URL is set", async ({ page }) => {
   await page.goto("./#legal");
   const social = page.locator(".footer-social", { hasText: "LinkedIn" });
-  await expect(social).toContainText("LinkedIn");
+  // The logo alone: the word is only for screen readers.
+  await expect(social.locator("svg")).toBeVisible();
+  await expect(social.locator(".visually-hidden")).toHaveText("LinkedIn");
   // No URL yet: shown as "Soon", never as a dead link.
   await expect(page.locator("footer a.footer-social", { hasText: "LinkedIn" })).toHaveCount(0);
   await expect(social.locator(".soon")).toHaveText("Soon");
