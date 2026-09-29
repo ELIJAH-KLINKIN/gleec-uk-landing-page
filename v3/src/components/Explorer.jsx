@@ -1,4 +1,4 @@
-// Explorer.jsx — Global accounts & transfers. A sidebar picks the market; where the
+// Explorer.jsx — Global Account details & transfers. A sidebar picks the market; where the
 // account has separate local and international details (GBP), a segmented control
 // switches between them. The panel lists the (illustrative) details the way a
 // payer's bank asks for them: name, identifiers, address, bank, bank address.
@@ -19,8 +19,8 @@ export default function Explorer() {
     ["Recipient’s name", market.holder],
     ...view.rows.map(([k, v]) => [k, v, true]),
     ["Recipient’s address", market.address],
-    ["Recipient’s bank", EXPLORER.bank.name],
-    ["Bank address", EXPLORER.bank.address],
+    ["Recipient’s bank", market.bank.name],
+    ["Bank address", market.bank.address],
   ];
 
   // Keep Local / International when the next market has it, otherwise its first view.

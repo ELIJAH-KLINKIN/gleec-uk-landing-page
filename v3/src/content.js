@@ -29,10 +29,11 @@ export const DISCLAIMER_SHORT =
 
 export const HERO = {
   // The headline's first line rotates with the demo tab below it
-  // ("Business accounts" ↔ Accounts, …); the rest of the sentence stays put.
+  // ("Global accounts" ↔ Accounts, …); the rest of the sentence stays put.
   titleRest: "for companies that don’t fit the default box.",
   // What screen readers hear: one stable sentence.
-  titleSpoken: "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
+  // Keeps "business accounts" for search; the visible phrase is the product name.
+  titleSpoken: "Global business accounts, corporate cards and cross-border payments for companies that don’t fit the default box.",
   // The hero's email pill (field + button in one) and the link to the product demo.
   primary: { label: "Join the Waitlist", href: "#waitlist" },
   emailLabel: "Work email",
@@ -49,8 +50,8 @@ export const HERO = {
     {
       id: "accounts",
       label: "Accounts",
-      phrase: "Business accounts",
-      caption: "GBP, EUR and USD accounts with local details, in one place.",
+      phrase: "Global accounts",
+      caption: "GBP, EUR and USD in one account, with local details.",
     },
     {
       id: "cards",
@@ -61,7 +62,8 @@ export const HERO = {
     {
       id: "payments",
       label: "Payments",
-      phrase: "Global payments",
+      // Not "Global payments": one "Global" in the rotation is enough.
+      phrase: "Cross-border payments",
       caption: "Faster Payments, SEPA and SWIFT from a single payment flow.",
     },
   ],
@@ -179,11 +181,12 @@ export const PARTNERS = {
 };
 
 export const ACCOUNTS = {
-  eyebrow: "Accounts",
+  eyebrow: "Global Account",
   title: "More than just account details.",
   lead: "Gleec Business is being built to combine account details, payment routes, FX capability and compliance controls in one operating platform.",
   points: [
-    "GBP, EUR and USD business account capability",
+    "GBP, EUR and USD at launch, 24 currencies planned",
+    "UK account details, and a Luxembourg IBAN for euros",
     "Named virtual IBAN account details",
     "Faster Payments, CHAPS and BACS for UK flows",
     "SEPA and SEPA Instant",
@@ -191,7 +194,7 @@ export const ACCOUNTS = {
     "Fiat-to-fiat FX",
     "KYB, sanctions screening and transaction monitoring controls",
   ],
-  link: { label: "Explore Global Accounts", href: "#payments" },
+  link: { label: "See Account Details", href: "#payments" },
   mock: {
     balances: [
       { code: "GBP", symbol: "£", amount: "84,250" },
@@ -207,27 +210,35 @@ export const ACCOUNTS = {
   },
 };
 
-// Global accounts & transfers explorer.
+// Who issues each set of account details. Named as the payer's bank needs it.
+const CLEARBANK = {
+  name: "ClearBank Limited",
+  address: "Borough Yards, 13 Dirty Lane, London SE1 9PA, United Kingdom",
+};
+const BANKING_CIRCLE = {
+  name: "Banking Circle S.A.",
+  address: "2 Boulevard de la Foire, L-1528 Luxembourg",
+};
+
+// Global Account details, by where the payer is. Each set comes from the partner
+// that issues it (Altery / Revolut layout: name, identifiers, address, bank):
+// - GBP: ClearBank (sort code locally, GB IBAN from abroad).
+// - Everything else: one Banking Circle IBAN in Luxembourg. Their product sheet: a
+//   LU IBAN takes SEPA, SEPA Instant and SWIFT in 24 currencies (a DE IBAN would
+//   take SEPA only), so EUR, USD and the rest share it and need no switch.
 export const EXPLORER = {
-  eyebrow: "Global accounts & transfers",
-  title: "Open global accounts. Move money the right way.",
-  lead: "Receive, hold and move funds across key markets with multi-currency global accounts, local account details and trusted domestic and international transfer methods.",
+  eyebrow: "Accounts & transfers",
+  // No "Open…": the account isn't live yet (FCA review).
+  title: "One Global Account. Move money the right way.",
+  lead: "UK account details for pounds, and a Luxembourg IBAN for euros, dollars and more, so European clients pay you like a local supplier. All in your company’s name.",
   stat: { value: "60+", label: "payout markets via SWIFT & partners" },
-  // Account details as a payer's bank needs them (the Altery / Revolut layout): the
-  // customer's name and address, the identifiers, then the bank that issues them.
-  // Gleec Pay's accounts are provided through ClearBank, so ClearBank is the
-  // recipient's bank. ClearBank takes USD and other currencies by SWIFT only, so
-  // those markets show one view and no Local / International switch.
-  bank: {
-    name: "ClearBank Limited",
-    address: "Borough Yards, 13 Dirty Lane, London SE1 9PA, United Kingdom",
-  },
   markets: [
     {
       id: "uk",
       label: "United Kingdom",
       flag: "GB",
-      title: "GBP account · United Kingdom",
+      title: "Global Account · GBP",
+      bank: CLEARBANK,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
       views: [
@@ -261,17 +272,17 @@ export const EXPLORER = {
       id: "eu",
       label: "Eurozone",
       flag: "EU",
-      title: "EUR account · Eurozone",
+      title: "Global Account · EUR",
+      bank: BANKING_CIRCLE,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, 10115 Berlin, Germany",
-      // One IBAN takes SEPA, SEPA Instant and SWIFT alike, so there is nothing to switch.
       views: [
         {
           id: "all",
           info: "For EUR payments via SEPA and SEPA Instant, and via SWIFT from outside the SEPA area.",
           rows: [
-            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
-            ["SWIFT/BIC", "CLRBGB22"],
+            ["IBAN", "LU00 4080 0000 1234 5678"],
+            ["SWIFT/BIC", "BCIRLULL"],
           ],
         },
       ],
@@ -285,7 +296,8 @@ export const EXPLORER = {
       id: "us",
       label: "United States",
       flag: "US",
-      title: "USD account · United States",
+      title: "Global Account · USD",
+      bank: BANKING_CIRCLE,
       holder: "ACME Studios Inc",
       address: "1 Example Street, New York, NY 10001, United States",
       views: [
@@ -293,8 +305,8 @@ export const EXPLORER = {
           id: "all",
           info: "For USD payments via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
-            ["SWIFT/BIC", "CLRBGB22"],
+            ["IBAN", "LU00 4080 0000 1234 5678"],
+            ["SWIFT/BIC", "BCIRLULL"],
           ],
         },
       ],
@@ -304,7 +316,8 @@ export const EXPLORER = {
       id: "global",
       label: "Global",
       flag: "GL",
-      title: "Multi-currency account · Global",
+      title: "Global Account · Other currencies",
+      bank: BANKING_CIRCLE,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
       views: [
@@ -312,8 +325,8 @@ export const EXPLORER = {
           id: "all",
           info: "For payments in other supported currencies via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
-            ["SWIFT/BIC", "CLRBGB22"],
+            ["IBAN", "LU00 4080 0000 1234 5678"],
+            ["SWIFT/BIC", "BCIRLULL"],
           ],
         },
       ],
@@ -336,7 +349,7 @@ export const CURRENCIES = {
   core: [
     { code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
     { code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },
-    { code: "USD", name: "US dollar", routes: "SWIFT · Fedwire" },
+    { code: "USD", name: "US dollar", routes: "SWIFT" },
   ],
   soonLabel: "Coming soon",
   soon: ["CHF", "CAD", "AUD", "DKK", "SEK", "NOK", "PLN", "CZK", "HUF", "JPY"],
@@ -648,7 +661,7 @@ export const FOOTER = {
     {
       title: "Product",
       links: [
-        { label: "Business accounts", href: "#accounts" },
+        { label: "Global Account", href: "#accounts" },
         { label: "Multi-currency", href: "#currencies" },
         { label: "International payments", href: "#payments" },
         { label: "Payment cards", href: "#cards" },

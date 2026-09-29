@@ -1,7 +1,7 @@
 // Hero.jsx — a quiet header in the Cursor manner: a modest two-line headline, the
 // email pill (field + Join the Waitlist, as on ramp.com) and "See the demo" under it, so the product demo is on screen, and moving, the
-// moment the page loads. The headline's first line rotates with the demo tab ("Business
-// accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Global payments" ↔ Payments).
+// moment the page loads. The headline's first line rotates with the demo tab ("Global
+// accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Cross-border payments" ↔ Payments).
 // A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
 // the demo. It advances by itself every 7 s — shown as a fill inside the
 // current pill — until the visitor picks a tab, then stays on their choice.

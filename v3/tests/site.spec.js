@@ -501,14 +501,14 @@ test("hero: a bad email is explained and nothing is sent", async ({ page }) => {
 test("headline reads as one sentence and its first line follows the demo tab", async ({ page }) => {
   await page.goto("./");
   await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
+    "Global business accounts, corporate cards and cross-border payments for companies that don’t fit the default box.",
   );
   const phrase = page.locator('.rot-phrase[data-state="in"]');
-  await expect(phrase).toHaveText("Business\u00a0accounts");
+  await expect(phrase).toHaveText("Global\u00a0accounts");
   await page.locator(".demo").getByRole("tab", { name: "Cards" }).click();
   await expect(phrase).toHaveText("Corporate\u00a0cards");
   await page.locator(".demo").getByRole("tab", { name: "Payments" }).click();
-  await expect(phrase).toHaveText("Global\u00a0payments");
+  await expect(phrase).toHaveText("Cross-border\u00a0payments");
   await expect(page.locator(".rot-phrase")).toHaveCount(3);
 });
 
@@ -596,7 +596,7 @@ test("explorer: account details read like a payer's bank asks for them", async (
   const labels = () => details.locator("dt").allTextContents();
 
   // UK: separate Local (sort code) and International (IBAN) details, same bank.
-  await expect(heading).toHaveText("GBP account · United Kingdom");
+  await expect(heading).toHaveText("Global Account · GBP");
   await expect(views).toHaveText(["Local", "International"]);
   expect(await labels()).toEqual([
     "Recipient’s name",
@@ -619,17 +619,20 @@ test("explorer: account details read like a payer's bank asks for them", async (
   ]);
   await expect(details).toContainText("CLRBGB22");
 
-  // One set of details elsewhere: no switch to show (EUR takes SEPA and SWIFT on one IBAN).
+  // Everything but GBP: one Banking Circle IBAN in Luxembourg (SEPA and SWIFT), no switch.
   for (const [market, title, info] of [
-    ["Eurozone", "EUR account · Eurozone", /SEPA and SEPA Instant/],
-    ["United States", "USD account · United States", /via SWIFT/],
-    ["Global", "Multi-currency account · Global", /via SWIFT/],
+    ["Eurozone", "Global Account · EUR", /SEPA and SEPA Instant/],
+    ["United States", "Global Account · USD", /via SWIFT/],
+    ["Global", "Global Account · Other currencies", /via SWIFT/],
   ]) {
     await markets.filter({ hasText: market }).click();
     await expect(heading).toHaveText(title);
     await expect(section.locator(".xp-panel-head .footnote")).toHaveText(info);
     await expect(section.getByRole("tablist", { name: "Paying from" })).toHaveCount(0);
-    await expect(details).toContainText("IBAN");
+    await expect(details).toContainText("LU00 4080 0000 1234 5678");
+    await expect(details).toContainText("BCIRLULL");
+    await expect(details).toContainText("Banking Circle S.A.");
+    await expect(details).not.toContainText("ClearBank");
   }
   // The identifier breakdown box is gone.
   await expect(section.locator(".xp-explain")).toHaveCount(0);
@@ -642,7 +645,7 @@ test("explorer: account details read like a payer's bank asks for them", async (
     await markets.filter({ hasText: "United States" }).focus();
     await page.keyboard.press("ArrowDown");
     await expect(markets.filter({ hasText: "Global" })).toBeFocused();
-    await expect(heading).toHaveText("Multi-currency account · Global");
+    await expect(heading).toHaveText("Global Account · Other currencies");
     await markets.filter({ hasText: "United Kingdom" }).click();
     await views.first().focus();
     await page.keyboard.press("ArrowRight");
