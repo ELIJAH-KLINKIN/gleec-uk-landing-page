@@ -1,44 +1,36 @@
-/* Hero — compact so the product demo is visible on first load. */
+/* Hero — quiet, in the Cursor manner: room above, a modest headline, one action,
+   then the product demo. */
 .hero {
-  padding-top: clamp(28px, 1rem + 2.5vw, 64px);
+  padding-top: clamp(40px, 1.5rem + 4.5vw, 112px);
   padding-bottom: var(--s-16);
   overflow: hidden;
   background: var(--bg);
 }
 
-/* Headline left; intro + actions right, aligned to the headline's last line. */
 .hero-top {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: var(--s-6) clamp(32px, 5vw, 80px);
-  align-items: end;
+  justify-items: start;
+  gap: var(--s-6);
 }
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 1.3rem + 2.4vw, 3.5rem); /* 36 → 56 */
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: var(--track-display);
+  font-size: clamp(1.625rem, 1.3rem + 0.75vw, 2rem); /* 26 → 32 */
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
   color: var(--label);
   text-wrap: balance;
-}
-.hero-lead {
-  font-size: var(--t-body);
-  line-height: 1.5;
-  color: var(--label-2);
-  text-wrap: pretty;
 }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-3) var(--s-6);
-  margin-top: var(--s-5);
 }
 
 /* ---------- Product demo ---------- */
 .demo {
-  margin-top: clamp(24px, 1rem + 2vw, 44px);
+  margin-top: clamp(32px, 1rem + 3vw, 64px);
   text-align: center;
 }
 
@@ -207,39 +199,17 @@
   text-align: center;
 }
 
-/* ---------- Tablet: stack the header ---------- */
-@media (max-width: 900px) {
-  .hero-top {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-  .hero-lead {
-    max-width: 600px;
-  }
-}
-
 /* ---------- Phone: phone-shaped screen, no window chrome ---------- */
 @media (max-width: 600px) {
   .hero {
-    padding-top: 20px;
+    padding-top: 36px;
   }
   .hero-top {
-    gap: var(--s-4);
+    gap: var(--s-5);
   }
-  .hero-heading .eyebrow {
-    margin-bottom: var(--s-2);
-    font-size: var(--t-subhead);
-  }
-  .hero-title {
-    font-size: 2rem; /* 32 */
-    line-height: 1.06;
-  }
-  .hero-lead {
-    font-size: var(--t-callout);
-    line-height: 1.45;
-  }
+  /* One full-width action on phones. */
   .hero-actions {
-    margin-top: var(--s-4);
+    justify-self: stretch;
   }
   .hero-actions .btn {
     flex: 1 1 auto;

@@ -4,7 +4,6 @@
   top: 0;
   z-index: 100;
   isolation: isolate;
-  border-bottom: 1px solid var(--separator);
 }
 /* The glass material lives on a pseudo-element: a backdrop-filter on .nav
    itself would become the containing block for the fixed-position menu and

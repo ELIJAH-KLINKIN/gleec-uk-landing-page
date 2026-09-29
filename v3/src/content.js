@@ -28,13 +28,11 @@ export const DISCLAIMER_SHORT =
   "Gleec Pay Ltd is preparing an application to the FCA to become an Authorised Electronic Money Institution. Products and services shown are subject to authorisation, onboarding approval, partner availability and final terms.";
 
 export const HERO = {
-  eyebrow: "UK Business Accounts",
   // The headline's first line rotates with the demo tab below it
   // ("Business accounts" ↔ Accounts, …); the rest of the sentence stays put.
   titleRest: "for companies that don’t fit the default box.",
   // What screen readers hear: one stable sentence.
   titleSpoken: "Business accounts, corporate cards and global payments for companies that don’t fit the default box.",
-  lead: "Designed for UK and international businesses that need GBP, EUR and USD accounts, reliable fiat payment routes underpinned by efficient KYB and personalised client support.",
   primary: { label: "Join the Waitlist", href: "#waitlist" },
   // Product demo under the headline: one tab per area, auto-advancing every 7 s.
   demoNote: "Product preview. Features shown are illustrative and subject to authorisation.",

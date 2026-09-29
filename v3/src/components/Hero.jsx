@@ -1,6 +1,6 @@
-// Hero.jsx — a compact header (headline left; intro and the single action
-// right) so the product demo is on screen, and moving, the moment the page
-// loads. The headline's first line rotates with the demo tab ("Business
+// Hero.jsx — a quiet header in the Cursor manner: a modest two-line headline and
+// the single action under it, so the product demo is on screen, and moving, the
+// moment the page loads. The headline's first line rotates with the demo tab ("Business
 // accounts" ↔ Accounts, "Corporate cards" ↔ Cards, "Global payments" ↔ Payments).
 // A pill tab bar inside the demo frame (Accounts / Cards / Payments) picks
 // the demo. It advances by itself every 7 s — shown as a fill inside the
@@ -52,21 +52,15 @@ export default function Hero() {
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="container-wide hero-top">
-        <div className="hero-heading">
-          <p className="eyebrow">{HERO.eyebrow}</p>
-          <h1 className="hero-title" id="hero-title">
-            <span className="visually-hidden">{HERO.titleSpoken}</span>
-            <RotatingPhrase phrases={demos.map((d) => d.phrase)} index={active} />
-            <span aria-hidden="true">{HERO.titleRest}</span>
-          </h1>
-        </div>
-        <div className="hero-side">
-          <p className="hero-lead">{HERO.lead}</p>
-          <div className="hero-actions">
-            <a className="btn btn-filled btn-large" href={HERO.primary.href}>
-              {HERO.primary.label}
-            </a>
-          </div>
+        <h1 className="hero-title" id="hero-title">
+          <span className="visually-hidden">{HERO.titleSpoken}</span>
+          <RotatingPhrase phrases={demos.map((d) => d.phrase)} index={active} />
+          <span aria-hidden="true">{HERO.titleRest}</span>
+        </h1>
+        <div className="hero-actions">
+          <a className="btn btn-filled" href={HERO.primary.href}>
+            {HERO.primary.label}
+          </a>
         </div>
       </div>
 
