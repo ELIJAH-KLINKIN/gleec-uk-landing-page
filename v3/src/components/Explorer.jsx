@@ -1,7 +1,7 @@
-// Explorer.jsx — Global accounts & transfers. A sidebar picks the market, a
-// segmented control picks the transfer method, and the panel shows matching
-// (illustrative) account details as label/value rows, plus what each part of
-// the identifier means.
+// Explorer.jsx — Global accounts & transfers. A sidebar picks the market; where the
+// account has separate local and international details (GBP), a segmented control
+// switches between them. The panel lists the (illustrative) details the way a
+// payer's bank asks for them: name, identifiers, address, bank, bank address.
 import { useState } from "react";
 import { EXPLORER } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
@@ -10,20 +10,24 @@ import Flag from "./ui/Flag.jsx";
 import Icon from "./ui/Icon.jsx";
 import "./Explorer.css";
 
-const PART_TONES = ["purple", "blue", "green", "orange"];
-
 export default function Explorer() {
   const [marketId, setMarketId] = useState("uk");
-  const [methodId, setMethodId] = useState("gbp-local");
+  const [viewId, setViewId] = useState("local");
   const market = EXPLORER.markets.find((m) => m.id === marketId);
-  const details = EXPLORER.details[`${marketId}/${methodId}`];
-  const explainer = EXPLORER.explainers[EXPLORER.methods[methodId].explain];
+  const view = market.views.find((v) => v.id === viewId) ?? market.views[0];
+  const rows = [
+    ["Recipient’s name", market.holder],
+    ...view.rows.map(([k, v]) => [k, v, true]),
+    ["Recipient’s address", market.address],
+    ["Recipient’s bank", EXPLORER.bank.name],
+    ["Bank address", EXPLORER.bank.address],
+  ];
 
-  // Keep the current method when the new market supports it, otherwise use its first.
+  // Keep Local / International when the next market has it, otherwise its first view.
   const selectMarket = (id) => {
     const next = EXPLORER.markets.find((m) => m.id === id);
     setMarketId(id);
-    if (!next.methods.includes(methodId)) setMethodId(next.methods[0]);
+    if (!next.views.some((v) => v.id === viewId)) setViewId(next.views[0].id);
   };
 
   const onSidebarKey = (e, i) => {
@@ -76,76 +80,36 @@ export default function Explorer() {
           </nav>
 
           <div className="xp-main">
-            <div className="xp-methods">
-              <SegmentedControl
-                label="Transfer method"
-                options={market.methods.map((id) => ({ value: id, label: EXPLORER.methods[id].label }))}
-                value={methodId}
-                onChange={setMethodId}
-                controls="xp-panel"
-              />
-            </div>
+            {/* Only a choice gets a chooser: one view, no switch. */}
+            {market.views.length > 1 ? (
+              <div className="xp-methods">
+                <SegmentedControl
+                  label="Paying from"
+                  options={market.views.map((v) => ({ value: v.id, label: v.label }))}
+                  value={view.id}
+                  onChange={setViewId}
+                  controls="xp-panel"
+                />
+              </div>
+            ) : null}
 
-            <div id="xp-panel" role="tabpanel" aria-label={`${details.currency} account details, ${market.label}`}>
-              <div className="xp-panel-head" key={`${marketId}/${methodId}`}>
-                <h3 className="title-3">
-                  {details.currency} account · {market.label}
-                </h3>
-                <p className="footnote">{details.note}</p>
+            <div id="xp-panel" role="tabpanel" aria-label={`${market.title}, account details`}>
+              <div className="xp-panel-head" key={`${marketId}/${view.id}`}>
+                <h3 className="title-3">{market.title}</h3>
+                <p className="footnote">{view.info}</p>
               </div>
 
-              <div className="xp-groups">
-                <div className="xp-group">
-                  <h4 className="xp-group-title">
-                    Account details <span className="xp-example">Example</span>
-                  </h4>
-                  <dl className="kv">
-                    <div>
-                      <dt>Account provider</dt>
-                      <dd>{details.provider}</dd>
-                    </div>
-                    {details.rows.map(([k, v]) => (
-                      <div key={k}>
-                        <dt>{k}</dt>
-                        <dd className="mono">{v}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-                <div className="xp-group">
-                  <h4 className="xp-group-title">Recipient details</h4>
-                  <dl className="kv">
-                    <div>
-                      <dt>Account holder</dt>
-                      <dd>{market.holder}</dd>
-                    </div>
-                    <div>
-                      <dt>Address</dt>
-                      <dd>{market.address}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-
-              <div className="xp-explain" aria-label={`How to read the ${explainer.title}`} role="group">
-                <p className="xp-group-title">{explainer.title}</p>
-                <p className="xp-explain-value">
-                  {explainer.parts.map(([value], i) => (
-                    <span key={i}>
-                      {i > 0 && explainer.joiner ? <span className="xp-joiner">{explainer.joiner}</span> : null}
-                      <span className={"xp-part " + PART_TONES[i]}>{value}</span>
-                    </span>
-                  ))}
-                </p>
-                <ul className="xp-legend">
-                  {explainer.parts.map(([, label], i) => (
-                    <li key={label}>
-                      <span className={"xp-swatch " + PART_TONES[i]} aria-hidden="true" />
-                      {label}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <h4 className="xp-group-title">
+                Account details <span className="xp-example">Example</span>
+              </h4>
+              <dl className="kv xp-details">
+                {rows.map(([k, v, mono]) => (
+                  <div key={k}>
+                    <dt>{k}</dt>
+                    <dd className={mono ? "mono" : undefined}>{v}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>

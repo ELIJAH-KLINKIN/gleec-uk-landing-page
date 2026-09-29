@@ -192,14 +192,43 @@ export const EXPLORER = {
   title: "Open global accounts. Move money the right way.",
   lead: "Receive, hold and move funds across key markets with multi-currency global accounts, local account details and trusted domestic and international transfer methods.",
   stat: { value: "60+", label: "payout markets via SWIFT & partners" },
+  // Account details as a payer's bank needs them (the Altery / Revolut layout): the
+  // customer's name and address, the identifiers, then the bank that issues them.
+  // Gleec Pay's accounts are provided through ClearBank, so ClearBank is the
+  // recipient's bank. ClearBank takes USD and other currencies by SWIFT only, so
+  // those markets show one view and no Local / International switch.
+  bank: {
+    name: "ClearBank Limited",
+    address: "Borough Yards, 13 Dirty Lane, London SE1 9PA, United Kingdom",
+  },
   markets: [
     {
       id: "uk",
       label: "United Kingdom",
       flag: "GB",
-      methods: ["gbp-local", "swift"],
+      title: "GBP account · United Kingdom",
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
+      views: [
+        {
+          id: "local",
+          label: "Local",
+          info: "For GBP payments from UK banks, via Faster Payments, BACS or CHAPS.",
+          rows: [
+            ["Sort code", "00-00-00"],
+            ["Account number", "12345678"],
+          ],
+        },
+        {
+          id: "international",
+          label: "International",
+          info: "For payments from banks outside the UK, via SWIFT. The sender’s bank or an intermediary may charge a fee.",
+          rows: [
+            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
+            ["SWIFT/BIC", "CLRBGB22"],
+          ],
+        },
+      ],
       routes: [
         ["Faster Payments", "Near real-time GBP payments"],
         ["BACS", "Standard UK bank transfers"],
@@ -211,9 +240,20 @@ export const EXPLORER = {
       id: "eu",
       label: "Eurozone",
       flag: "EU",
-      methods: ["eur-local", "sepa", "sepa-instant", "swift"],
+      title: "EUR account · Eurozone",
       holder: "ACME Studios Ltd",
       address: "1 Example Street, 10115 Berlin, Germany",
+      // One IBAN takes SEPA, SEPA Instant and SWIFT alike, so there is nothing to switch.
+      views: [
+        {
+          id: "all",
+          info: "For EUR payments via SEPA and SEPA Instant, and via SWIFT from outside the SEPA area.",
+          rows: [
+            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
+            ["SWIFT/BIC", "CLRBGB22"],
+          ],
+        },
+      ],
       routes: [
         ["SEPA", "Euro payments across Europe"],
         ["SEPA Instant", "Near real-time where supported"],
@@ -224,176 +264,41 @@ export const EXPLORER = {
       id: "us",
       label: "United States",
       flag: "US",
-      methods: ["ach", "fedwire", "swift"],
+      title: "USD account · United States",
       holder: "ACME Studios Inc",
       address: "1 Example Street, New York, NY 10001, United States",
-      routes: [
-        ["ACH", "Batch USD domestic rail"],
-        ["Fedwire", "Same-day high-value USD"],
-        ["SWIFT", "International correspondent"],
+      views: [
+        {
+          id: "all",
+          info: "For USD payments via SWIFT. The sender’s bank or an intermediary may charge a fee.",
+          rows: [
+            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
+            ["SWIFT/BIC", "CLRBGB22"],
+          ],
+        },
       ],
+      routes: [["SWIFT", "International correspondent"]],
     },
     {
       id: "global",
       label: "Global",
       flag: "GL",
-      methods: ["swift"],
+      title: "Multi-currency account · Global",
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
+      views: [
+        {
+          id: "all",
+          info: "For payments in other supported currencies via SWIFT. The sender’s bank or an intermediary may charge a fee.",
+          rows: [
+            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
+            ["SWIFT/BIC", "CLRBGB22"],
+          ],
+        },
+      ],
       routes: [["SWIFT", "International correspondent network"]],
     },
   ],
-  methods: {
-    "gbp-local": { label: "GBP Local", explain: "sort" },
-    "eur-local": { label: "EUR Local", explain: "iban" },
-    sepa: { label: "SEPA", explain: "iban" },
-    "sepa-instant": { label: "SEPA Instant", explain: "iban" },
-    swift: { label: "SWIFT", explain: "swift" },
-    ach: { label: "ACH", explain: "aba" },
-    fedwire: { label: "Fedwire", explain: "aba" },
-  },
-  details: {
-    "uk/gbp-local": {
-      currency: "GBP",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["Account number", "12345678"],
-        ["Sort code", "00-00-00"],
-      ],
-      supports: ["Faster Payments", "BACS", "CHAPS"],
-      note: "Domestic GBP rails — same-day to near real-time settlement.",
-    },
-    "uk/swift": {
-      currency: "GBP",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["SWIFT / BIC", "XXXXGB00XXX"],
-        ["Account number", "12345678"],
-        ["Sort code", "00-00-00"],
-      ],
-      supports: ["SWIFT"],
-      note: "International correspondent route into the GBP account.",
-    },
-    "eu/eur-local": {
-      currency: "EUR",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["IBAN", "GB00 XXXX 0000 0012 3456 78"],
-        ["BIC", "XXXXGB00XXX"],
-      ],
-      supports: ["SEPA", "SEPA Instant"],
-      note: "Local euro account details for European receivables.",
-    },
-    "eu/sepa": {
-      currency: "EUR",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["IBAN", "GB00 XXXX 0000 0012 3456 78"],
-        ["BIC", "XXXXGB00XXX"],
-      ],
-      supports: ["SEPA"],
-      note: "Standard euro credit transfers across the SEPA area.",
-    },
-    "eu/sepa-instant": {
-      currency: "EUR",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["IBAN", "GB00 XXXX 0000 0012 3456 78"],
-        ["BIC", "XXXXGB00XXX"],
-      ],
-      supports: ["SEPA Instant"],
-      note: "Near real-time euro payments — typically under 10 seconds.",
-    },
-    "eu/swift": {
-      currency: "EUR",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["SWIFT / BIC", "XXXXGB00XXX"],
-        ["IBAN", "GB00 XXXX 0000 0012 3456 78"],
-      ],
-      supports: ["SWIFT"],
-      note: "International route into the euro account.",
-    },
-    "us/ach": {
-      currency: "USD",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["Routing number", "000 000 000"],
-        ["Account number", "1234 5678 90"],
-      ],
-      supports: ["ACH"],
-      note: "Batch USD payments — domestic rails for payroll and recurring debits.",
-    },
-    "us/fedwire": {
-      currency: "USD",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["Routing number", "000 000 000"],
-        ["Account number", "1234 5678 90"],
-      ],
-      supports: ["Fedwire"],
-      note: "Same-day high-value USD wire settlement.",
-    },
-    "us/swift": {
-      currency: "USD",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["SWIFT / BIC", "XXXXGB00XXX"],
-        ["Routing number", "000 000 000"],
-        ["Account number", "1234 5678 90"],
-      ],
-      supports: ["SWIFT"],
-      note: "International USD route via correspondent network.",
-    },
-    "global/swift": {
-      currency: "Multi-currency",
-      provider: "Gleec Pay Ltd",
-      rows: [
-        ["SWIFT / BIC", "XXXXGB00XXX"],
-        ["Correspondent", "Through approved partners"],
-      ],
-      supports: ["SWIFT"],
-      note: "Send and receive across 60+ markets through the SWIFT network.",
-    },
-  },
-  explainers: {
-    sort: {
-      title: "Sort code",
-      parts: [
-        ["00", "Institution"],
-        ["00", "Sub-office"],
-        ["00", "Branch"],
-      ],
-      joiner: "–",
-    },
-    iban: {
-      title: "IBAN",
-      parts: [
-        ["GB", "Country"],
-        ["00", "Check digits"],
-        ["XXXX 0000 0012 3456 78", "Institution & account"],
-      ],
-      joiner: " ",
-    },
-    swift: {
-      title: "SWIFT / BIC",
-      parts: [
-        ["XXXX", "Institution"],
-        ["GB", "Country"],
-        ["00", "Location"],
-        ["XXX", "Branch"],
-      ],
-      joiner: "",
-    },
-    aba: {
-      title: "Routing & account",
-      parts: [
-        ["000 000 000", "ABA routing"],
-        ["1234 5678 90", "Account number"],
-      ],
-      joiner: " / ",
-    },
-  },
   capabilities: [
     "Designed to support accounts in your business name",
     "Planned support for GBP, EUR and USD as core currencies",

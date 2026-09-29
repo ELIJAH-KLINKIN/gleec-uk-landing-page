@@ -546,36 +546,57 @@ test("cards: segmented control switches card (click + arrow keys)", async ({ pag
   await expect(caption).toHaveText(before);
 });
 
-test("explorer: every market and method shows matching details", async ({ page }, testInfo) => {
+test("explorer: account details read like a payer's bank asks for them", async ({ page }, testInfo) => {
   await page.goto("./#payments");
   const section = page.locator("#payments");
   const heading = section.locator("#xp-panel h3");
+  const details = section.locator("#xp-panel dl");
   const markets = section.getByRole("tablist", { name: "Markets" }).getByRole("tab");
-  const methods = section.getByRole("tablist", { name: "Transfer method" }).getByRole("tab");
-  const expected = [
-    ["United Kingdom", "GBP account · United Kingdom", ["GBP Local", "SWIFT"]],
-    ["Eurozone", "EUR account · Eurozone", ["EUR Local", "SEPA", "SEPA Instant", "SWIFT"]],
-    ["United States", "USD account · United States", ["ACH", "Fedwire", "SWIFT"]],
-    ["Global", "Multi-currency account · Global", ["SWIFT"]],
-  ];
-  for (const [market, title, labels] of expected) {
+  const views = section.getByRole("tablist", { name: "Paying from" }).getByRole("tab");
+  const labels = () => details.locator("dt").allTextContents();
+
+  // UK: separate Local (sort code) and International (IBAN) details, same bank.
+  await expect(heading).toHaveText("GBP account · United Kingdom");
+  await expect(views).toHaveText(["Local", "International"]);
+  expect(await labels()).toEqual([
+    "Recipient’s name",
+    "Sort code",
+    "Account number",
+    "Recipient’s address",
+    "Recipient’s bank",
+    "Bank address",
+  ]);
+  await expect(details).toContainText("ClearBank Limited");
+  await views.filter({ hasText: "International" }).click();
+  await expect(views.filter({ hasText: "International" })).toHaveAttribute("aria-selected", "true");
+  expect(await labels()).toEqual([
+    "Recipient’s name",
+    "IBAN",
+    "SWIFT/BIC",
+    "Recipient’s address",
+    "Recipient’s bank",
+    "Bank address",
+  ]);
+  await expect(details).toContainText("CLRBGB22");
+
+  // One set of details elsewhere: no switch to show (EUR takes SEPA and SWIFT on one IBAN).
+  for (const [market, title, info] of [
+    ["Eurozone", "EUR account · Eurozone", /SEPA and SEPA Instant/],
+    ["United States", "USD account · United States", /via SWIFT/],
+    ["Global", "Multi-currency account · Global", /via SWIFT/],
+  ]) {
     await markets.filter({ hasText: market }).click();
-    await expect(markets.filter({ hasText: market })).toHaveAttribute("aria-selected", "true");
     await expect(heading).toHaveText(title);
-    await expect(methods).toHaveText(labels);
-    await expect(methods.and(page.locator('[aria-selected="true"]'))).toHaveCount(1);
-    for (let i = 0; i < labels.length; i++) {
-      await methods.nth(i).click();
-      await expect(methods.nth(i)).toHaveAttribute("aria-selected", "true");
-      await expect(heading).toHaveText(title);
-    }
+    await expect(section.locator(".xp-panel-head .footnote")).toHaveText(info);
+    await expect(section.getByRole("tablist", { name: "Paying from" })).toHaveCount(0);
+    await expect(details).toContainText("IBAN");
   }
-  // An unsupported method falls back to the market's first one.
-  await markets.filter({ hasText: "Eurozone" }).click();
-  await methods.filter({ hasText: "SEPA Instant" }).click();
-  await markets.filter({ hasText: "United States" }).click();
-  await expect(methods.filter({ hasText: "ACH" })).toHaveAttribute("aria-selected", "true");
-  await expect(section.locator(".xp-explain .xp-group-title")).toHaveText("Routing & account");
+  // The identifier breakdown box is gone.
+  await expect(section.locator(".xp-explain")).toHaveCount(0);
+
+  // Back to the UK: the last view chosen there is remembered only while it exists.
+  await markets.filter({ hasText: "United Kingdom" }).click();
+  await expect(views.first()).toHaveAttribute("aria-selected", "true");
 
   if (!isMobile(testInfo)) {
     await markets.filter({ hasText: "United States" }).focus();
@@ -583,10 +604,10 @@ test("explorer: every market and method shows matching details", async ({ page }
     await expect(markets.filter({ hasText: "Global" })).toBeFocused();
     await expect(heading).toHaveText("Multi-currency account · Global");
     await markets.filter({ hasText: "United Kingdom" }).click();
-    await methods.first().focus();
+    await views.first().focus();
     await page.keyboard.press("ArrowRight");
-    await expect(methods.nth(1)).toBeFocused();
-    await expect(section.locator(".xp-explain .xp-group-title")).toHaveText("SWIFT / BIC");
+    await expect(views.nth(1)).toBeFocused();
+    await expect(details).toContainText("CLRBGB22");
   }
 });
 
