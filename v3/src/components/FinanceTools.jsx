@@ -8,7 +8,7 @@ import "./Controls.css";
 
 export default function FinanceTools() {
   return (
-    <section id="finance" className="section finance" aria-labelledby="finance-title">
+    <section id="finance" className="section alt finance" aria-labelledby="finance-title">
       <div className="container-wide">
         <SectionHeader id="finance-title" eyebrow={FINANCE.eyebrow} title={FINANCE.title} lead={FINANCE.lead} />
         <ul className="ctrl-grid">

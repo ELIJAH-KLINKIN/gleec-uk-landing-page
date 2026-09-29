@@ -19,8 +19,8 @@ export default function Explorer() {
     ["Recipient’s name", market.holder],
     ...view.rows.map(([k, v]) => [k, v, true]),
     ["Recipient’s address", market.address],
-    ["Recipient’s bank", market.bank.name],
-    ["Bank address", market.bank.address],
+    ["Account provider", market.bank.name],
+    ["Provider address", market.bank.address],
   ];
 
   // Keep Local / International when the next market has it, otherwise its first view.
@@ -44,7 +44,7 @@ export default function Explorer() {
   };
 
   return (
-    <section id="payments" className="section explorer" aria-labelledby="explorer-title">
+    <section id="payments" className="section alt explorer" aria-labelledby="explorer-title">
       <div className="container">
         <SectionHeader id="explorer-title" eyebrow={EXPLORER.eyebrow} title={EXPLORER.title} lead={EXPLORER.lead} />
       </div>

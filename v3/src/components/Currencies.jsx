@@ -10,7 +10,7 @@ import "./Currencies.css";
 
 export default function Currencies() {
   return (
-    <section id="currencies" className="section alt currencies" aria-labelledby="currencies-title">
+    <section id="currencies" className="section currencies" aria-labelledby="currencies-title">
       <div className="container">
         <SectionHeader
           id="currencies-title"

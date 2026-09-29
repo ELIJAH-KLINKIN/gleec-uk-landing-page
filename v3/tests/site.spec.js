@@ -603,10 +603,12 @@ test("explorer: account details read like a payer's bank asks for them", async (
     "Sort code",
     "Account number",
     "Recipient’s address",
-    "Recipient’s bank",
-    "Bank address",
+    "Account provider",
+    "Provider address",
   ]);
-  await expect(details).toContainText("ClearBank Limited");
+  await expect(details).toContainText("Gleec Pay Ltd");
+  // The partner banks stay unnamed until they agree in writing (NDAs).
+  await expect(section).not.toContainText(/ClearBank|Banking Circle|CLRB|BCIR/);
   await views.filter({ hasText: "International" }).click();
   await expect(views.filter({ hasText: "International" })).toHaveAttribute("aria-selected", "true");
   expect(await labels()).toEqual([
@@ -614,12 +616,12 @@ test("explorer: account details read like a payer's bank asks for them", async (
     "IBAN",
     "SWIFT/BIC",
     "Recipient’s address",
-    "Recipient’s bank",
-    "Bank address",
+    "Account provider",
+    "Provider address",
   ]);
-  await expect(details).toContainText("CLRBGB22");
+  await expect(details).toContainText("XXXXGB2L");
 
-  // Everything but GBP: one Banking Circle IBAN in Luxembourg (SEPA and SWIFT), no switch.
+  // Everything but GBP: one Luxembourg IBAN (SEPA and SWIFT), no switch.
   for (const [market, title, info] of [
     ["Eurozone", "Global Account · EUR", /SEPA and SEPA Instant/],
     ["United States", "Global Account · USD", /via SWIFT/],
@@ -629,10 +631,9 @@ test("explorer: account details read like a payer's bank asks for them", async (
     await expect(heading).toHaveText(title);
     await expect(section.locator(".xp-panel-head .footnote")).toHaveText(info);
     await expect(section.getByRole("tablist", { name: "Paying from" })).toHaveCount(0);
-    await expect(details).toContainText("LU00 4080 0000 1234 5678");
-    await expect(details).toContainText("BCIRLULL");
-    await expect(details).toContainText("Banking Circle S.A.");
-    await expect(details).not.toContainText("ClearBank");
+    await expect(details).toContainText("LU00 XXX0 0000 1234 5678");
+    await expect(details).toContainText("XXXXLULL");
+    await expect(details).toContainText("Gleec Pay Ltd");
   }
   // The identifier breakdown box is gone.
   await expect(section.locator(".xp-explain")).toHaveCount(0);
@@ -650,7 +651,7 @@ test("explorer: account details read like a payer's bank asks for them", async (
     await views.first().focus();
     await page.keyboard.press("ArrowRight");
     await expect(views.nth(1)).toBeFocused();
-    await expect(details).toContainText("CLRBGB22");
+    await expect(details).toContainText("XXXXGB2L");
   }
 });
 

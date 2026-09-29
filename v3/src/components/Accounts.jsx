@@ -17,7 +17,7 @@ const ACTIVITY_ICON = {
 export default function Accounts() {
   const m = ACCOUNTS.mock;
   return (
-    <section id="accounts" className="section alt accounts" aria-labelledby="accounts-title">
+    <section id="accounts" className="section accounts" aria-labelledby="accounts-title">
       <div className="container-wide accounts-grid">
         <div className="accounts-copy">
           <p className="eyebrow">{ACCOUNTS.eyebrow}</p>

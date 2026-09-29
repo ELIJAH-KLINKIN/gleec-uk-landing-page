@@ -13,6 +13,11 @@
   background: var(--surface);
   text-align: center;
 }
+/* On a white section the tiles and chips take the grey card colour instead. */
+.section:not(.alt) .cur-tile,
+.section:not(.alt) .cur-chips li:not(.cur-more) {
+  background: var(--bg-2);
+}
 .cur-flag {
   margin-bottom: var(--s-5);
 }

@@ -1,7 +1,6 @@
 import Nav from "./components/Nav.jsx";
 import Hero from "./components/Hero.jsx";
 import Highlights from "./components/Highlights.jsx";
-import Partners from "./components/Partners.jsx";
 import Accounts from "./components/Accounts.jsx";
 import Explorer from "./components/Explorer.jsx";
 import Currencies from "./components/Currencies.jsx";
@@ -25,7 +24,6 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         <Hero />
         <Highlights />
-        <Partners />
         <Accounts />
         <Explorer />
         <Currencies />

@@ -170,13 +170,6 @@ export const HIGHLIGHTS = {
   ],
 };
 
-export const PARTNERS = {
-  eyebrow: "Infrastructure",
-  title: "Built upon experienced financial infrastructure partners.",
-  lead: "Gleec Business is being built upon regulated banking, payment, card and compliance infrastructure. Logos reflect intended integrations and ongoing provider discussions — not confirmed or live partnerships, and not an endorsement by any provider.",
-  names: ["ClearBank", "Banking Circle", "Sumsub", "Card scheme"],
-};
-
 export const ACCOUNTS = {
   eyebrow: "Global Account",
   title: "More than just account details.",
@@ -207,22 +200,13 @@ export const ACCOUNTS = {
   },
 };
 
-// Who issues each set of account details. Named as the payer's bank needs it.
-const CLEARBANK = {
-  name: "ClearBank Limited",
-  address: "Borough Yards, 13 Dirty Lane, London SE1 9PA, United Kingdom",
-};
-const BANKING_CIRCLE = {
-  name: "Banking Circle S.A.",
-  address: "2 Boulevard de la Foire, L-1528 Luxembourg",
-};
+// Global Account details, by where the payer is: GBP on UK details, everything else
+// on one Luxembourg IBAN (SEPA, SEPA Instant and SWIFT in 24 currencies), so only GBP
+// needs a Local / International switch. Gleec Pay is shown as the account provider
+// and the bank codes are placeholders (XXXX): the partner banks' NDAs keep the talks
+// confidential, so their names and codes go on the page only once they agree in writing.
+const PROVIDER = { name: COMPANY.name, address: COMPANY.office.join(", ") };
 
-// Global Account details, by where the payer is. Each set comes from the partner
-// that issues it (Altery / Revolut layout: name, identifiers, address, bank):
-// - GBP: ClearBank (sort code locally, GB IBAN from abroad).
-// - Everything else: one Banking Circle IBAN in Luxembourg. Their product sheet: a
-//   LU IBAN takes SEPA, SEPA Instant and SWIFT in 24 currencies (a DE IBAN would
-//   take SEPA only), so EUR, USD and the rest share it and need no switch.
 export const EXPLORER = {
   eyebrow: "Global accounts & transfers",
   // Kept as is on purpose during the FCA review (Ilia's call).
@@ -235,7 +219,7 @@ export const EXPLORER = {
       label: "United Kingdom",
       flag: "GB",
       title: "Global Account · GBP",
-      bank: CLEARBANK,
+      bank: PROVIDER,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
       views: [
@@ -253,8 +237,8 @@ export const EXPLORER = {
           label: "International",
           info: "For payments from banks outside the UK, via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "GB00 CLRB 0000 0012 3456 78"],
-            ["SWIFT/BIC", "CLRBGB22"],
+            ["IBAN", "GB00 XXXX 0000 0012 3456 78"],
+            ["SWIFT/BIC", "XXXXGB2L"],
           ],
         },
       ],
@@ -270,7 +254,7 @@ export const EXPLORER = {
       label: "Eurozone",
       flag: "EU",
       title: "Global Account · EUR",
-      bank: BANKING_CIRCLE,
+      bank: PROVIDER,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, 10115 Berlin, Germany",
       views: [
@@ -278,8 +262,8 @@ export const EXPLORER = {
           id: "all",
           info: "For EUR payments via SEPA and SEPA Instant, and via SWIFT from outside the SEPA area.",
           rows: [
-            ["IBAN", "LU00 4080 0000 1234 5678"],
-            ["SWIFT/BIC", "BCIRLULL"],
+            ["IBAN", "LU00 XXX0 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXLULL"],
           ],
         },
       ],
@@ -294,7 +278,7 @@ export const EXPLORER = {
       label: "United States",
       flag: "US",
       title: "Global Account · USD",
-      bank: BANKING_CIRCLE,
+      bank: PROVIDER,
       holder: "ACME Studios Inc",
       address: "1 Example Street, New York, NY 10001, United States",
       views: [
@@ -302,8 +286,8 @@ export const EXPLORER = {
           id: "all",
           info: "For USD payments via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "LU00 4080 0000 1234 5678"],
-            ["SWIFT/BIC", "BCIRLULL"],
+            ["IBAN", "LU00 XXX0 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXLULL"],
           ],
         },
       ],
@@ -314,7 +298,7 @@ export const EXPLORER = {
       label: "Global",
       flag: "GL",
       title: "Global Account · Other currencies",
-      bank: BANKING_CIRCLE,
+      bank: PROVIDER,
       holder: "ACME Studios Ltd",
       address: "1 Example Street, London, EC1A 1AA, United Kingdom",
       views: [
@@ -322,8 +306,8 @@ export const EXPLORER = {
           id: "all",
           info: "For payments in other supported currencies via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "LU00 4080 0000 1234 5678"],
-            ["SWIFT/BIC", "BCIRLULL"],
+            ["IBAN", "LU00 XXX0 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXLULL"],
           ],
         },
       ],
