@@ -47,6 +47,29 @@
 .wl-pill input:focus {
   outline: none;
 }
+/* Browser autofill (Safari's yellow, Chrome's blue) would paint a box inside the
+   pill; keep the field's own colours instead. */
+.wl-pill input:-webkit-autofill,
+.wl-pill input:-webkit-autofill:hover,
+.wl-pill input:-webkit-autofill:focus,
+.wl-field input:-webkit-autofill,
+.wl-field input:-webkit-autofill:hover,
+.wl-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--label);
+  caret-color: var(--label);
+  -webkit-box-shadow: 0 0 0 1000px var(--field) inset;
+  box-shadow: 0 0 0 1000px var(--field) inset;
+  transition: background-color 600000s 0s;
+}
+/* Autofilled detail fields keep their purple focus ring. */
+.wl-field input:-webkit-autofill:focus {
+  -webkit-box-shadow:
+    0 0 0 1000px var(--field) inset,
+    0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+  box-shadow:
+    0 0 0 1000px var(--field) inset,
+    0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+}
 .wl-pill input::placeholder {
   color: var(--label-3);
   opacity: 1;
