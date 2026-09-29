@@ -78,7 +78,8 @@ export const HIGHLIGHTS = {
       eyebrow: "Global Account",
       title: "One IBAN, 24 currencies",
       body: "GBP, EUR and USD from launch, 21 more planned — all on one IBAN in your company’s name.",
-      // 3D art rendered by scripts/art (public/art/<name>-light|dark.webp).
+      // 3D art rendered by scripts/art (public/art/<name>-light|dark.webp); the
+      // other tiles are drawn (components/art/ProductArt.jsx) and have no notice.
       art: "coins",
       notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250" },
     },
@@ -87,84 +88,51 @@ export const HIGHLIGHTS = {
       eyebrow: "Account details",
       title: "Named virtual IBANs",
       body: "Dedicated account details for each client, region or product, so every payment lands where it belongs.",
-      art: "accounts",
-      // The art shows the details; the notice shows what they're for.
-      notice: { kind: "event", flag: "EU", title: "Payment matched", detail: "Northwind Trading Ltd · €4,210" },
+      art: "named",
     },
     {
       id: "uk-rails",
       eyebrow: "Payments",
       title: "Faster Payments, CHAPS & BACS",
-      body: "Domestic UK payments planned through standard and same-day routes, with Confirmation of Payee on every payment you send. Subject to authorisation, partner setup and operational readiness.",
-      notice: {
-        kind: "event",
-        flag: "GB", // a flag, not the Faster Payments logo (scheme marks are for participants)
-        title: "FPS payment",
-        detail: "Sample inflow · £12,480",
-      },
+      // Timings from the partners' documents: FPS seconds 24/7, CHAPS same day, Bacs inbound only.
+      body: "Faster Payments in seconds, CHAPS the same day, and Bacs for the payments you receive.",
+      art: "uk-rails",
     },
     {
       id: "cop",
       eyebrow: "Fraud protection",
       title: "Confirmation of Payee",
-      body: "Before a UK payment leaves your account, the recipient’s name is checked against their bank’s records. A mismatch is flagged before you send, so a misdirected payment or a fake invoice gets caught before it becomes a loss.",
-      notice: {
-        kind: "event",
-        icon: "check",
-        tone: "green",
-        title: "Name matches",
-        detail: "Hartwell & Frome Ltd · Confirmation of Payee",
-      },
+      body: "Every UK payment is checked against the recipient’s name first, so a fake invoice gets caught before it becomes a loss.",
+      art: "cop",
     },
     {
       id: "sepa",
       eyebrow: "Euro rails",
       title: "SEPA & SEPA Instant",
-      body: "Planned support for sending and receiving euro payments via SEPA and, where available, SEPA Instant — subject to authorisation and partner availability.",
-      notice: {
-        kind: "event",
-        flag: "EU",
-        title: "EUR → SEPA",
-        detail: "Sample outflow · €4,210",
-      },
+      body: "Euro payments across Europe: SEPA Instant in seconds, or SEPA by the next business day.",
+      art: "sepa",
     },
     {
       id: "swift",
       eyebrow: "International",
       title: "SWIFT & USD connectivity",
-      body: "Planned international and USD payments via SWIFT. You choose who pays the fees — you (OUR), the recipient (BEN) or shared (SHA) — and can follow each payment as it moves. Subject to authorisation, corridor availability and onboarding approval.",
-      notice: {
-        kind: "event",
-        flag: "US",
-        title: "USD wire",
-        detail: "Sample beneficiary · $9,184",
-      },
+      body: "Pay abroad in USD and more. Choose who pays the fees (OUR, SHA or BEN), and follow each payment as it moves.",
+      art: "swift",
     },
     {
       id: "cards",
       eyebrow: "Cards",
       title: "Virtual cards for team spend",
-      body: "Payment cards for team spend, subscriptions and operating expenses, with per-card limits and category controls. Card functionality is intended for a later phase, subject to scheme, issuer, operational and compliance readiness.",
-      notice: {
-        kind: "event",
-        icon: "credit-card",
-        tone: "blue",
-        title: "Virtual card",
-        detail: "Marketing · •••• 7421",
-      },
+      // Cards are not day-one in the business plan: keep "later phase".
+      body: "Per-card limits and category controls for team spend and subscriptions. Planned for a later phase.",
+      art: "cards",
     },
     {
       id: "compliance",
       eyebrow: "Compliance",
       title: "Compliance-led onboarding",
-      body: "Designed to support more complex customers through structured KYB, EDD and ongoing monitoring. Any future onboarding would be subject to customer due diligence and acceptance policy.",
-      notice: {
-        kind: "event",
-        icon: "shield-check",
-        tone: "purple",
-        title: "KYB review · In progress",
-        detail: "Documents 8 of 10 received",
-      },
+      body: "Structured KYB, enhanced due diligence and ongoing monitoring, built for companies with complex structures.",
+      art: "kyb",
     },
   ],
 };

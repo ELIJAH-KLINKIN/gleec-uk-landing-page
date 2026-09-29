@@ -1009,3 +1009,26 @@ test("demo: visible on first load, with phone-sized screens on phones", async ({
   if (isMobile(testInfo)) expect(r.src).toMatch(/-mobile-/);
   else expect(r.src).not.toMatch(/-mobile-/);
 });
+
+test("product gallery: every tile has art, hidden from screen readers, inside its tile", async ({ page }) => {
+  await page.goto("./#product");
+  const tiles = page.locator("#product .hl-tile");
+  const n = await tiles.count();
+  for (let i = 0; i < n; i++) {
+    const art = tiles.nth(i).locator(".hl-art");
+    await expect(art).toHaveCount(1);
+    // Example data in drawings is decorative: either an img with empty alt or aria-hidden.
+    const hidden = await art.evaluate((el) => el.getAttribute("aria-hidden") === "true" || el.querySelector("img")?.alt === "");
+    expect(hidden).toBe(true);
+  }
+  const spill = await tiles.evaluateAll((ts) =>
+    ts.filter((t) => {
+      const r = t.getBoundingClientRect();
+      return [...t.querySelectorAll(".art *")].some((e) => {
+        const q = e.getBoundingClientRect();
+        return q.width && (q.left < r.left - 1 || q.right > r.right + 1 || q.bottom > r.bottom + 1);
+      });
+    }).length,
+  );
+  expect(spill).toBe(0);
+});

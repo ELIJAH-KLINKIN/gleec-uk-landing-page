@@ -8,7 +8,7 @@ import { usePrefersReducedMotion } from "../lib/motion.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
 import Flag from "./ui/Flag.jsx";
-import AccountStack from "./art/AccountStack.jsx";
+import { PRODUCT_ART } from "./art/ProductArt.jsx";
 import "./Highlights.css";
 
 export default function Highlights() {
@@ -125,7 +125,7 @@ export default function Highlights() {
                 <p className="hl-tile-body">{item.body}</p>
               </div>
               {item.art ? <Art name={item.art} /> : null}
-              <Notice notice={item.notice} />
+              {item.notice ? <Notice notice={item.notice} /> : null}
             </article>
           ))}
         </div>
@@ -173,16 +173,16 @@ export default function Highlights() {
   );
 }
 
-// Card art. Drawn in HTML/CSS where the thing is flat (account details), otherwise
-// pre-rendered 3D (scripts/art), one image per colour scheme. Decorative: the
+// Card art. Drawn in HTML/CSS (a piece of the product), or pre-rendered 3D for
+// real objects (scripts/art), one image per colour scheme. Decorative: the
 // card's own text says what it shows.
-const DRAWN = { accounts: AccountStack };
+const DRAWN = PRODUCT_ART;
 
 function Art({ name }) {
   const Drawn = DRAWN[name];
   if (Drawn) {
     return (
-      <div className="hl-art">
+      <div className="hl-art" aria-hidden="true">
         <Drawn />
       </div>
     );

@@ -1,0 +1,500 @@
+/* Drawn product moments for the gallery. Every size is in em and the art's font
+   size follows the tile's width (container units), so a drawing scales as one
+   piece from phone to desktop. Colours come from the page tokens, so the art
+   follows light and dark mode like the rest of the app. */
+.hl-art {
+  container-type: inline-size;
+}
+/* Drawings sit on the tile's floor, so the eight line up in the gallery. */
+div.hl-art {
+  place-items: end center;
+}
+.art {
+  --panel: var(--surface-2);
+  --cell: var(--surface);
+  --float: var(--surface);
+  --lift: 0 0.9em 2.2em -0.8em rgba(20, 10, 40, 0.28), 0 0.15em 0.4em rgba(20, 10, 40, 0.08);
+  position: relative;
+  width: 100%;
+  padding: 0 0.4em;
+  font-size: clamp(9.5px, calc(100cqw / 27), 12.5px);
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--label);
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-color-scheme: dark) {
+  .art {
+    --float: #3a3a3c;
+    --lift: 0 1em 2.4em -0.6em rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* ---------- Shared pieces ---------- */
+.art-panel {
+  display: grid;
+  gap: 0.6em;
+  padding: 1em;
+  border-radius: 1.4em;
+  background: var(--panel);
+}
+.art-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0.2em 0.1em;
+  font-size: 1.05em;
+  font-weight: 600;
+}
+.art-head .art-muted {
+  font-size: 0.86em;
+  font-weight: 500;
+}
+.art-muted {
+  color: var(--label-2);
+}
+.art-mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  letter-spacing: 0.01em;
+}
+.art-grow {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.1em;
+}
+.art-grow > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.art-grow strong {
+  font-weight: 600;
+}
+/* A layer that overlaps the panel by a fixed amount, whatever its height: it stays
+   in the flow and tucks under or over the panel with a negative margin. */
+.art-float {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.75em 0.95em;
+  border-radius: 1.1em;
+  background: var(--float);
+  box-shadow: var(--lift);
+}
+.art-dot {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.95em;
+}
+.art-dot.green {
+  background: #34c759;
+}
+.art-dot.orange {
+  background: #ff9500;
+}
+.art-dot.purple {
+  background: var(--tint);
+}
+.art-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  font-size: 0.86em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.art-avatar.purple {
+  color: #fff;
+  background: linear-gradient(135deg, #9d5bff, #6423d8);
+}
+.art-avatar.graphite {
+  color: #fff;
+  background: linear-gradient(135deg, #55555d, #1f1f23);
+}
+.art-avatar.silver {
+  color: #1d1d1f;
+  background: linear-gradient(135deg, #f4f4f7, #c9c9d1);
+}
+.art-big {
+  font-family: var(--font-display);
+  font-size: 3em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.art-bar {
+  display: block;
+  height: 0.45em;
+  overflow: hidden;
+  border-radius: 1em;
+  background: color-mix(in srgb, var(--label) 10%, transparent);
+}
+.art-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tint);
+}
+
+/* ---------- 2 · Named accounts ---------- */
+.art-named .art-panel {
+  gap: 0.35em;
+}
+.art-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.55em 0.6em;
+  border-radius: 0.9em;
+}
+.art-row.is-hi {
+  background: var(--cell);
+  box-shadow: var(--shadow-1);
+}
+.art-amount {
+  font-weight: 600;
+}
+.art-amount.is-pos {
+  color: var(--green);
+}
+.art-named .art-toast {
+  width: 62%;
+  margin: 0 0.4em -0.9em auto;
+}
+
+/* ---------- 3 · UK payments ---------- */
+.art-uk {
+  display: grid;
+  gap: 0.7em;
+}
+.art-hero {
+  justify-items: center;
+  gap: 0.55em;
+  padding: 1.5em 1em 1.3em;
+  text-align: center;
+}
+.art-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-weight: 600;
+  color: var(--label-2);
+}
+.art-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--label-2);
+}
+.art-live {
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: #34c759;
+  box-shadow: 0 0 0 0.25em color-mix(in srgb, #34c759 25%, transparent);
+}
+.art-seg {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 0.25em;
+  padding: 0.3em;
+  border-radius: 1.1em;
+  background: var(--panel);
+}
+.art-seg-item {
+  display: grid;
+  gap: 0.1em;
+  padding: 0.55em 0.6em;
+  border-radius: 0.85em;
+  font-size: 0.9em;
+}
+.art-seg-item strong {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.art-seg-item.is-on {
+  background: var(--cell);
+  box-shadow: var(--shadow-1);
+}
+
+/* ---------- 4 · Confirmation of Payee ---------- */
+.art-cell {
+  display: grid;
+  gap: 0.15em;
+  padding: 0.6em 0.8em;
+  border-radius: 0.85em;
+  background: var(--cell);
+}
+.art-cell .art-muted {
+  font-size: 0.86em;
+}
+.art-cell strong {
+  font-weight: 600;
+}
+.art-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6em;
+}
+.art-cop .art-alert {
+  margin: -0.9em 0 0 1.6em;
+  align-items: flex-start;
+}
+.art-cop .art-alert .art-grow > * {
+  white-space: normal;
+}
+
+/* ---------- 5 · SEPA ---------- */
+.art-payee {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+.art-sepa .art-big {
+  margin: 0.25em 0.1em 0.2em;
+}
+.art-options {
+  display: grid;
+  gap: 0.4em;
+}
+.art-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.6em 0.8em;
+  border-radius: 0.85em;
+  background: var(--cell);
+  box-shadow: inset 0 0 0 1px transparent;
+}
+.art-option.is-on {
+  box-shadow: inset 0 0 0 2px var(--tint);
+}
+.art-radio {
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--label) 25%, transparent);
+}
+.art-option.is-on .art-radio {
+  box-shadow: inset 0 0 0 0.36em var(--tint);
+}
+
+/* ---------- 6 · SWIFT ---------- */
+.art-amount-lg {
+  font-family: var(--font-display);
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.art-swift .art-panel {
+  gap: 0.9em;
+}
+.art-track {
+  display: grid;
+  gap: 0.2em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.art-track li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.45em 0.2em;
+}
+/* The line joining the steps. */
+.art-track li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.55em;
+  left: calc(0.2em + 0.55em - 1px);
+  width: 2px;
+  height: 1.35em;
+  background: #34c759;
+}
+.art-step {
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: #34c759;
+}
+.art-track .is-now .art-step {
+  background: var(--cell);
+  box-shadow: inset 0 0 0 0.3em var(--tint);
+}
+.art-track .is-now .art-grow {
+  font-weight: 600;
+}
+.art-swift .art-fees {
+  margin: -0.9em 0 0 2.2em;
+  justify-content: space-between;
+}
+.art-chips {
+  display: inline-flex;
+  gap: 0.2em;
+  padding: 0.2em;
+  border-radius: 0.8em;
+  background: color-mix(in srgb, var(--label) 7%, transparent);
+}
+.art-chips span {
+  padding: 0.3em 0.7em;
+  border-radius: 0.6em;
+  font-weight: 600;
+  color: var(--label-2);
+}
+.art-chips .is-on {
+  color: #fff;
+  background: var(--tint);
+}
+
+/* ---------- 7 · Company cards (real card proportions, ISO ID-1) ---------- */
+.art-cards {
+  height: 17em;
+}
+.art-card {
+  position: absolute;
+  width: 16.5em;
+  aspect-ratio: 85.6 / 53.98;
+  padding: 1em 1.15em;
+  border-radius: 1em;
+  color: #fff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 1.2em 2.4em -1em rgba(18, 8, 40, 0.5);
+}
+.art-card-back {
+  top: 0.4em;
+  right: 0.8em;
+  rotate: 8deg;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(135deg, #4a4a52 0%, #2c2c31 55%, #1b1b1f 100%);
+}
+.art-card-front {
+  top: 2.6em;
+  left: 0.8em;
+  rotate: -4deg;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.24), transparent 55%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 7px),
+    linear-gradient(135deg, #9d5bff 0%, #8c41ff 45%, #6423d8 100%);
+}
+.art-card-top,
+.art-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+.art-card-logo {
+  width: auto;
+  height: 1.35em;
+  filter: brightness(0) invert(1);
+}
+.art-card-type {
+  font-size: 0.86em;
+  opacity: 0.85;
+}
+.art-card-num {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.art-card-back .art-card-num {
+  position: absolute;
+  right: 1.15em;
+  bottom: 1em;
+  font-size: 0.95em;
+}
+.art-card-back .art-card-type {
+  position: absolute;
+  top: 1.1em;
+  right: 1.15em;
+}
+.art-contactless {
+  width: 1.5em;
+  height: 1.5em;
+  opacity: 0.85;
+}
+.art-cards .art-limit {
+  position: absolute;
+  right: 0.4em;
+  bottom: 0;
+  left: 5.5em;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5em;
+}
+.art-limit-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+.art-limit-row strong {
+  font-size: 1.15em;
+  font-weight: 700;
+}
+
+/* ---------- 8 · Onboarding ---------- */
+.art-kyb .art-panel {
+  gap: 0.7em;
+}
+.art-checks {
+  display: grid;
+  gap: 0.5em;
+  margin: 0.1em 0 0;
+  padding: 0;
+  list-style: none;
+}
+.art-checks li {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+}
+.art-checks .art-dot {
+  width: 1.6em;
+  height: 1.6em;
+  font-size: 0.85em;
+}
+.art-checks .is-review .art-grow {
+  font-weight: 600;
+}
+.art-pill {
+  padding: 0.2em 0.6em;
+  border-radius: 1em;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: var(--tint-text);
+  background: color-mix(in srgb, var(--tint) 14%, transparent);
+}
+.art-kyb .art-doc {
+  width: 55%;
+  margin: -0.9em 0 0 auto;
+}
+.art-doc-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.1em;
+  height: 2.5em;
+  border-radius: 0.4em;
+  color: var(--tint-text);
+  background: color-mix(in srgb, var(--tint) 12%, transparent);
+}
