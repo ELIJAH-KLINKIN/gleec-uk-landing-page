@@ -48,10 +48,13 @@
   align-items: center;
   gap: var(--s-2) var(--s-5);
 }
+/* The logo alone, no word. Kept at least 24px for touch (WCAG 2.5.8). */
 .footer-social {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  min-width: 24px;
+  min-height: 24px;
   color: var(--label-2);
 }
 a.footer-social:hover {

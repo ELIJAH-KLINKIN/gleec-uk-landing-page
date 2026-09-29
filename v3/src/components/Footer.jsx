@@ -39,14 +39,21 @@ export default function Footer({ home = true }) {
               </a>
             ) : null}
             {COMPANY.linkedin ? (
-              <a className="footer-social" href={COMPANY.linkedin} rel="noopener noreferrer" target="_blank">
+              <a
+                className="footer-social"
+                href={COMPANY.linkedin}
+                rel="noopener noreferrer"
+                target="_blank"
+                aria-label="LinkedIn"
+                title="LinkedIn"
+              >
                 <LinkedInMark />
-                LinkedIn
               </a>
             ) : (
               <span className="footer-social" title="LinkedIn page coming soon">
                 <LinkedInMark />
-                LinkedIn <span className="soon">Soon</span>
+                <span className="visually-hidden">LinkedIn</span>
+                <span className="soon">Soon</span>
               </span>
             )}
             <p>{FOOTER.locale}</p>
