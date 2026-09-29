@@ -77,7 +77,7 @@ export default function HeroJoin() {
               if (error) setError(validateEmail(e.target.value) || "");
             }}
             aria-invalid={error ? true : undefined}
-            aria-describedby={[error ? id("err") : null, id("note")].filter(Boolean).join(" ")}
+            aria-describedby={error ? id("err") : undefined}
           />
           {joined ? (
             <span className="tk-pill-check hero-join-check" role="status" aria-label={HERO.joined}>
@@ -120,10 +120,6 @@ export default function HeroJoin() {
           </p>
         ) : null}
       </div>
-
-      <p className="footnote hero-join-note" id={id("note")}>
-        <a href="/privacy/">{HERO.privacy}</a>
-      </p>
 
       {HERO.demo.href ? (
         <a className="link-chevron hero-demo" href={HERO.demo.href}>

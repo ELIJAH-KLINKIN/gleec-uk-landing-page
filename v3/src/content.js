@@ -38,9 +38,6 @@ export const HERO = {
   primary: { label: "Join the Waitlist", href: "#waitlist" },
   emailLabel: "Work email",
   emailPlaceholder: "Work email",
-  // The one line under the field: UK GDPR wants privacy information where the email
-  // is collected, and a link does that. No sentence, no consent wording.
-  privacy: "How we use your email",
   joined: "You’re on the list.",
   // Set VITE_DEMO_URL to show "See the demo"; without it the link is hidden.
   demo: { label: "See the demo", href: import.meta.env.VITE_DEMO_URL || "" },
