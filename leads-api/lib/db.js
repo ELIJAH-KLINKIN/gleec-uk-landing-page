@@ -52,10 +52,13 @@ export const SQL = {
     UNION ALL
     SELECT id, created_at, true AS duplicate FROM existing`,
 
+  // The Telegram message id is written once (first ping) and kept, so the details can edit it.
   recordNotificationResults: `
     UPDATE leads
     SET telegram_status = $2, telegram_sent_at = $3::timestamptz,
-        crm_status = $4, crm_sent_at = $5::timestamptz
+        crm_status = $4, crm_sent_at = $5::timestamptz,
+        telegram_chat_id = COALESCE($6::text, telegram_chat_id),
+        telegram_message_id = COALESCE($7::bigint, telegram_message_id)
     WHERE id = $1::uuid`,
 
   // Rate limit for the details step: details added from this IP hash inside the window.
@@ -89,7 +92,7 @@ export const SQL = {
       WHERE id = $1::uuid AND details_at IS NULL
       RETURNING id, created_at, status, full_name, email, company, country, phone, business_type,
                 currencies, monthly_volume, message, consent, consent_at, source, details_at,
-                first_name, last_name, company_website
+                first_name, last_name, company_website, telegram_chat_id, telegram_message_id
     )
     SELECT CASE
              WHEN EXISTS (SELECT 1 FROM updated) THEN 'updated'
@@ -131,6 +134,8 @@ function toRecord(row) {
     consentAt: toIso(row.consent_at),
     source: row.source ?? {},
     detailsAt: toIso(row.details_at),
+    telegramChatId: row.telegram_chat_id ?? null,
+    telegramMessageId: row.telegram_message_id == null ? null : Number(row.telegram_message_id),
   };
 }
 
@@ -175,13 +180,18 @@ export function createLeadRepo(db) {
       return { id: row.id, createdAt: toIso(row.created_at), duplicate: row.duplicate === true };
     },
 
-    async recordNotificationResults(id, { telegramStatus, telegramSentAt, crmStatus, crmSentAt }) {
+    async recordNotificationResults(
+      id,
+      { telegramStatus, telegramSentAt, crmStatus, crmSentAt, telegramChatId = null, telegramMessageId = null },
+    ) {
       await db.query(SQL.recordNotificationResults, [
         id,
         telegramStatus ?? null,
         toIso(telegramSentAt),
         crmStatus ?? null,
         toIso(crmSentAt),
+        telegramChatId,
+        telegramMessageId,
       ]);
     },
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { TELEGRAM_MAX_LENGTH, formatTelegramMessage, sendTelegramMessage } from '../lib/telegram.js';
+import { TELEGRAM_MAX_LENGTH, editTelegramMessage, formatTelegramMessage, sendTelegramMessage } from '../lib/telegram.js';
 import { escapeHtml } from '../lib/text.js';
 import { validateLead } from '../lib/validate.js';
 import { TELEGRAM_TOKEN, createFakeFetch, emailOnlyBody, hangingFetch, validBody } from './helpers.js';
@@ -229,7 +229,7 @@ describe('sendTelegramMessage', () => {
   it('POSTs sendMessage with HTML parse mode and previews disabled', async () => {
     const fetch = createFakeFetch();
     const result = await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-1001234567890', text: 'hi', fetch });
-    assert.deepEqual(result, { ok: true });
+    assert.deepEqual(result, { ok: true, chatId: '-1001234567890', messageId: null });
     assert.equal(fetch.calls.length, 1);
     const [call] = fetch.calls;
     assert.equal(call.url, `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`);
@@ -247,6 +247,12 @@ describe('sendTelegramMessage', () => {
     const fetch = createFakeFetch();
     await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-100', threadId: 42, text: 'hi', fetch });
     assert.equal(fetch.calls[0].json.message_thread_id, 42);
+  });
+
+  it('returns the message id so the ping can be edited later', async () => {
+    const fetch = createFakeFetch(() => Response.json({ ok: true, result: { message_id: 77 } }));
+    const result = await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-100', text: 'hi', fetch });
+    assert.deepEqual(result, { ok: true, chatId: '-100', messageId: 77 });
   });
 
   it('reports Telegram API errors with their description', async () => {
@@ -267,7 +273,7 @@ describe('sendTelegramMessage', () => {
         : Response.json({ ok: true, result: {} }),
     );
     const result = await sendTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-4001', text: 'hi', fetch });
-    assert.deepEqual(result, { ok: true, migratedTo: '-1004001' });
+    assert.deepEqual(result, { ok: true, chatId: '-1004001', messageId: null, migratedTo: '-1004001' });
     assert.deepEqual(fetch.calls.map((c) => c.json.chat_id), ['-4001', '-1004001']);
   });
 
@@ -308,5 +314,30 @@ describe('sendTelegramMessage', () => {
     await Promise.resolve();
     t.mock.timers.tick(1);
     assert.deepEqual(await pending, { ok: false, error: 'timed out after 5000 ms' });
+  });
+});
+
+describe('editTelegramMessage', () => {
+  it('POSTs editMessageText for that chat and message, HTML, no previews', async () => {
+    const fetch = createFakeFetch();
+    const result = await editTelegramMessage({ token: TELEGRAM_TOKEN, chatId: '-100', messageId: 77, text: 'new', fetch });
+    assert.deepEqual(result, { ok: true });
+    assert.equal(fetch.calls[0].url, `https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageText`);
+    assert.deepEqual(fetch.calls[0].json, {
+      chat_id: '-100',
+      message_id: 77,
+      text: 'new',
+      parse_mode: 'HTML',
+      disable_web_page_preview: true,
+    });
+  });
+
+  it('treats "message is not modified" as done and other errors as failures', async () => {
+    const reply = (description) => () => Response.json({ ok: false, error_code: 400, description }, { status: 400 });
+    const args = { token: TELEGRAM_TOKEN, chatId: '-100', messageId: 77, text: 'x' };
+    const same = await editTelegramMessage({ ...args, fetch: createFakeFetch(reply('Bad Request: message is not modified')) });
+    assert.deepEqual(same, { ok: true });
+    const gone = await editTelegramMessage({ ...args, fetch: createFakeFetch(reply('Bad Request: message to edit not found')) });
+    assert.deepEqual(gone, { ok: false, error: '400 Bad Request: message to edit not found' });
   });
 });

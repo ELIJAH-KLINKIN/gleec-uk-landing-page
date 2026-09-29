@@ -79,7 +79,18 @@ export function makeRequest({
   return new Request(`https://leads.example.test${path}`, init);
 }
 
-const DETAIL_COLUMNS = ['fullName', 'company', 'country', 'phone', 'businessType', 'monthlyVolume', 'message'];
+const DETAIL_COLUMNS = [
+  'fullName',
+  'firstName',
+  'lastName',
+  'company',
+  'companyWebsite',
+  'country',
+  'phone',
+  'businessType',
+  'monthlyVolume',
+  'message',
+];
 
 /** In-memory repository with the same interface (and semantics) as lib/db.js createLeadRepo(). */
 export function createFakeRepo({ clock = () => NOW, rows = [] } = {}) {
@@ -127,8 +138,11 @@ export function createFakeRepo({ clock = () => NOW, rows = [] } = {}) {
         createdAt: row.createdAt,
         status: row.status ?? 'new',
         fullName: row.fullName ?? null,
+        firstName: row.firstName ?? null,
+        lastName: row.lastName ?? null,
         email: row.email,
         company: row.company ?? null,
+        companyWebsite: row.companyWebsite ?? null,
         country: row.country ?? null,
         phone: row.phone ?? null,
         businessType: row.businessType ?? null,
@@ -139,6 +153,8 @@ export function createFakeRepo({ clock = () => NOW, rows = [] } = {}) {
         consentAt: row.consentAt ?? null,
         source: row.source ?? {},
         detailsAt: row.detailsAt,
+        telegramChatId: row.telegramChatId ?? null,
+        telegramMessageId: row.telegramMessageId ?? null,
       };
       return { outcome: 'updated', record };
     },

@@ -25,7 +25,7 @@ create table if not exists leads (
 
   status           text not null default 'new', -- sales pipeline, for the future CRM
 
-  telegram_status  text,                        -- sent | not_configured | failed: <reason>
+  telegram_status  text,                        -- sent | edited | not_configured | failed: <reason>
   telegram_sent_at timestamptz,
   crm_status       text,                        -- sent | not_configured | failed: <reason>
   crm_sent_at      timestamptz,
@@ -48,7 +48,10 @@ alter table leads
   -- The details step asks for first and last name and the company website (v3).
   add column if not exists first_name text,
   add column if not exists last_name text,
-  add column if not exists company_website text;
+  add column if not exists company_website text,
+  -- The first Telegram ping, so the details step can edit it instead of posting again.
+  add column if not exists telegram_chat_id text,
+  add column if not exists telegram_message_id bigint;
 
 -- Duplicate check: same email within 24h.
 create index if not exists leads_email_created_at_idx on leads (email, created_at desc);

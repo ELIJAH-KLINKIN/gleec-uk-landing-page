@@ -3,7 +3,7 @@
 import { NOTIFY_TIMEOUT_MS } from './constants.js';
 import { CRM_EVENT, CRM_UPDATED_EVENT, buildCrmPayload, buildCrmUpdatePayload, sendCrmWebhook } from './crm.js';
 import { describeError } from './http.js';
-import { formatTelegramMessage, sendTelegramMessage, TELEGRAM_MAX_LENGTH } from './telegram.js';
+import { editTelegramMessage, formatTelegramMessage, sendTelegramMessage, TELEGRAM_MAX_LENGTH } from './telegram.js';
 
 const STATUS_MAX = 300;
 
@@ -19,25 +19,42 @@ function toOutcome(settled, now) {
   }
   const result = settled.value;
   if (result === null) return { status: 'not_configured', sentAt: null };
-  if (result.ok) return { status: 'sent', sentAt: new Date(now()) };
+  if (result.ok) return { status: result.edited ? 'edited' : 'sent', sentAt: new Date(now()) };
   return { status: `failed: ${result.error}`.slice(0, STATUS_MAX), sentAt: null };
 }
 
 /**
+ * Telegram for one lead event. New lead: send the ping. Details added: edit that ping into
+ * the full lead (one message per lead); only if that is impossible (no stored message, edit
+ * refused) post a separate "Details" message so nothing is lost.
+ */
+async function notifyTelegram({ kind, record, config, fetch, timeoutMs, log }) {
+  if (!config.telegram) return null;
+  const telegram = { ...config.telegram, fetch, timeoutMs };
+  if (kind === 'updated' && record.telegramChatId && record.telegramMessageId) {
+    const edited = await editTelegramMessage({
+      ...telegram,
+      chatId: record.telegramChatId,
+      messageId: record.telegramMessageId,
+      text: formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind: 'created' }),
+    });
+    if (edited.ok) return { ok: true, edited: true };
+    log.warn('telegram.edit_failed', { id: record.id, error: edited.error });
+  }
+  return sendTelegramMessage({ ...telegram, text: formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind }) });
+}
+
+/**
  * @param {object} args
- * @param {'created'|'updated'} [args.kind]  'updated' = details added (Telegram "📝 Lead details added",
- *                                           CRM X-Gleec-Event: lead.updated)
+ * @param {'created'|'updated'} [args.kind]  'updated' = details added (Telegram: the first ping is
+ *                                           edited, CRM X-Gleec-Event: lead.updated)
  * The outcome overwrites telegram_status/crm_status (+ *_sent_at): the columns hold the latest attempt.
  */
 export async function notifyLead({ kind = 'created', record, config, repo, fetch, now, log, timeoutMs = NOTIFY_TIMEOUT_MS }) {
   const { crmEvent, crmPayload, logPrefix } = KINDS[kind];
   try {
     const [telegramSettled, crmSettled] = await Promise.allSettled([
-      (async () => {
-        if (!config.telegram) return null;
-        const text = formatTelegramMessage(record, TELEGRAM_MAX_LENGTH, { kind });
-        return sendTelegramMessage({ ...config.telegram, text, fetch, timeoutMs });
-      })(),
+      notifyTelegram({ kind, record, config, fetch, timeoutMs, log }),
       (async () => {
         if (!config.crm) return null;
         return sendCrmWebhook({
@@ -52,7 +69,10 @@ export async function notifyLead({ kind = 'created', record, config, repo, fetch
     ]);
 
     const telegram = toOutcome(telegramSettled, now);
-    const movedTo = telegramSettled.status === 'fulfilled' && telegramSettled.value?.migratedTo;
+    const sent = telegramSettled.status === 'fulfilled' ? telegramSettled.value : null;
+    // The first ping's id, kept so the details can edit it later.
+    const ping = kind === 'created' && sent?.ok && sent.messageId ? { chatId: sent.chatId, messageId: sent.messageId } : null;
+    const movedTo = sent?.migratedTo;
     if (movedTo) log.warn('telegram.chat_moved', { id: record.id, setTelegramChatIdTo: movedTo });
     const crm = toOutcome(crmSettled, now);
     const level = telegram.status.startsWith('failed') || crm.status.startsWith('failed') ? 'error' : 'info';
@@ -64,6 +84,8 @@ export async function notifyLead({ kind = 'created', record, config, repo, fetch
         telegramSentAt: telegram.sentAt,
         crmStatus: crm.status,
         crmSentAt: crm.sentAt,
+        telegramChatId: ping?.chatId ?? null,
+        telegramMessageId: ping?.messageId ?? null,
       });
     } catch (error) {
       log.error(`${logPrefix}.status_update_failed`, { id: record.id, error: describeError(error) });

@@ -165,6 +165,14 @@ describe('POST /api/leads — email-first (v2) and the details token', () => {
     assert.equal(JSON.stringify(log.entries).includes(body.token), false);
   });
 
+  it('stores the first ping\'s chat and message id so the details can edit it', async () => {
+    const fetch = createFakeFetch(() => Response.json({ ok: true, result: { message_id: 77 } }));
+    const { handler, repo } = setup({ env: TELEGRAM_ENV, fetch });
+    await post(handler, { body: emailOnlyBody() });
+    assert.equal(repo.calls.update[0].telegramMessageId, 77);
+    assert.equal(repo.calls.update[0].telegramChatId, TELEGRAM_ENV.TELEGRAM_CHAT_ID);
+  });
+
   it('Telegram message for an email-only lead has no empty Name/Company/Country lines', async () => {
     const fetch = createFakeFetch();
     const { handler } = setup({ env: TELEGRAM_ENV, fetch });

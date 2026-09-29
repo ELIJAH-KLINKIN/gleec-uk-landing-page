@@ -234,7 +234,61 @@ describe('POST /api/leads/details — notifications', () => {
       telegramSentAt: new Date(NOW),
       crmStatus: 'sent',
       crmSentAt: new Date(NOW),
+      telegramChatId: null,
+      telegramMessageId: null,
     });
+  });
+
+  it('edits the first ping into the full lead instead of posting a second message', async () => {
+    const fetch = createFakeFetch();
+    const { handler, repo } = setup({
+      env: TELEGRAM_ENV,
+      fetch,
+      rows: [storedLead({ telegramChatId: '-1001234', telegramMessageId: 77 })],
+    });
+    const { status } = await post(handler, {
+      body: { id: LEAD_ID, token: tokenFor(LEAD_ID), firstName: 'Ada', lastName: 'Lovelace', country: 'Germany' },
+    });
+    assert.equal(status, 200);
+    const calls = fetch.calls.filter((c) => c.url.startsWith('https://api.telegram.org'));
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, `https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageText`);
+    assert.equal(calls[0].json.chat_id, '-1001234');
+    assert.equal(calls[0].json.message_id, 77);
+    assert.equal(
+      calls[0].json.text,
+      [
+        '🇬🇧 <b>UK Business Banking Lead</b>',
+        '',
+        '• Ada Lovelace',
+        '• Germany',
+        '• ada@example.co.uk',
+        '• https://elijah-klinkin.github.io/gleec-uk-landing-page/v2/',
+        '',
+        `Lead ID: ${LEAD_ID}`,
+      ].join('\n'),
+    );
+    assert.equal(repo.calls.update[0].telegramStatus, 'edited');
+  });
+
+  it('posts a separate details message when the first ping can\'t be edited', async () => {
+    const fetch = createFakeFetch((url) =>
+      url.endsWith('/editMessageText')
+        ? Response.json({ ok: false, error_code: 400, description: 'Bad Request: message to edit not found' }, { status: 400 })
+        : Response.json({ ok: true, result: { message_id: 78 } }),
+    );
+    const { handler, repo, log } = setup({
+      env: TELEGRAM_ENV,
+      fetch,
+      rows: [storedLead({ telegramChatId: '-1001234', telegramMessageId: 77 })],
+    });
+    await post(handler, { body: { id: LEAD_ID, token: tokenFor(LEAD_ID), firstName: 'Ada', lastName: 'Lovelace' } });
+    const urls = fetch.calls.filter((c) => c.url.startsWith('https://api.telegram.org')).map((c) => c.url.split('/').pop());
+    assert.deepEqual(urls, ['editMessageText', 'sendMessage']);
+    assert.ok(fetch.calls.at(-1).json.text.startsWith('🇬🇧 <b>UK Business Banking Lead · Details</b>\n'));
+    assert.equal(repo.calls.update[0].telegramStatus, 'sent');
+    assert.equal(repo.calls.update[0].telegramMessageId, null); // the first ping stays the lead's message
+    assert.ok(log.entries.some((e) => e.event === 'telegram.edit_failed'));
   });
 
   it('responds before notifications finish and hands them to waitUntil', async () => {

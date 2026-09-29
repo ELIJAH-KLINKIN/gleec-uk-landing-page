@@ -98,24 +98,12 @@ function redact(text, token) {
   return out.replace(BOT_TOKEN_PATTERN, '[redacted]');
 }
 
-/**
- * Sends one message. Never throws. If the group was upgraded to a supergroup (its chat id
- * changes), Telegram names the new id and the message is resent there once.
- * @returns {Promise<{ ok: true, migratedTo?: string } | { ok: false, error: string }>}
- */
-export async function sendTelegramMessage({ token, chatId, threadId = null, text, fetch, timeoutMs = NOTIFY_TIMEOUT_MS, retried = false }) {
-  const payload = {
-    chat_id: chatId,
-    text,
-    parse_mode: 'HTML',
-    disable_web_page_preview: true,
-  };
-  if (threadId !== null && threadId !== undefined) payload.message_thread_id = threadId;
-
+/** POSTs one Bot API method. Never throws: { ok, data } or { ok: false, error } (token redacted). */
+async function callTelegram({ token, method, payload, fetch, timeoutMs }) {
   try {
     const response = await fetchWithTimeout(
       fetch,
-      `https://api.telegram.org/bot${token}/sendMessage`,
+      `https://api.telegram.org/bot${token}/${method}`,
       {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -129,15 +117,56 @@ export async function sendTelegramMessage({ token, chatId, threadId = null, text
     } catch {
       // non-JSON error page
     }
-    if (response.ok && data && data.ok === true) return { ok: true };
-    const migrateTo = data && data.parameters && data.parameters.migrate_to_chat_id;
-    if (migrateTo && !retried) {
-      const result = await sendTelegramMessage({ token, chatId: String(migrateTo), threadId, text, fetch, timeoutMs, retried: true });
-      return result.ok ? { ok: true, migratedTo: String(migrateTo) } : result;
-    }
+    if (response.ok && data && data.ok === true) return { ok: true, data };
     const detail = data && data.description ? `${response.status} ${data.description}` : `HTTP ${response.status}`;
-    return { ok: false, error: redact(detail, token) };
+    return { ok: false, error: redact(detail, token), data };
   } catch (error) {
     return { ok: false, error: redact(describeError(error), token) };
   }
+}
+
+/**
+ * Sends one message. Never throws. Returns the chat and message id so the message can be
+ * edited later. If the group was upgraded to a supergroup (its chat id changes), Telegram
+ * names the new id and the message is resent there once.
+ * @returns {Promise<{ ok: true, chatId: string, messageId: number | null, migratedTo?: string } | { ok: false, error: string }>}
+ */
+export async function sendTelegramMessage({ token, chatId, threadId = null, text, fetch, timeoutMs = NOTIFY_TIMEOUT_MS, retried = false }) {
+  const payload = {
+    chat_id: chatId,
+    text,
+    parse_mode: 'HTML',
+    disable_web_page_preview: true,
+  };
+  if (threadId !== null && threadId !== undefined) payload.message_thread_id = threadId;
+
+  const result = await callTelegram({ token, method: 'sendMessage', payload, fetch, timeoutMs });
+  if (result.ok) {
+    const messageId = result.data.result?.message_id;
+    return { ok: true, chatId: String(chatId), messageId: Number.isInteger(messageId) ? messageId : null };
+  }
+  const migrateTo = result.data?.parameters?.migrate_to_chat_id;
+  if (migrateTo && !retried) {
+    const moved = await sendTelegramMessage({ token, chatId: String(migrateTo), threadId, text, fetch, timeoutMs, retried: true });
+    return moved.ok ? { ...moved, migratedTo: String(migrateTo) } : moved;
+  }
+  return { ok: false, error: result.error };
+}
+
+/**
+ * Replaces the text of a message the bot sent. Never throws. "Message is not modified"
+ * (same text again) counts as success.
+ * @returns {Promise<{ ok: true } | { ok: false, error: string }>}
+ */
+export async function editTelegramMessage({ token, chatId, messageId, text, fetch, timeoutMs = NOTIFY_TIMEOUT_MS }) {
+  const payload = {
+    chat_id: chatId,
+    message_id: messageId,
+    text,
+    parse_mode: 'HTML',
+    disable_web_page_preview: true,
+  };
+  const result = await callTelegram({ token, method: 'editMessageText', payload, fetch, timeoutMs });
+  if (result.ok || /message is not modified/i.test(result.data?.description || '')) return { ok: true };
+  return { ok: false, error: result.error };
 }

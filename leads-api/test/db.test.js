@@ -104,7 +104,21 @@ describe('createLeadRepo', () => {
       crmSentAt: null,
     });
     assert.equal(db.calls[0].text, SQL.recordNotificationResults);
-    assert.deepEqual(db.calls[0].params, ['id-1', 'sent', '2026-09-26T12:00:02.000Z', 'not_configured', null]);
+    assert.deepEqual(db.calls[0].params, ['id-1', 'sent', '2026-09-26T12:00:02.000Z', 'not_configured', null, null, null]);
+  });
+
+  it('recordNotificationResults keeps the first ping\'s chat and message id (written once)', async () => {
+    const db = recordingDb();
+    await createLeadRepo(db).recordNotificationResults('id-1', {
+      telegramStatus: 'sent',
+      telegramSentAt: null,
+      crmStatus: 'not_configured',
+      crmSentAt: null,
+      telegramChatId: '-1001234',
+      telegramMessageId: 42,
+    });
+    assert.deepEqual(db.calls[0].params.slice(5), ['-1001234', 42]);
+    assert.match(SQL.recordNotificationResults, /telegram_message_id = COALESCE\(\$7::bigint, telegram_message_id\)/);
   });
 
   it('insertLeadUnlessDuplicate sends null for an email-only lead', async () => {
@@ -147,6 +161,8 @@ describe('createLeadRepo', () => {
       first_name: 'Ada',
       last_name: 'Lovelace',
       company_website: 'https://analytical.example',
+      telegram_chat_id: '-1001234',
+      telegram_message_id: '42', // Postgres bigint arrives as a string
     };
 
     it('runs one parameterised statement and maps the updated row to a camelCase record', async () => {
@@ -204,6 +220,8 @@ describe('createLeadRepo', () => {
           consentAt: '2026-09-26T12:00:00.000Z',
           source: { page: 'https://example.com/' },
           detailsAt: '2026-09-26T12:01:00.000Z',
+          telegramChatId: '-1001234',
+          telegramMessageId: 42,
         },
       });
     });
@@ -260,7 +278,7 @@ describe('splitSqlStatements', () => {
       assert.match(statements[1], new RegExp(`alter column ${column} drop not null`));
     }
     assert.match(statements[1], /add column if not exists details_at timestamptz/);
-    assert.match(statements[1], /add column if not exists company_website text$/);
+    assert.match(statements[1], /add column if not exists telegram_message_id bigint$/);
     for (const s of statements.slice(2, 6)) assert.match(s, /create index if not exists/);
     // "Talk to a human": hosts, call requests and their indexes (the unique one blocks double booking).
     assert.match(statements[6], /create table if not exists calendar_hosts/);
