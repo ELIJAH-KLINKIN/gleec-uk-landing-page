@@ -1,0 +1,107 @@
+<!doctype html>
+<!-- ibans.html — the "Named virtual IBANs" card art: a stack of account cards,
+     each with its own avatar and name, the front one (brand purple) showing
+     IBAN-style digit groups. Shares the studio with the other cards. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; background: transparent; }
+    </style>
+    <script type="importmap">
+      { "imports": { "three": "/three/build/three.module.js", "three/addons/": "/three/examples/jsm/" } }
+    </script>
+  </head>
+  <body>
+    <script type="module">
+      import { THREE, scene, mats, lights, contactShadow, roundedRect, camera, finish } from "/studio.js";
+
+      const TILE = { w: 2.6, h: 1.62, d: 0.1, r: 0.22 };
+
+      // Raised marks on the face: a slab with a soft bevel.
+      function raised(shape, mat, depth = 0.028) {
+        const geo = new THREE.ExtrudeGeometry(shape, {
+          depth,
+          bevelEnabled: true,
+          bevelThickness: 0.008,
+          bevelSize: 0.008,
+          bevelSegments: 3,
+          curveSegments: 32,
+        });
+        return new THREE.Mesh(geo, mat);
+      }
+      const pill = (len, h) => roundedRect(len, h, h / 2);
+      const dot = (r) => {
+        const s = new THREE.Shape();
+        s.absarc(0, 0, r, 0, Math.PI * 2, false);
+        return s;
+      };
+
+      function accountCard({ body, accent, soft, name, full }) {
+        const g = new THREE.Group();
+        const bevel = 0.045;
+        const geo = new THREE.ExtrudeGeometry(roundedRect(TILE.w - 2 * bevel, TILE.h - 2 * bevel, TILE.r), {
+          depth: TILE.d,
+          bevelEnabled: true,
+          bevelThickness: bevel,
+          bevelSize: bevel,
+          bevelSegments: 8,
+          curveSegments: 32,
+        });
+        geo.translate(0, 0, -TILE.d / 2);
+        g.add(new THREE.Mesh(geo, body));
+        const face = TILE.d / 2 + bevel - 0.004;
+        const put = (mesh, x, y) => {
+          mesh.position.set(x, y, face);
+          g.add(mesh);
+        };
+        // Top row: avatar and the holder's name (what peeks out of the stack).
+        put(raised(dot(0.17), accent), -0.9, 0.46);
+        put(raised(pill(name, 0.15), accent), -0.62 + name / 2, 0.52);
+        put(raised(pill(name * 0.62, 0.11), soft), -0.62 + (name * 0.62) / 2, 0.33);
+        if (full) {
+          // IBAN-style groups along the bottom.
+          for (let i = 0; i < 4; i++) put(raised(pill(0.44, 0.11), soft), -0.84 + i * 0.56, -0.42);
+        }
+        return g;
+      }
+
+      // Big flat faces turned to the key light: dim the direct light a little.
+      lights.key.intensity = 0.8;
+      lights.hemi.intensity = 0.5;
+      // The face's colour comes mostly from an emissive brand purple; a dark base
+      // colour and a light clearcoat add the shading and highlights.
+      const satinPurple = mats.purple.clone();
+      satinPurple.color.set(0x3a1590);
+      satinPurple.emissive.set(0x6b2be6);
+      satinPurple.metalness = 0;
+      satinPurple.roughness = 0.45;
+      satinPurple.specularIntensity = 0.3;
+      satinPurple.clearcoat = 0.3;
+      satinPurple.clearcoatRoughness = 0.3;
+      satinPurple.envMapIntensity = 0.35;
+      // Neutral tone mapping reads brand purple's full blue channel as a highlight and
+      // bleaches it; a flat face shows that, so this one material skips tone mapping.
+      satinPurple.toneMapped = false;
+
+      const stack = new THREE.Group();
+      const cards = [
+        { body: mats.aluminium, accent: mats.violet, soft: mats.softViolet, name: 0.95, y: 1.0, z: -0.5 },
+        { body: mats.aluminium, accent: mats.violet, soft: mats.softViolet, name: 1.3, y: 0.5, z: -0.25 },
+        { body: satinPurple, accent: mats.white, soft: mats.lilac, name: 1.15, y: 0, z: 0, full: true },
+      ];
+      for (const c of cards) {
+        const m = accountCard(c);
+        m.position.set(0, c.y, c.z);
+        stack.add(m);
+      }
+      stack.rotation.set(-0.5, -0.32, 0.05);
+      stack.position.set(0.3, -0.3, 0);
+      stack.scale.setScalar(1.3);
+      scene.add(stack);
+      contactShadow(0.3, 0.25, 4.4, 1.4);
+
+      finish(camera());
+    </script>
+  </body>
+</html>

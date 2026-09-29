@@ -86,15 +86,10 @@ export const HIGHLIGHTS = {
       id: "ibans",
       eyebrow: "Account details",
       title: "Named virtual IBANs",
-      body: "Dedicated account details where available, intended to help approved businesses separate flows by client, region or product.",
-      notice: {
-        kind: "details",
-        rows: [
-          ["Beneficiary", "ACME Studios Ltd"],
-          ["Sort code", "00-00-00"],
-          ["Account number", "12345678"],
-        ],
-      },
+      body: "Dedicated account details for each client, region or product, so every payment lands where it belongs.",
+      art: "ibans",
+      // One line, like the other cards: the art already shows the stack of details.
+      notice: { kind: "event", flag: "GB", title: "ACME Studios Ltd", detail: "Sort code 00-00-00 · 12345678" },
     },
     {
       id: "uk-rails",

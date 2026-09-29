@@ -21,6 +21,12 @@ const ART = {
     h: 720,
     variants: { light: { shadow: 0.2, exposure: 1 }, dark: { shadow: 0.5, exposure: 1.08 } },
   },
+  ibans: {
+    page: "ibans.html",
+    w: 1008,
+    h: 720,
+    variants: { light: { shadow: 0.2, exposure: 1 }, dark: { shadow: 0.5, exposure: 1.08 } },
+  },
 };
 
 const only = process.argv[2];
