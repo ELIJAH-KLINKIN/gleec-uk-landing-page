@@ -253,7 +253,7 @@ export const TALK_SQL = {
 
   getRequest: `
     SELECT id, created_at, email, first_name, last_name, phone, company, company_website, message, source,
-           status, host_email, start_at, end_at, meet_url
+           status, host_email, start_at, end_at, meet_url, telegram_chat_id, telegram_message_id
     FROM call_requests
     WHERE id = $1::uuid`,
 
@@ -275,7 +275,13 @@ export const TALK_SQL = {
     SET status = 'booked', google_event_id = $2, meet_url = $3, booked_at = now()
     WHERE id = $1::uuid AND status = 'booking'`,
 
-  recordTelegram: `UPDATE call_requests SET telegram_status = $2 WHERE id = $1::uuid`,
+  // The request ping's ids are written once and kept, so the booking can edit that message.
+  recordTelegram: `
+    UPDATE call_requests
+    SET telegram_status = $2,
+        telegram_chat_id = COALESCE($3::text, telegram_chat_id),
+        telegram_message_id = COALESCE($4::bigint, telegram_message_id)
+    WHERE id = $1::uuid`,
 
   upcomingCountsByHost: `
     SELECT host_email, count(*)::int AS count
@@ -314,6 +320,8 @@ function toCallRequest(row) {
     startAt: toIso(row.start_at),
     endAt: toIso(row.end_at),
     meetUrl: row.meet_url ?? null,
+    telegramChatId: row.telegram_chat_id ?? null,
+    telegramMessageId: row.telegram_message_id == null ? null : Number(row.telegram_message_id),
   };
 }
 
@@ -365,8 +373,8 @@ export function createTalkRepo(db) {
     async confirmBooking(id, { eventId, meetUrl }) {
       await db.query(TALK_SQL.confirmBooking, [id, eventId ?? null, meetUrl ?? null]);
     },
-    async recordTelegram(id, status) {
-      await db.query(TALK_SQL.recordTelegram, [id, status]);
+    async recordTelegram(id, status, ping = null) {
+      await db.query(TALK_SQL.recordTelegram, [id, status, ping?.chatId ?? null, ping?.messageId ?? null]);
     },
     /** { 'host@x': 3, … } — booked calls from `since` on. */
     async upcomingCountsByHost(since) {

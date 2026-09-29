@@ -101,10 +101,16 @@ create table if not exists call_requests (
   google_event_id  text,
   meet_url         text,
   booked_at        timestamptz,
-  telegram_status  text,
+  telegram_status  text,                          -- sent | edited | not_configured | failed: <reason>
   constraint call_requests_status_check check (status in ('requested', 'booking', 'booked')),
   constraint call_requests_email_lowercase_check check (email = lower(email))
 );
+
+-- The request's Telegram ping, so the booking can edit it into "Call Booked" (one message
+-- per request). Idempotent, like the leads upgrade above.
+alter table call_requests
+  add column if not exists telegram_chat_id text,
+  add column if not exists telegram_message_id bigint;
 
 -- One call per host per start time: a second booking of the same slot fails here
 -- (the race between two visitors picking the same time at once).

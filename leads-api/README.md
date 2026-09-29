@@ -210,8 +210,9 @@ A new lead posts "🇬🇧 **UK Business Banking Lead**": one unlabelled bullet 
 also sends `lead.created`, and the ping's chat and message id are stored with the lead. Added
 details **edit that ping** into the full lead (one message per lead; Telegram marks it "edited") and
 send `lead.updated`. Only if the ping can't be edited (it was never sent, or Telegram refuses) is a
-separate "🇬🇧 **UK Business Banking Lead · Details**" message posted instead. Call requests and bookings use the same shape ("UK Business Banking Call Request" /
-"Call Booked"). The status columns always hold the outcome of the latest of the two.
+separate "🇬🇧 **UK Business Banking Lead · Details**" message posted instead. Call requests work the same way: one
+"🇬🇧 **UK Business Banking Call Request**" per request, edited into "**Call Booked**" (time, host,
+Meet link) when a time is picked; a new message only if that edit is impossible. The status columns always hold the outcome of the latest of the two.
 
 The IP is stored only as `HMAC-SHA256(IP_HASH_SALT, ip)` (first `x-forwarded-for` entry, else
 `x-real-ip`). Logs carry lead ids and statuses, never names, emails or IPs.

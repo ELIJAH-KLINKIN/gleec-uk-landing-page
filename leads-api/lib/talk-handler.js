@@ -326,6 +326,7 @@ export function createTalkHandler({
         };
         const note = notifyTalk({
           id,
+          edit: { chatId: r.telegramChatId, messageId: r.telegramMessageId },
           text: bookedMessage(r, {
             startAt: booking.start,
             endAt: booking.end,

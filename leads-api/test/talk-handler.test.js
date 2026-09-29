@@ -60,8 +60,10 @@ function createFakeTalkRepo({ hosts = ['ilia@example.com', 'andrey@example.com']
     async confirmBooking(id, { eventId, meetUrl }) {
       Object.assign(rows.get(id), { status: 'booked', eventId, meetUrl });
     },
-    async recordTelegram(id, status) {
-      rows.get(id).telegramStatus = status;
+    async recordTelegram(id, status, ping) {
+      const row = rows.get(id);
+      row.telegramStatus = status;
+      if (ping) Object.assign(row, { telegramChatId: ping.chatId, telegramMessageId: ping.messageId });
     },
     async upcomingCountsByHost() {
       const counts = {};
@@ -84,7 +86,9 @@ function createFakeGoogle({ busy = {}, failEvent = false, idToken = null, tokenS
   const fetch = async (url, init = {}) => {
     const body = typeof init.body === 'string' ? init.body : init.body?.toString();
     calls.push({ url: String(url), init, body });
-    if (url.startsWith('https://api.telegram.org/')) return Response.json({ ok: true, result: {} });
+    if (url.startsWith('https://api.telegram.org/')) {
+      return Response.json({ ok: true, result: url.endsWith('/sendMessage') ? { message_id: 500 + calls.length } : {} });
+    }
     if (url === 'https://oauth2.googleapis.com/token') {
       const p = new URLSearchParams(body);
       if (p.get('grant_type') === 'refresh_token') {
@@ -245,8 +249,28 @@ describe('POST /api/talk/book', () => {
     assert.equal(event.conferenceData.createRequest.conferenceSolutionKey.type, 'hangoutsMeet');
     assert.match(event.description, /not currently authorised by the FCA/);
     assert.equal(ctx.repo.rows.get(data.id).status, 'booked');
+    // One message per request: the request ping is edited into "Call Booked".
     const pings = ctx.google.calls.filter((c) => c.url.includes('api.telegram.org'));
-    assert.match(JSON.parse(pings.at(-1).body).text, /^🇬🇧 <b>UK Business Banking Call Booked<\/b>\n\n<b>.+<\/b>\n• with /);
+    assert.deepEqual(pings.map((c) => c.url.split('/').pop()), ['sendMessage', 'editMessageText']);
+    const row = ctx.repo.rows.get(data.id);
+    const edit = JSON.parse(pings[1].body);
+    assert.equal(edit.chat_id, TELEGRAM_ENV.TELEGRAM_CHAT_ID);
+    assert.equal(edit.message_id, row.telegramMessageId);
+    assert.ok(edit.text.startsWith('🇬🇧 <b>UK Business Banking Call Booked</b>\n\n• Ada Lovelace\n'));
+    assert.match(edit.text, /\n<b>Tue 29 Sept?, 10:00–10:20 \(London\)<\/b> with Andrey\nhttps:\/\/meet\.google\.com\/abc-defg-hij$/);
+    assert.equal(edit.text.includes('Choosing a time'), false);
+    assert.equal(row.telegramStatus, 'edited');
+  });
+
+  it('posts "Call Booked" as a new message when the request ping can\'t be edited', async () => {
+    const ctx = setup();
+    const { data } = await createRequest(ctx);
+    ctx.repo.rows.get(data.id).telegramMessageId = null; // e.g. the request ping never went out
+    await book(ctx, { id: data.id, token: data.token, start: TUE_10 });
+    const pings = ctx.google.calls.filter((c) => c.url.includes('api.telegram.org'));
+    assert.deepEqual(pings.map((c) => c.url.split('/').pop()), ['sendMessage', 'sendMessage']);
+    assert.ok(JSON.parse(pings[1].body).text.startsWith('🇬🇧 <b>UK Business Banking Call Booked</b>'));
+    assert.equal(ctx.repo.rows.get(data.id).telegramStatus, 'sent');
   });
 
   it('is idempotent: booking again returns the same call', async () => {
