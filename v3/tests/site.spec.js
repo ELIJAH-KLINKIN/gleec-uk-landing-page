@@ -682,7 +682,8 @@ test("waitlist: join with email, then add details", async ({ page }) => {
   await expect(country).toContainText("Choose…");
   await country.click();
   const list = section.getByRole("listbox");
-  await expect(list.getByRole("option")).toHaveCount(33);
+  await expect(list.getByRole("option")).toHaveCount(37);
+  await expect(list.getByRole("option").nth(4)).toHaveText("Jersey");
   await expect(list.getByRole("option").first()).toHaveText("United Kingdom");
   await expect(list.getByRole("option").last()).toHaveText("Other");
   await list.getByRole("option", { name: "Germany" }).click();
@@ -740,7 +741,9 @@ test("waitlist: the country picker works from the keyboard and closes on Escape 
 
   // Every option has its own round flag, and the list stays inside the screen.
   await country.click();
-  await expect(list.locator("svg.flag")).toHaveCount(33);
+  await expect(list.locator("svg.flag")).toHaveCount(37);
+  // Real artwork for every country (only "Other" is the globe).
+  await expect(list.locator("svg.flag rect[fill='#5E5CE6']")).toHaveCount(1);
   const box = await list.boundingBox();
   const width = page.viewportSize().width;
   expect(box.x).toBeGreaterThanOrEqual(0);

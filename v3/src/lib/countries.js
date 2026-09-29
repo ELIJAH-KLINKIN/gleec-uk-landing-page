@@ -1,8 +1,13 @@
-// countries.js — countries a company can pick in the waitlist details step:
-// the UK first, then the EEA and Switzerland, then "Other". `name` is what the
-// API stores and sales sees; `code` picks the flag (GL = globe).
+// countries.js — countries a company can pick in the waitlist details step: the UK
+// first, then the Crown Dependencies and Gibraltar, then the EEA and Switzerland,
+// then "Other". `name` is what the API stores and sales sees; `code` picks the flag
+// (GL = globe).
 export const COUNTRIES = [
   { code: "GB", name: "United Kingdom" },
+  { code: "GI", name: "Gibraltar" },
+  { code: "GG", name: "Guernsey" },
+  { code: "IM", name: "Isle of Man" },
+  { code: "JE", name: "Jersey" },
   { code: "AT", name: "Austria" },
   { code: "BE", name: "Belgium" },
   { code: "BG", name: "Bulgaria" },

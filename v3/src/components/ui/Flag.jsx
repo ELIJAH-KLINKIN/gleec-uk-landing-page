@@ -5,7 +5,7 @@ import { useId } from "react";
 
 // Only these flags are bundled; add a code here to use it anywhere on the site.
 const RAW = import.meta.glob(
-  "/node_modules/circle-flags/flags/{gb,eu,us,ch,ca,au,dk,se,no,pl,cz,hu,jp,at,be,bg,hr,cy,ee,fi,fr,de,gr,is,ie,it,lv,li,lt,lu,mt,nl,pt,ro,sk,si,es}.svg",
+  "/node_modules/circle-flags/flags/{gb,eu,us,ch,ca,au,dk,se,no,pl,cz,hu,jp,at,be,bg,hr,cy,ee,fi,fr,de,gr,is,ie,it,lv,li,lt,lu,mt,nl,pt,ro,sk,si,es,gi,gg,im,je}.svg",
   { query: "?raw", import: "default", eager: true },
 );
 
