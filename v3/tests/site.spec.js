@@ -695,7 +695,7 @@ test("waitlist: pill field, live count and target launch", async ({ page }) => {
   await expect(form.getByText("Target launch 2027, subject to FCA authorisation")).toBeVisible();
 });
 
-test("waitlist: product updates are a separate, unticked opt-in, with the privacy policy linked", async ({ page }) => {
+test("waitlist: product updates are a separate, unticked opt-in, with no paragraph under the form", async ({ page }) => {
   const bodies = [];
   await page.route(LEADS_API, async (route) => {
     bodies.push(route.request().postDataJSON());
@@ -705,7 +705,10 @@ test("waitlist: product updates are a separate, unticked opt-in, with the privac
   const form = page.locator("#waitlist form");
   const updates = form.getByRole("checkbox", { name: "Send me product updates" });
   await expect(updates).not.toBeChecked();
-  await expect(form.getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
+  // The footer's Privacy policy link covers it; nothing under the form.
+  await expect(form.getByRole("link", { name: "Privacy policy" })).toHaveCount(0);
+  await expect(form).not.toContainText("only to contact you");
+  await expect(page.locator("footer").getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
   await expect(form).not.toContainText("By joining, you agree");
 
   await form.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");

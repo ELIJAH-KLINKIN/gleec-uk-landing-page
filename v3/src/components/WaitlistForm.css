@@ -91,9 +91,6 @@
   font-weight: 600;
   color: var(--label);
 }
-.wl-consent-note {
-  max-width: 500px;
-}
 /* "Send me product updates": a separate, unticked opt-in under the field. */
 .wl-updates {
   display: inline-flex;
