@@ -33,6 +33,11 @@ export default function Footer({ home = true }) {
         <div className="footer-bottom">
           <p>{FOOTER.copyright}</p>
           <div className="footer-meta">
+            {COMPANY.email ? (
+              <a className="footer-social" href={`mailto:${COMPANY.email}`}>
+                {COMPANY.email}
+              </a>
+            ) : null}
             {COMPANY.linkedin ? (
               <a className="footer-social" href={COMPANY.linkedin} rel="noopener noreferrer" target="_blank">
                 <LinkedInMark />

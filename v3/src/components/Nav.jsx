@@ -98,7 +98,7 @@ export default function Nav({ home = true }) {
         <a
           className="nav-brand"
           href="/"
-          aria-label={home ? "GLEEC Business, back to top" : "GLEEC Business, home"}
+          aria-label={home ? "Gleec Business, back to top" : "Gleec Business, home"}
           onClick={(e) => {
             setOpen(false);
             if (!home) return;
@@ -110,7 +110,7 @@ export default function Nav({ home = true }) {
         >
           <img src={logo} alt="" width="15" height="20" />
           <span>
-            GLEEC <span className="nav-brand-accent">Business</span>
+            Gleec <span className="nav-brand-accent">Business</span>
           </span>
         </a>
         <ul className="nav-links" ref={linksRef}>

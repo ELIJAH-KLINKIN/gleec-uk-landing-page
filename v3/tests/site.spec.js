@@ -27,9 +27,17 @@ test("prerendered HTML and metadata", async ({ page, request }) => {
   expect(html).toContain("for companies that don’t fit the default box.");
   expect(html).toContain('id="waitlist"');
   await page.goto("./");
-  await expect(page).toHaveTitle(/GLEEC Business/);
+  await expect(page).toHaveTitle(/Gleec Business/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /^https:\/\/.+og-image\.png$/);
+  // The shared-link preview travels without the page, so it carries the FCA qualifier itself.
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
+    "content",
+    /subject to FCA authorisation/,
+  );
+  // One brand spelling everywhere: "Gleec Business", never "GLEEC Business".
+  expect(html).not.toContain("GLEEC");
+  expect(await page.content()).not.toContain("GLEEC");
   await expect(page.locator('meta[name="theme-color"]')).toHaveCount(2);
   await expect(page.locator("h1")).toHaveCount(1);
 });
@@ -326,10 +334,10 @@ const LEGAL = [
 
 test("footer: LinkedIn slot is a placeholder until the page URL is set", async ({ page }) => {
   await page.goto("./#legal");
-  const social = page.locator(".footer-social");
+  const social = page.locator(".footer-social", { hasText: "LinkedIn" });
   await expect(social).toContainText("LinkedIn");
   // No URL yet: shown as "Soon", never as a dead link.
-  await expect(page.locator("footer a.footer-social")).toHaveCount(0);
+  await expect(page.locator("footer a.footer-social", { hasText: "LinkedIn" })).toHaveCount(0);
   await expect(social.locator(".soon")).toHaveText("Soon");
 });
 
@@ -361,7 +369,7 @@ test("the site stores nothing on the device (matches the cookie policy)", async 
 for (const [path, title, text] of LEGAL) {
   test(`legal page ${path}: prerendered, titled, linked back home`, async ({ page, request }, testInfo) => {
     const html = await (await request.get(path)).text();
-    expect(html, "own <title>").toContain(`<title>${title} — GLEEC Business</title>`);
+    expect(html, "own <title>").toContain(`<title>${title} — Gleec Business</title>`);
     expect(html, "own canonical URL").toMatch(new RegExp(`rel="canonical" href="[^"]*${path}"`));
     expect(html, "prerendered body").toContain(text);
 
@@ -605,7 +613,7 @@ test("footer carries the company's legal details", async ({ page }) => {
 const STATS_API = "https://leads-api.test/api/stats";
 const DETAILS_API = `${LEADS_API}/details`;
 
-test("waitlist: pill field, live count and planned launch", async ({ page }) => {
+test("waitlist: pill field, live count and target launch", async ({ page }) => {
   await page.route(STATS_API, (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true,"companies":1284}' }),
   );
@@ -614,13 +622,49 @@ test("waitlist: pill field, live count and planned launch", async ({ page }) => 
   await expect(form.getByRole("textbox", { name: "Work email" })).toBeVisible();
   await expect(form.getByRole("button", { name: "Join" })).toBeDisabled();
   await expect(form.getByText("1,284 companies on the list")).toBeVisible();
-  await expect(form.getByText("Planned launch: Q2 2027")).toBeVisible();
+  await expect(form.getByText("Target launch 2027, subject to FCA authorisation")).toBeVisible();
+});
+
+test("waitlist: product updates are a separate, unticked opt-in, with the privacy policy linked", async ({ page }) => {
+  const bodies = [];
+  await page.route(LEADS_API, async (route) => {
+    bodies.push(route.request().postDataJSON());
+    await route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1"}' });
+  });
+  await page.goto("./#waitlist");
+  const form = page.locator("#waitlist form");
+  const updates = form.getByRole("checkbox", { name: "Send me product updates" });
+  await expect(updates).not.toBeChecked();
+  await expect(form.getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
+  await expect(form).not.toContainText("By joining, you agree");
+
+  await form.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await form.getByRole("button", { name: "Join" }).click();
+  await expect.poll(() => bodies.length).toBe(1);
+  expect(bodies[0]).toMatchObject({ consent: true, updates: false });
+
+  await page.reload();
+  await page.locator("#waitlist form").getByRole("checkbox", { name: "Send me product updates" }).check();
+  await page.locator("#waitlist form").getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await page.locator("#waitlist form").getByRole("button", { name: "Join" }).click();
+  await expect.poll(() => bodies.length).toBe(2);
+  expect(bodies[1]).toMatchObject({ updates: true });
+});
+
+test("company email is in the footer and on the contact page", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator(".footer").getByRole("link", { name: "hello@gleecpay.co.uk" })).toHaveAttribute(
+    "href",
+    "mailto:hello@gleecpay.co.uk",
+  );
+  await page.goto("/contact/");
+  await expect(page.locator("main").getByRole("link", { name: "hello@gleecpay.co.uk" }).first()).toBeVisible();
 });
 
 test("waitlist: count is hidden when unavailable", async ({ page }) => {
   await page.route(STATS_API, (route) => route.fulfill({ status: 503, body: "{}" }));
   await page.goto("./#waitlist");
-  await expect(page.locator("#waitlist").getByText("Planned launch: Q2 2027")).toBeVisible();
+  await expect(page.locator("#waitlist").getByText("Target launch 2027, subject to FCA authorisation")).toBeVisible();
   await expect(page.locator("#waitlist").getByText(/on the list/)).toHaveCount(0);
 });
 

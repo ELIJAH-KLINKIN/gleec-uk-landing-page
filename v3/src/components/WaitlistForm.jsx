@@ -54,6 +54,7 @@ export default function WaitlistForm() {
   const [skipped, setSkipped] = useState(false);
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
+  const [updates, setUpdates] = useState(false); // "Send me product updates", unticked by default
   const [emailError, setEmailError] = useState("");
   const [lead, setLead] = useState(null); // { id, token }
   const [details, setDetails] = useState(EMPTY_DETAILS);
@@ -102,7 +103,7 @@ export default function WaitlistForm() {
     }
     setBusy(true);
     try {
-      const res = await joinWaitlist({ email, website }, { startedAt: startedAt.current });
+      const res = await joinWaitlist({ email, website, updates }, { startedAt: startedAt.current });
       setLead({ id: res.id, token: res.token });
       setSkipped(!res.token);
       setStep(res.token ? "details" : "done");
@@ -351,6 +352,11 @@ export default function WaitlistForm() {
       ) : null}
       {serverAlert}
 
+      <label className="wl-updates">
+        <input type="checkbox" name="updates" checked={updates} onChange={(e) => setUpdates(e.target.checked)} />
+        {WAITLIST.updates}
+      </label>
+
       <p className="wl-meta">
         {showCount ? (
           <>
@@ -361,7 +367,7 @@ export default function WaitlistForm() {
         <span>{WAITLIST.launch}</span>
       </p>
       <p className="footnote wl-consent-note" id={id("consent")}>
-        {WAITLIST.consent}
+        {WAITLIST.consent} See our <a href="/privacy/">Privacy policy</a>.
       </p>
     </form>
   );

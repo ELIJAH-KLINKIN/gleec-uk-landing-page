@@ -113,7 +113,7 @@ export default function Hero() {
                 <span />
                 <span />
               </span>
-              <span className="demo-window-title">GLEEC Business</span>
+              <span className="demo-window-title">Gleec Business</span>
             </div>
             <div
               className="demo-screens"
@@ -129,7 +129,7 @@ export default function Hero() {
                   size={DEMO_SIZE}
                   active={i === active}
                   eager={i === 0}
-                  alt={`GLEEC Business app, ${d.label.toLowerCase()} screen (illustrative)`}
+                  alt={`Gleec Business app, ${d.label.toLowerCase()} screen (illustrative)`}
                 />
               ))}
             </div>

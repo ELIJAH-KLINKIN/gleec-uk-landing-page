@@ -1,5 +1,5 @@
 /* ============================================================
-   GLEEC Business v2 — design tokens
+   Gleec Business v2 — design tokens
    Modelled on Apple's Human Interface Guidelines: semantic colours
    that swap for light / dark appearance, one type ramp, a 4-pt
    spacing grid and concentric radii. Components use only these.
@@ -25,7 +25,7 @@
   --fill: rgba(120, 120, 128, 0.12); /* control track, chip */
   --fill-2: rgba(120, 120, 128, 0.2);
 
-  /* Brand tint (GLEEC purple) — the one action colour. */
+  /* Brand tint (Gleec purple) — the one action colour. */
   --tint: #8c41ff; /* filled-button background: white text 4.9:1 */
   --tint-pressed: #7a2ef5;
   --tint-text: #7a2ef5; /* links / tinted text: 5.9:1 on white */

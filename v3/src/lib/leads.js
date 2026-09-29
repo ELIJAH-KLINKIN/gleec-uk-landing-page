@@ -69,11 +69,13 @@ async function post(url, payload) {
   throw new LeadError("server");
 }
 
-// Step 1: join with an email. Joining is the consent action (notice shown by the button).
-export function joinWaitlist({ email, website }, { startedAt }) {
+// Step 1: join with an email. Joining = "contact me about onboarding" (the notice under the
+// button); product updates are a separate opt-in (`updates`, unticked by default).
+export function joinWaitlist({ email, website, updates = false }, { startedAt }) {
   return post(LEADS_ENDPOINT, {
     email: email.trim(),
     consent: true,
+    updates: updates === true,
     website,
     startedAt,
     source: sourceInfo(),

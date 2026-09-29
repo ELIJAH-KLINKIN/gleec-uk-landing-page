@@ -59,17 +59,17 @@ const SECTIONS = [
         rows={[
           [
             "Contact details",
-            "Your work email address (required to join the waitlist). Optionally your full name and phone number.",
+            "Your work email address (required to join the waitlist). Optionally your first and last name.",
             "You",
           ],
           [
             "Business details (optional)",
-            "Company name, country of incorporation, type of business, expected monthly payment volume, currencies you need, and any message you send us.",
+            "Company name and website, country of incorporation, any message you send us, and which of our business-type links you followed to the form, if any.",
             "You",
           ],
           [
             "Registration details",
-            "When you registered, the page you registered from, the website that referred you, and campaign tags in the link you followed (for example, utm_source).",
+            "When you registered, whether you asked for product updates (and when), the page you registered from, the website that referred you, and campaign tags in the link you followed (for example, utm_source).",
             "Your browser, when you submit the form",
           ],
           [
@@ -114,8 +114,8 @@ const SECTIONS = [
               "Legitimate interests: discussing a possible business relationship you asked about",
             ],
             [
-              "Send product news and updates",
-              "Your consent where the law requires it (for example, if you are a sole trader). Otherwise, legitimate interests. You can opt out at any time.",
+              "Send product news and updates, only if you ticked “Send me product updates”",
+              "Your consent. You can withdraw it at any time by replying to any update or writing to us.",
             ],
             [
               "Protect the website and the waitlist from spam, abuse and fraud",

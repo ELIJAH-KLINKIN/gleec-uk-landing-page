@@ -94,6 +94,24 @@
 .wl-consent-note {
   max-width: 500px;
 }
+/* "Send me product updates": a separate, unticked opt-in under the field. */
+.wl-updates {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--hit);
+  font-size: var(--t-subhead);
+  color: var(--label);
+  cursor: pointer;
+}
+.wl-updates input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--tint);
+  cursor: pointer;
+}
 
 /* ---------- Step 2 & 3: card ---------- */
 .wl-card {

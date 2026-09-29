@@ -41,7 +41,7 @@ export default function Accounts() {
 
         <div className="app-window squircle" aria-hidden="true">
           <aside className="app-sidebar">
-            <span className="app-sidebar-title">GLEEC Business</span>
+            <span className="app-sidebar-title">Gleec Business</span>
             <ul>
               {SIDEBAR.map((item, i) => (
                 <li key={item} className={i === 0 ? "is-selected" : undefined}>

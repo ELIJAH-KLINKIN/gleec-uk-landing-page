@@ -13,13 +13,12 @@ export const NAV = [
 // The legal entity behind the site. Used by the footer and the legal pages.
 export const COMPANY = {
   name: "Gleec Pay Ltd",
-  brand: "GLEEC Business",
+  brand: "Gleec Business",
   number: "14776628",
   registeredIn: "England and Wales",
   office: ["Tower 42", "25 Old Broad Street", "London EC2N 1HN", "United Kingdom"],
-  // Set once a mailbox exists on gleecpay.co.uk; until then the legal pages
-  // give the postal address as the contact route.
-  email: null,
+  // Shown in the footer and on every legal page (contact, complaints, privacy…).
+  email: "hello@gleecpay.co.uk",
   // Company page URL. Until it is set, the footer shows a "Soon" placeholder
   // instead of a link.
   linkedin: null,
@@ -155,7 +154,7 @@ export const HIGHLIGHTS = {
 export const PARTNERS = {
   eyebrow: "Infrastructure",
   title: "Built upon experienced financial infrastructure partners.",
-  lead: "GLEEC Business is being built upon regulated banking, payment, card and compliance infrastructure. Logos reflect intended integrations and ongoing provider discussions — not confirmed or live partnerships, and not an endorsement by any provider.",
+  lead: "Gleec Business is being built upon regulated banking, payment, card and compliance infrastructure. Logos reflect intended integrations and ongoing provider discussions — not confirmed or live partnerships, and not an endorsement by any provider.",
   names: ["ClearBank", "Banking Circle", "Sumsub", "Card scheme"],
 };
 
@@ -435,7 +434,7 @@ export const CARDS = {
         "Track every transaction from one workspace",
       ],
       notice: {
-        app: "GLEEC Business",
+        app: "Gleec Business",
         merchant: "openai",
         title: "OpenAI · Subscription",
         detail: "Virtual · Marketing · within limit",
@@ -452,7 +451,7 @@ export const CARDS = {
         "Keep card activity visible in one workspace",
       ],
       notice: {
-        app: "GLEEC Business",
+        app: "Gleec Business",
         merchant: "booking",
         title: "Booking.com · Travel",
         detail: "Physical · Travel team · within limit",
@@ -466,7 +465,7 @@ export const CARDS = {
 export const SEGMENTS = {
   eyebrow: "Who it’s for",
   title: "Built for businesses traditional banking leaves behind.",
-  lead: "GLEEC Business is for companies that often struggle to open or keep a business bank account — including regulated digital-asset businesses that need fiat GBP, EUR and USD accounts. Gleec Pay Ltd provides fiat services only and does not handle cryptoassets. Where high-street banks see complexity, we see customers worth serving.",
+  lead: "Gleec Business is for companies that often struggle to open or keep a business bank account — including regulated digital-asset businesses that need fiat GBP, EUR and USD accounts. Gleec Pay Ltd provides fiat services only and does not handle cryptoassets. Where high-street banks see complexity, we see customers worth serving.",
   items: [
     {
       id: "local",
@@ -552,7 +551,7 @@ export const PLANS = {
 export const CONTROLS = {
   eyebrow: "Controls",
   title: "Designed for regulated, high-control payments.",
-  lead: "GLEEC Business is being built with KYB, screening, monitoring, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
+  lead: "Gleec Business is being built with KYB, screening, monitoring, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
   items: [
     {
       icon: "shield-check",
@@ -580,21 +579,23 @@ export const CONTROLS = {
 export const WAITLIST = {
   // Step 1 — email only.
   eyebrow: "Waitlist",
-  title: "Be first to know when accounts open.",
-  lead: "Leave your work email and we’ll let you know as soon as GLEEC Business opens to eligible companies.",
+  title: "We’ll contact eligible companies as onboarding opens.",
+  lead: "Leave your work email to register your interest in Gleec Business.",
   emailLabel: "Work email",
   emailPlaceholder: "Work email",
   join: "Join",
   joining: "Joining…",
-  // Shown under the field. Launch date is a planning estimate — confirm before go-live.
-  launch: "Planned launch: Q2 2027",
+  // Shown under the field. A target, not a promise: launch depends on FCA authorisation.
+  launch: "Target launch 2027, subject to FCA authorisation",
   count: (n) => `${n.toLocaleString("en-GB")} ${n === 1 ? "company" : "companies"} on the list`,
+  // Joining only means "tell me when onboarding opens"; marketing is a separate, unticked box.
+  updates: "Send me product updates",
   consent:
-    "By joining, you agree that Gleec Pay Ltd may contact you about GLEEC Business. The service isn’t available yet and is subject to FCA authorisation and onboarding approval. Registering interest is not an application for a regulated service.",
+    "We’ll use your email only to contact you about onboarding, and to send product updates if you tick the box. The service isn’t available yet and is subject to FCA authorisation and onboarding approval. Registering interest is not an application for a regulated service.",
 
   // Step 2 — optional details (sales uses these to prepare a setup).
   joinedTitle: "You’re on the list.",
-  joinedBody: "We’ll email you as soon as GLEEC Business opens to eligible companies.",
+  joinedBody: "We’ll contact you as onboarding opens to eligible companies.",
   detailsTitle: "Need a tailored setup?",
   detailsLead:
     "Only your name is required. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
@@ -602,7 +603,7 @@ export const WAITLIST = {
   sending: "Sending…",
   skip: "Not Now",
   doneTitle: "Thanks — we’ll be in touch.",
-  doneBody: "We’ll use these details to prepare for your onboarding once GLEEC Business opens.",
+  doneBody: "We’ll use these details to prepare, once onboarding opens.",
 };
 
 // "Talk to a human": email → about you → pick a time (Google Meet), after the FAQ.
