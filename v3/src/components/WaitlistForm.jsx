@@ -1,40 +1,37 @@
 // WaitlistForm.jsx — email-first waitlist.
 //   1. Join: a pill-shaped email field + Join button, with the live count of
 //      companies on the list and the planned launch underneath.
-//   2. Details (optional): company details that help sales prepare a setup.
+//   2. Details (optional): name, then country, company, website and a note.
 //   3. Done.
 // Posts to the lead-intake API (../../leads-api): the lead is stored, the
 // sales Telegram channel is alerted and the CRM webhook fires.
 import { useEffect, useId, useRef, useState } from "react";
 import { WAITLIST } from "../content.js";
 import {
-  BUSINESS_TYPES,
-  CURRENCIES,
   LeadError,
-  MONTHLY_VOLUMES,
   fetchWaitlistCount,
-  hasAnyDetail,
   joinWaitlist,
   sendDetails,
   validateDetails,
   validateEmail,
 } from "../lib/leads.js";
 import { PREFILL_EVENT } from "../lib/prefill.js";
+import CountrySelect from "./ui/CountrySelect.jsx";
 import Icon from "./ui/Icon.jsx";
 import "./WaitlistForm.css";
 
 // Hide the count until the list is big enough to be worth showing.
 const MIN_COUNT = Number(import.meta.env.VITE_WAITLIST_MIN_COUNT || 1);
 
+// In the order the fields appear (the first field with an error gets focus).
 const EMPTY_DETAILS = {
-  fullName: "",
-  company: "",
+  firstName: "",
+  lastName: "",
   country: "",
-  phone: "",
-  businessType: "",
-  currencies: [],
-  monthlyVolume: "",
+  company: "",
+  companyWebsite: "",
   message: "",
+  businessType: "", // set by a segment CTA, never shown
 };
 
 const SERVER_MESSAGES = {
@@ -132,12 +129,6 @@ export default function WaitlistForm() {
     if (!(name in EMPTY_DETAILS)) return;
     setErrors((prev) => ({ ...prev, [name]: validateDetails(details)[name] }));
   };
-  const toggleCurrency = (code) =>
-    setDetail(
-      "currencies",
-      details.currencies.includes(code) ? details.currencies.filter((c) => c !== code) : [...details.currencies, code],
-    );
-
   const focusDetail = (errs) => {
     const first = Object.keys(EMPTY_DETAILS).find((k) => errs[k]);
     if (first) detailsRef.current?.querySelector(`[name="${first}"]`)?.focus();
@@ -212,25 +203,14 @@ export default function WaitlistForm() {
           {errors[name]}
         </p>
       ) : null;
-    const label = (name, text) => (
-      <label className="wl-label" htmlFor={id(name)}>
-        {text}
-      </label>
-    );
-    const select = (name, text, options) => (
+    const input = (name, text, extra = {}, optional = true) => (
       <div className="wl-field">
-        {label(name, text)}
-        <div className="wl-select">
-          <select {...field(name)}>
-            <option value="">Choose…</option>
-            {options.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-          <Icon name="chevron-down" size={16} strokeWidth={2.4} />
-        </div>
+        <label className="wl-label" htmlFor={id(name)}>
+          {text}
+          {optional ? <span className="wl-optional"> (optional)</span> : null}
+        </label>
+        <input {...field(name, extra)} />
+        {error(name)}
       </div>
     );
 
@@ -246,83 +226,45 @@ export default function WaitlistForm() {
         <p className="wl-card-body">{WAITLIST.detailsLead}</p>
 
         <form ref={detailsRef} className="wl-form" noValidate onSubmit={onSendDetails} aria-busy={busy}>
-          <fieldset className="wl-group">
-            <legend className="wl-group-title">About you</legend>
-            <div className="wl-field">
-              {label("fullName", "Full name")}
-              <input {...field("fullName")} type="text" autoComplete="name" maxLength={120} />
-              {error("fullName")}
-            </div>
-            <div className="wl-field">
-              {label("phone", "Phone")}
-              <input
-                {...field("phone")}
-                type="tel"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={40}
-                placeholder="+44 20 7946 0000"
-              />
-              {error("phone")}
-            </div>
-          </fieldset>
-
-          <fieldset className="wl-group">
-            <legend className="wl-group-title">Your company</legend>
-            <div className="wl-field">
-              {label("company", "Company name")}
-              <input {...field("company")} type="text" autoComplete="organization" maxLength={160} />
-              {error("company")}
-            </div>
-            <div className="wl-field">
-              {label("country", "Country of incorporation")}
-              <input
-                {...field("country")}
-                type="text"
-                autoComplete="country-name"
-                maxLength={80}
-                placeholder="United Kingdom"
-              />
-              {error("country")}
-            </div>
-            {select("businessType", "Business type", BUSINESS_TYPES)}
-            {select("monthlyVolume", "Expected monthly volume", MONTHLY_VOLUMES)}
-            <div className="wl-field" role="group" aria-labelledby={id("currencies-label")}>
-              <span className="wl-label" id={id("currencies-label")}>
-                Currencies you need
-              </span>
-              <div className="wl-toggles">
-                {CURRENCIES.map((code) => {
-                  const on = details.currencies.includes(code);
-                  return (
-                    <button
-                      key={code}
-                      type="button"
-                      className={"wl-toggle" + (on ? " is-on" : "")}
-                      aria-pressed={on}
-                      onClick={() => toggleCurrency(code)}
-                    >
-                      {on ? <Icon name="check" size={14} strokeWidth={2.6} /> : null}
-                      {code}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset className="wl-group">
-            <legend className="wl-group-title">Anything else</legend>
-            <div className="wl-field">
-              {label("message", "Message")}
-              <textarea {...field("message")} rows={4} maxLength={2000} />
-              {error("message")}
-            </div>
-          </fieldset>
+          <div className="wl-row">
+            {input("firstName", "First name", { type: "text", autoComplete: "given-name", maxLength: 60 }, false)}
+            {input("lastName", "Last name", { type: "text", autoComplete: "family-name", maxLength: 60 }, false)}
+          </div>
+          <div className="wl-field">
+            <span className="wl-label" id={id("country-label")}>
+              Country of incorporation<span className="wl-optional"> (optional)</span>
+            </span>
+            <CountrySelect
+              id={id("country")}
+              name="country"
+              labelId={id("country-label")}
+              value={details.country}
+              onChange={(v) => setDetail("country", v)}
+            />
+          </div>
+          <div className="wl-row">
+            {input("company", "Company name", { type: "text", autoComplete: "organization", maxLength: 160 })}
+            {input("companyWebsite", "Company website", {
+              type: "text",
+              inputMode: "url",
+              autoComplete: "url",
+              autoCapitalize: "none",
+              spellCheck: false,
+              maxLength: 200,
+              placeholder: "acme.com",
+            })}
+          </div>
+          <div className="wl-field">
+            <label className="wl-label" htmlFor={id("message")}>
+              Anything else we should know?<span className="wl-optional"> (optional)</span>
+            </label>
+            <textarea {...field("message")} rows={3} maxLength={2000} />
+            {error("message")}
+          </div>
 
           <div className="wl-actions">
             <div className="wl-actions-row">
-              <button type="submit" className="btn btn-filled btn-large" disabled={busy || !hasAnyDetail(details)}>
+              <button type="submit" className="btn btn-filled btn-large" disabled={busy}>
                 {busy ? (
                   <>
                     <Icon name="loader" size={18} className="wl-spin" /> {WAITLIST.sending}

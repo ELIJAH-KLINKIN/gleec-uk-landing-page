@@ -186,7 +186,10 @@ const TALK_DAYS = [
   { date: "2026-09-29", slots: ["2026-09-29T09:00:00.000Z", "2026-09-29T09:30:00.000Z"] },
   { date: "2026-09-30", slots: ["2026-09-30T13:00:00.000Z"] },
   // A full week of days, so the scrolling day row is wider than a phone screen.
-  ...["2026-10-01", "2026-10-02", "2026-10-05", "2026-10-06"].map((date) => ({ date, slots: [`${date}T09:00:00.000Z`] })),
+  ...["2026-10-01", "2026-10-02", "2026-10-05", "2026-10-06"].map((date) => ({
+    date,
+    slots: [`${date}T09:00:00.000Z`],
+  })),
 ];
 
 async function mockTalk(page, { available = true, bookStatus = 200 } = {}) {
@@ -663,23 +666,85 @@ test("waitlist: join with email, then add details", async ({ page }) => {
   });
   expect(joinBody.startedAt).toBeGreaterThan(0);
 
+  // Only first and last name are required; no section sub-headers, no old fields.
+  await expect(section.locator("legend")).toHaveCount(0);
+  for (const gone of ["Phone", "Business type", "Expected monthly volume", "Currencies you need", "Message"])
+    await expect(section.getByText(gone, { exact: true })).toHaveCount(0);
   const send = section.getByRole("button", { name: "Send Details" });
-  await expect(send).toBeDisabled();
-  await section.getByLabel("Full name").fill("Ada Lovelace");
+  await send.click();
+  await expect(section.getByText("Enter your first name.")).toBeVisible();
+  await expect(section.getByLabel("First name")).toBeFocused();
+  expect(detailsBody).toBeUndefined();
+
+  await section.getByLabel("First name").fill("Ada");
+  await section.getByLabel("Last name").fill("Lovelace");
+  const country = section.getByRole("button", { name: /Country of incorporation/ });
+  await expect(country).toContainText("Choose…");
+  await country.click();
+  const list = section.getByRole("listbox");
+  await expect(list.getByRole("option")).toHaveCount(33);
+  await expect(list.getByRole("option").first()).toHaveText("United Kingdom");
+  await expect(list.getByRole("option").last()).toHaveText("Other");
+  await list.getByRole("option", { name: "Germany" }).click();
+  await expect(list).toHaveCount(0);
+  await expect(country).toHaveAccessibleName("Country of incorporation (optional) Germany");
+  await expect(country.locator("svg.flag")).toHaveCount(1);
   await section.getByLabel("Company name").fill("Analytical Engines Ltd");
-  await section.getByLabel("Business type").selectOption("international");
-  await section.getByRole("button", { name: "EUR" }).click();
-  await expect(section.getByRole("button", { name: "EUR" })).toHaveAttribute("aria-pressed", "true");
+  await section.getByLabel("Company website").fill("analytical.example");
+  await section.getByLabel("Anything else we should know?").fill("Multi-currency payouts.");
   await send.click();
   await expect(section.getByRole("heading", { name: "Thanks — we’ll be in touch." })).toBeVisible();
-  expect(detailsBody).toMatchObject({
+  expect(detailsBody).toEqual({
     id: "L1",
     token: "T1",
-    fullName: "Ada Lovelace",
+    firstName: "Ada",
+    lastName: "Lovelace",
+    country: "Germany",
     company: "Analytical Engines Ltd",
-    businessType: "international",
-    currencies: ["EUR"],
+    companyWebsite: "analytical.example",
+    message: "Multi-currency payouts.",
   });
+});
+
+test("waitlist: the country picker works from the keyboard and closes on Escape or outside", async ({ page }) => {
+  await page.route(LEADS_API, (route) =>
+    route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' }),
+  );
+  await page.goto("./#waitlist");
+  const section = page.locator("#waitlist");
+  await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
+  await section.getByRole("button", { name: "Join" }).click();
+  const country = section.getByRole("button", { name: /Country of incorporation/ });
+  const list = section.getByRole("listbox");
+
+  await country.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(list).toBeFocused();
+  await page.keyboard.press("s"); // Slovakia, the first country starting with S
+  await page.keyboard.press("ArrowDown"); // Slovenia
+  await page.keyboard.press("Enter");
+  await expect(list).toHaveCount(0);
+  await expect(country).toBeFocused();
+  await expect(country).toContainText("Slovenia");
+
+  await page.keyboard.press("Enter");
+  await expect(list.getByRole("option", { name: "Slovenia" })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("Escape");
+  await expect(list).toHaveCount(0);
+  await expect(country).toContainText("Slovenia");
+
+  await country.click();
+  await expect(list).toBeVisible();
+  await section.getByRole("heading", { name: "Need a tailored setup?" }).click();
+  await expect(list).toHaveCount(0);
+
+  // Every option has its own round flag, and the list stays inside the screen.
+  await country.click();
+  await expect(list.locator("svg.flag")).toHaveCount(33);
+  const box = await list.boundingBox();
+  const width = page.viewportSize().width;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(width);
 });
 
 test("waitlist: details can be skipped", async ({ page }) => {
@@ -694,10 +759,15 @@ test("waitlist: details can be skipped", async ({ page }) => {
   await expect(section.getByRole("heading", { name: "You’re on the list." })).toBeVisible();
 });
 
-test("waitlist: segment links pre-select the business type for the details step", async ({ page }) => {
+test("waitlist: the segment link the visitor used is sent with the details", async ({ page }) => {
+  let detailsBody;
   await page.route(LEADS_API, (route) =>
     route.fulfill({ status: 201, contentType: "application/json", body: '{"ok":true,"id":"L1","token":"T1"}' }),
   );
+  await page.route(DETAILS_API, async (route) => {
+    detailsBody = route.request().postDataJSON();
+    await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
+  });
   await page.goto("./");
   await page
     .locator(".seg-card")
@@ -707,7 +777,11 @@ test("waitlist: segment links pre-select the business type for the details step"
   const section = page.locator("#waitlist");
   await section.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
   await section.getByRole("button", { name: "Join" }).click();
-  await expect(section.getByLabel("Business type")).toHaveValue("international");
+  await section.getByLabel("First name").fill("Ada");
+  await section.getByLabel("Last name").fill("Lovelace");
+  await section.getByRole("button", { name: "Send Details" }).click();
+  await expect(section.getByRole("heading", { name: "Thanks — we’ll be in touch." })).toBeVisible();
+  expect(detailsBody).toMatchObject({ firstName: "Ada", businessType: "international" });
 });
 
 test("waitlist: server problems are explained and the email is kept", async ({ page }) => {

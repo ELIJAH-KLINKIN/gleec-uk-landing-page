@@ -212,7 +212,7 @@ export default function TalkToHuman() {
     <div className="wl-field">
       <label className="wl-label" htmlFor={id(name)}>
         {label}
-        {optional ? <span className="tk-optional"> (optional)</span> : null}
+        {optional ? <span className="wl-optional"> (optional)</span> : null}
       </label>
       <input {...field(name, extra)} />
       {error(name)}
@@ -317,8 +317,8 @@ export default function TalkToHuman() {
                 {TALK.detailsTitle}
               </h3>
               <p className="wl-card-body tk-card-lead">{TALK.detailsLead}</p>
-              <form className="wl-form tk-form" noValidate onSubmit={onBook} aria-busy={busy}>
-                <div className="tk-row">
+              <form className="wl-form" noValidate onSubmit={onBook} aria-busy={busy}>
+                <div className="wl-row">
                   {input("firstName", "First name", { type: "text", autoComplete: "given-name", maxLength: 60 }, false)}
                   {input("lastName", "Last name", { type: "text", autoComplete: "family-name", maxLength: 60 }, false)}
                 </div>
@@ -329,7 +329,7 @@ export default function TalkToHuman() {
                   maxLength: 40,
                   placeholder: "+44 20 7946 0000",
                 })}
-                <div className="tk-row">
+                <div className="wl-row">
                   {input("company", "Company name", { type: "text", autoComplete: "organization", maxLength: 160 })}
                   {input("companyWebsite", "Company website", {
                     type: "text",
@@ -343,7 +343,7 @@ export default function TalkToHuman() {
                 </div>
                 <div className="wl-field">
                   <label className="wl-label" htmlFor={id("message")}>
-                    Anything else we should know?<span className="tk-optional"> (optional)</span>
+                    Anything else we should know?<span className="wl-optional"> (optional)</span>
                   </label>
                   <textarea {...field("message")} rows={3} maxLength={2000} />
                   {error("message")}

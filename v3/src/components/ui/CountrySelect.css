@@ -1,0 +1,107 @@
+/* CountrySelect — the button shares the one field surface (see .wl-field input). */
+.cs {
+  position: relative;
+  min-width: 0;
+}
+.cs-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--hit);
+  padding: 10px 14px;
+  border: 1px solid var(--separator-strong);
+  border-radius: var(--r-control);
+  background: var(--field);
+  color: var(--label);
+  font-size: var(--t-body);
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-1),
+    box-shadow var(--dur-1);
+}
+.cs-button:focus-visible,
+.cs-button[aria-expanded="true"] {
+  outline: none;
+  border-color: var(--tint);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 22%, transparent);
+}
+.cs-button .flag {
+  flex-shrink: 0;
+}
+.cs-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cs-button.is-empty .cs-value {
+  color: var(--label-3);
+}
+.cs-chevron {
+  flex-shrink: 0;
+  color: var(--label-2);
+}
+
+/* The list opens under the button, as wide as it. */
+.cs-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: min(320px, 50vh);
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border: 1px solid var(--separator);
+  border-radius: var(--r-control);
+  background: var(--menu);
+  box-shadow: var(--shadow-2);
+  outline: none;
+  scroll-margin-bottom: 24px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cs-list {
+    animation: cs-open 160ms var(--ease-out) both;
+  }
+}
+@keyframes cs-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.cs-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--hit);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: var(--t-body);
+  color: var(--label);
+  cursor: pointer;
+}
+.cs-option .flag {
+  flex-shrink: 0;
+}
+.cs-option.is-active {
+  background: var(--fill);
+}
+.cs-option[aria-selected="true"] {
+  font-weight: 600;
+}
+.cs-name {
+  flex: 1;
+  min-width: 0;
+}
+.cs-check {
+  flex-shrink: 0;
+  color: var(--tint-text);
+}

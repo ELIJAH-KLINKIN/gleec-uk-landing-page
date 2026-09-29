@@ -7,25 +7,7 @@ export const LEADS_ENDPOINT = (import.meta.env.VITE_LEADS_ENDPOINT || "").trim()
 const DETAILS_ENDPOINT = LEADS_ENDPOINT && `${LEADS_ENDPOINT}/details`;
 const STATS_ENDPOINT = LEADS_ENDPOINT && LEADS_ENDPOINT.replace(/\/leads$/, "/stats");
 
-export const BUSINESS_TYPES = [
-  { value: "local", label: "UK business" },
-  { value: "international", label: "International business" },
-  { value: "group", label: "Holding / corporate group" },
-  { value: "other", label: "Other" },
-];
-
-export const CURRENCIES = ["GBP", "EUR", "USD", "Other"];
-
-export const MONTHLY_VOLUMES = [
-  { value: "lt_50k", label: "Under £50k" },
-  { value: "50k_250k", label: "£50k – £250k" },
-  { value: "250k_1m", label: "£250k – £1m" },
-  { value: "1m_5m", label: "£1m – £5m" },
-  { value: "gt_5m", label: "Over £5m" },
-];
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^[0-9 +().-]*$/;
 const len = (s) => (s || "").trim().length;
 
 // Messages say how to fix the problem (HIG: plain, direct, no blame).
@@ -35,28 +17,8 @@ export function validateEmail(email) {
   return undefined;
 }
 
-// Step-two fields are all optional; each is checked only when filled in.
-export function validateDetails(v) {
-  const errors = {};
-  if (len(v.fullName) === 1) errors.fullName = "Enter your full name.";
-  else if (len(v.fullName) > 120) errors.fullName = "Shorten your name to 120 characters or fewer.";
-  if (len(v.company) > 160) errors.company = "Shorten the company name to 160 characters or fewer.";
-  if (len(v.country) === 1) errors.country = "Enter the country where your company is registered.";
-  else if (len(v.country) > 80) errors.country = "Shorten the country to 80 characters or fewer.";
-  if (len(v.phone) > 40 || !PHONE_RE.test(v.phone || "")) errors.phone = "Use only digits, spaces and + ( ) -.";
-  else if (len(v.phone) && (v.phone.match(/\d/g) || []).length < 5)
-    errors.phone = "Enter a full phone number, including the area code.";
-  if (len(v.message) > 2000) errors.message = "Keep your message to 2,000 characters or fewer.";
-  return errors;
-}
-
-export function hasAnyDetail(v) {
-  return (
-    ["fullName", "company", "country", "phone", "businessType", "monthlyVolume", "message"].some(
-      (k) => len(v[k]) > 0,
-    ) || v.currencies.length > 0
-  );
-}
+// Step two: first and last name, then optional country, company, website and a note.
+export { validateContactDetails as validateDetails } from "./contact.js";
 
 export class LeadError extends Error {
   constructor(kind, fields) {
@@ -118,19 +80,19 @@ export function joinWaitlist({ email, website }, { startedAt }) {
   });
 }
 
-// Step 2: optional details for the lead created in step 1.
+// Step 2: optional details for the lead created in step 1. `businessType` comes from the
+// segment CTA the visitor clicked (see prefill.js), not from a field.
 export function sendDetails({ id, token }, v) {
   const clean = (s) => (s || "").trim() || undefined;
   return post(DETAILS_ENDPOINT, {
     id,
     token,
-    fullName: clean(v.fullName),
-    company: clean(v.company),
+    firstName: clean(v.firstName),
+    lastName: clean(v.lastName),
     country: clean(v.country),
-    phone: clean(v.phone),
+    company: clean(v.company),
+    companyWebsite: clean(v.companyWebsite),
     businessType: v.businessType || undefined,
-    currencies: v.currencies.length ? v.currencies : undefined,
-    monthlyVolume: v.monthlyVolume || undefined,
     message: clean(v.message),
   });
 }

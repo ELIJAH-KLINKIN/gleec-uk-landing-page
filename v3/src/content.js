@@ -592,12 +592,12 @@ export const WAITLIST = {
   consent:
     "By joining, you agree that Gleec Pay Ltd may contact you about GLEEC Business. The service isn’t available yet and is subject to FCA authorisation and onboarding approval. Registering interest is not an application for a regulated service.",
 
-  // Step 2 — optional company details (sales uses these to prepare a setup).
+  // Step 2 — optional details (sales uses these to prepare a setup).
   joinedTitle: "You’re on the list.",
   joinedBody: "We’ll email you as soon as GLEEC Business opens to eligible companies.",
   detailsTitle: "Need a tailored setup?",
   detailsLead:
-    "Tell us about your company, expected payment activity, currencies and ownership structure. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
+    "Only your name is required. We’ll follow up once we can confirm what may fit your needs, subject to authorisation, onboarding approval and acceptance policy.",
   sendDetails: "Send Details",
   sending: "Sending…",
   skip: "Not Now",
