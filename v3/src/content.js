@@ -227,9 +227,9 @@ const BANKING_CIRCLE = {
 //   LU IBAN takes SEPA, SEPA Instant and SWIFT in 24 currencies (a DE IBAN would
 //   take SEPA only), so EUR, USD and the rest share it and need no switch.
 export const EXPLORER = {
-  eyebrow: "Accounts & transfers",
-  // No "Open…": the account isn't live yet (FCA review).
-  title: "One Global Account. Move money the right way.",
+  eyebrow: "Global accounts & transfers",
+  // Kept as is on purpose during the FCA review (Ilia's call).
+  title: "Open global accounts. Move money the right way.",
   lead: "UK account details for pounds, and a Luxembourg IBAN for euros, dollars and more, so European clients pay you like a local supplier. All in your company’s name.",
   stat: { value: "60+", label: "payout markets via SWIFT & partners" },
   markets: [
