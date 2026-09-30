@@ -536,7 +536,7 @@ test("highlights gallery: dots and paddles move it; it never moves on its own", 
   await page.waitForTimeout(3000);
   await expect(current, "gallery advanced by itself").toHaveAttribute("aria-label", /highlight 1:/);
 
-  await gallery.getByRole("button", { name: /Go to highlight 4/ }).click();
+  await gallery.getByRole("button", { name: /Go to highlight 4:/ }).click();
   await expect(current).toHaveAttribute("aria-label", /highlight 4:/);
   // The chosen tile now sits at the gallery's leading edge.
   await expect
@@ -557,7 +557,7 @@ test("highlights gallery: dots and paddles move it; it never moves on its own", 
     await expect(current).toHaveAttribute("aria-label", /highlight 5:/);
     await gallery.getByRole("button", { name: "Previous highlight" }).click();
     await expect(current).toHaveAttribute("aria-label", /highlight 4:/);
-    await gallery.getByRole("button", { name: /Go to highlight 1/ }).click();
+    await gallery.getByRole("button", { name: /Go to highlight 1:/ }).click();
     await expect(gallery.getByRole("button", { name: "Previous highlight" })).toBeDisabled();
   }
 
