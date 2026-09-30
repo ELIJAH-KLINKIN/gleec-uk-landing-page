@@ -122,6 +122,11 @@ a:hover {
 .section.alt {
   background: var(--bg-2);
 }
+/* A link to a section lands on its heading, not on the empty top padding:
+   the eyebrow settles a short gap below the navigation bar. */
+.section[id] {
+  scroll-margin-top: calc(var(--s-4) - var(--section-y));
+}
 
 /* ---------- Typography roles ---------- */
 .eyebrow {
