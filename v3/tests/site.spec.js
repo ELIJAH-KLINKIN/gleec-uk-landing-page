@@ -575,7 +575,8 @@ test("cards: segmented control switches card (click + arrow keys)", async ({ pag
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   await expect(caption).toHaveText(/Physical cards/);
-  await expect(page.locator(".cards-scene.is-current img.front")).toHaveAttribute("src", /card-physical/);
+  // Each card type has its own render: the physical card has the chip, the virtual one doesn't.
+  await expect(page.locator(".cards-scene.is-current img.cards-render")).toHaveAttribute("src", /cards-physical/);
   if (!isMobile(testInfo)) {
     await tabs.nth(1).focus();
     await page.keyboard.press("ArrowLeft");
