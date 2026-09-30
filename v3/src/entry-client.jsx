@@ -17,8 +17,15 @@ if (root.firstElementChild) hydrateRoot(root, app);
 else createRoot(root).render(app);
 
 // Section anchors match the menu labels. Old shared links keep working:
-// /#highlights → /#product, /#plans → /#pricing, /#top → the plain address.
-const RENAMED = { "#highlights": "#product", "#plans": "#pricing", "#top": "" };
+// /#highlights → /#product, /#plans → /#pricing, /#top → the plain address;
+// the merged sections: /#currencies → /#accounts, /#finance → /#payments.
+const RENAMED = {
+  "#highlights": "#product",
+  "#plans": "#pricing",
+  "#currencies": "#accounts",
+  "#finance": "#payments",
+  "#top": "",
+};
 const followRenamed = () => {
   if (!Object.hasOwn(RENAMED, window.location.hash)) return;
   const next = RENAMED[window.location.hash];

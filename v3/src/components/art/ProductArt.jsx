@@ -197,7 +197,8 @@ function NewAccount() {
   );
 }
 
-// 3 · Faster Payments, CHAPS & Bacs — the big number, and the three routes.
+// 3 · Faster Payments, CHAPS & Bacs — a payment just sent (the one the Payments
+// section's recording makes), and the three routes.
 function UkPayments() {
   const routes = [
     { name: "Faster Payments", when: "Seconds, 24/7", on: true },
@@ -209,9 +210,10 @@ function UkPayments() {
       <div className="art-panel art-hero">
         <span className="art-kicker">
           <Flag code="GB" size="1.25em" />
-          Received
+          Sent
         </span>
-        <span className="art-big">£12,480</span>
+        <span className="art-big">£4,850</span>
+        <span className="art-muted">to Hartwell &amp; Frome LLP</span>
         <span className="art-status">
           <span className="art-live" />
           Faster Payments · moments ago

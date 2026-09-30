@@ -33,7 +33,8 @@ export const HERO = {
   titleRest: "for companies that don’t fit the default box.",
   // What screen readers hear: one stable sentence.
   // Keeps "business accounts" for search; the visible phrase is the product name.
-  titleSpoken: "Global business accounts, corporate cards and cross-border payments for companies that don’t fit the default box.",
+  titleSpoken:
+    "Global business accounts, corporate cards and cross-border payments for companies that don’t fit the default box.",
   // The hero's email pill (field + button in one) and the link to the product demo.
   primary: { label: "Join the Waitlist", href: "#waitlist" },
   emailLabel: "Work email",
@@ -139,36 +140,6 @@ export const HIGHLIGHTS = {
   ],
 };
 
-export const ACCOUNTS = {
-  eyebrow: "Global Account",
-  title: "More than just account details.",
-  lead: "Gleec Business is being built to combine account details, payment routes, FX capability and compliance controls in one operating platform.",
-  points: [
-    "GBP, EUR and USD at launch, 24 currencies planned",
-    "UK account details, and a Luxembourg IBAN for euros",
-    "Named virtual IBAN account details",
-    "Faster Payments, CHAPS and BACS for UK flows",
-    "SEPA and SEPA Instant",
-    "SWIFT and USD corridors for international payments",
-    "Fiat-to-fiat FX",
-    "KYB, sanctions screening and transaction monitoring controls",
-  ],
-  link: { label: "See Account Details", href: "#payments" },
-  mock: {
-    balances: [
-      { code: "GBP", symbol: "£", amount: "84,250" },
-      { code: "EUR", symbol: "€", amount: "36,902.18" },
-      { code: "USD", symbol: "$", amount: "9,184.40" },
-    ],
-    activity: [
-      { dir: "in", name: "Acme Studios Ltd", detail: "Faster Payments · GBP · Today 11:42", amount: "+£12,480" },
-      { dir: "out", name: "Linde GmbH", detail: "SEPA Instant · EUR · Yesterday", amount: "−€4,210" },
-      { dir: "fx", name: "FX · GBP → USD", detail: "Conversion · 1.2734 · Auto-route", amount: "$9,184.40" },
-      { dir: "review", name: "Counterparty review", detail: "New beneficiary · Under screening", amount: "Review" },
-    ],
-  },
-};
-
 // Global Account details, by where the payer is: GBP on UK details, everything else
 // on one Luxembourg IBAN (SEPA, SEPA Instant and SWIFT in 24 currencies), so only GBP
 // needs a Local / International switch. Gleec Pay is shown as the account provider
@@ -176,12 +147,17 @@ export const ACCOUNTS = {
 // confidential, so their names and codes go on the page only once they agree in writing.
 const PROVIDER = { name: COMPANY.name, address: COMPANY.office.join(", ") };
 
+// The Accounts section: the details a company gives its payers, per region, and
+// the currencies still to come. (Sending is the Payments section.)
 export const EXPLORER = {
-  eyebrow: "Global accounts & transfers",
+  eyebrow: "Global Account",
   // Kept as is on purpose during the FCA review (Ilia's call).
   title: "Open global accounts. Move money the right way.",
   lead: "UK account details for pounds, and a Luxembourg IBAN for euros, dollars and more, so European clients pay you like a local supplier. All in your company’s name.",
-  stat: { value: "60+", label: "payout markets via SWIFT & partners" },
+  stat: { value: "24", label: "currencies on one IBAN, GBP, EUR and USD first" },
+  soonLabel: "Coming soon",
+  soon: ["CHF", "CAD", "AUD", "DKK", "SEK", "NOK", "PLN", "CZK", "HUF", "JPY"],
+  more: "+11 others",
   markets: [
     {
       id: "uk",
@@ -211,12 +187,6 @@ export const EXPLORER = {
           ],
         },
       ],
-      routes: [
-        ["Faster Payments", "Near real-time GBP payments"],
-        ["BACS", "Standard UK bank transfers"],
-        ["CHAPS", "Same-day high-value GBP"],
-        ["SWIFT", "International correspondent"],
-      ],
     },
     {
       id: "eu",
@@ -235,11 +205,6 @@ export const EXPLORER = {
             ["SWIFT/BIC", "XXXXLULL"],
           ],
         },
-      ],
-      routes: [
-        ["SEPA", "Euro payments across Europe"],
-        ["SEPA Instant", "Near real-time where supported"],
-        ["SWIFT", "International correspondent"],
       ],
     },
     {
@@ -260,7 +225,6 @@ export const EXPLORER = {
           ],
         },
       ],
-      routes: [["SWIFT", "International correspondent"]],
     },
     {
       id: "global",
@@ -280,33 +244,37 @@ export const EXPLORER = {
           ],
         },
       ],
-      routes: [["SWIFT", "International correspondent network"]],
     },
   ],
-  capabilities: [
-    "Designed to support accounts in your business name",
-    "Planned support for GBP, EUR and USD as core currencies",
-    "Dedicated local account details where available",
-    "Account configuration is subject to onboarding approval",
-    "Service availability is subject to authorisation and partner readiness",
-  ],
 };
 
-export const CURRENCIES = {
-  eyebrow: "Multi-currency",
-  title: "GBP, EUR and USD at launch. 24 currencies on one IBAN.",
-  lead: "Hold and receive up to 24 currencies under one IBAN through our banking partners. GBP, EUR and USD come first; the rest follow, subject to authorisation and partner availability.",
-  core: [
-    { code: "GBP", name: "British pound", routes: "FPS · BACS · CHAPS" },
-    { code: "EUR", name: "Euro", routes: "SEPA · SEPA Instant" },
-    { code: "USD", name: "US dollar", routes: "SWIFT" },
+export const FINANCE = {
+  eyebrow: "Finance teams",
+  title: "Built for the way finance teams work.",
+  lead: "Pay in bulk, connect your systems and reconcile without copy and paste. Planned from launch, subject to authorisation.",
+  items: [
+    {
+      icon: "file-spreadsheet",
+      title: "Bulk payments",
+      body: "Pay hundreds of suppliers or staff from one CSV file, checked and approved in one go.",
+    },
+    {
+      icon: "code",
+      title: "API and instant notifications",
+      body: "Create payments, read balances and get a webhook the moment money arrives or leaves.",
+    },
+    {
+      icon: "file-text",
+      title: "Statements your systems read",
+      body: "Download statements as CSV, PDF or ISO 20022 (camt.053), ready for your accounting software.",
+    },
+    {
+      icon: "users",
+      title: "Roles and approvals",
+      body: "Give each person the access they need, and send payments over your limits for a second approval.",
+    },
   ],
-  soonLabel: "Coming soon",
-  soon: ["CHF", "CAD", "AUD", "DKK", "SEK", "NOK", "PLN", "CZK", "HUF", "JPY"],
-  more: "+11 others",
-  link: { label: "Explore Payments", href: "#payments" },
 };
-
 export const CARDS = {
   eyebrow: "Cards",
   title: "Company cards with controls built in.",
@@ -460,33 +428,6 @@ export const CONTROLS = {
 // "For finance teams": the tools corporate treasury and finance teams look for.
 // Backed by the banking partners' channels (bulk files, API + webhooks, ISO 20022
 // statements); roles and approvals are the platform's own.
-export const FINANCE = {
-  eyebrow: "Finance teams",
-  title: "Built for the way finance teams work.",
-  lead: "Pay in bulk, connect your systems and reconcile without copy and paste. Planned from launch, subject to authorisation.",
-  items: [
-    {
-      icon: "file-spreadsheet",
-      title: "Bulk payments",
-      body: "Pay hundreds of suppliers or staff from one CSV file, checked and approved in one go.",
-    },
-    {
-      icon: "code",
-      title: "API and instant notifications",
-      body: "Create payments, read balances and get a webhook the moment money arrives or leaves.",
-    },
-    {
-      icon: "file-text",
-      title: "Statements your systems read",
-      body: "Download statements as CSV, PDF or ISO 20022 (camt.053), ready for your accounting software.",
-    },
-    {
-      icon: "users",
-      title: "Roles and approvals",
-      body: "Give each person the access they need, and send payments over your limits for a second approval.",
-    },
-  ],
-};
 
 export const WAITLIST = {
   // Step 1 — email only.
@@ -605,8 +546,7 @@ export const FOOTER = {
       title: "Product",
       links: [
         { label: "Global Account", href: "#accounts" },
-        { label: "Multi-currency", href: "#currencies" },
-        { label: "International payments", href: "#payments" },
+        { label: "Payments", href: "#payments" },
         { label: "Payment cards", href: "#cards" },
         { label: "Spend controls", href: "#cards" },
       ],

@@ -1,9 +1,7 @@
 import Nav from "./components/Nav.jsx";
 import Hero from "./components/Hero.jsx";
 import Highlights from "./components/Highlights.jsx";
-import Accounts from "./components/Accounts.jsx";
 import Explorer from "./components/Explorer.jsx";
-import Currencies from "./components/Currencies.jsx";
 import FinanceTools from "./components/FinanceTools.jsx";
 import Cards from "./components/Cards.jsx";
 import Segments from "./components/Segments.jsx";
@@ -24,9 +22,7 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         <Hero />
         <Highlights />
-        <Accounts />
         <Explorer />
-        <Currencies />
         <FinanceTools />
         <Cards />
         <Segments />

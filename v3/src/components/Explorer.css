@@ -150,24 +150,36 @@
   grid-template-columns: minmax(120px, 176px) 1fr;
 }
 
-.xp-below {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--s-12);
+/* The currencies still to come */
+.xp-soon {
   margin-top: var(--s-12);
+  text-align: center;
 }
-.xp-below-title {
+.xp-soon-title {
+  margin-bottom: var(--s-4);
+  font-size: var(--t-body);
+  font-weight: 600;
+}
+.xp-chips {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap-chip);
+}
+.xp-chips li {
+  display: inline-flex;
   align-items: center;
   gap: var(--gap-icon);
-  margin-bottom: var(--s-4);
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: var(--track-title);
+  padding: 6px 14px 6px 7px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  font-size: var(--t-subhead);
+  font-weight: 500;
 }
-.xp-below .checklist {
-  margin: 0;
+.xp-chips .xp-more {
+  padding-left: 14px;
+  background: none;
+  color: var(--label-2);
 }
 
 @media (max-width: 900px) {
@@ -202,12 +214,6 @@
   }
   .xp-main {
     padding: var(--s-5) var(--s-4) var(--s-6);
-  }
-  .xp-below {
-    grid-template-columns: 1fr;
-  }
-  .xp-below {
-    gap: var(--s-10);
   }
 }
 

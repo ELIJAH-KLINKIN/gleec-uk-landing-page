@@ -1,13 +1,14 @@
-// Explorer.jsx — Global Account details & transfers. A sidebar picks the market; where the
-// account has separate local and international details (GBP), a segmented control
-// switches between them. The panel lists the (illustrative) details the way a
-// payer's bank asks for them: name, identifiers, address, bank, bank address.
+// Explorer.jsx — the Accounts section: Global Account details. A sidebar picks the
+// market; where the account has separate local and international details (GBP), a
+// segmented control switches between them. The panel lists the (illustrative)
+// details the way a payer's bank asks for them: name, identifiers, address, bank,
+// bank address. Below: the currencies still to come. (Sending is Payments.jsx.)
 import { useState } from "react";
 import { EXPLORER } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
 import Flag from "./ui/Flag.jsx";
-import Icon from "./ui/Icon.jsx";
+import { CURRENCY_FLAG } from "../lib/flags.js";
 import "./Explorer.css";
 
 export default function Explorer() {
@@ -44,7 +45,7 @@ export default function Explorer() {
   };
 
   return (
-    <section id="payments" className="section alt explorer" aria-labelledby="explorer-title">
+    <section id="accounts" className="section explorer" aria-labelledby="explorer-title">
       <div className="container">
         <SectionHeader id="explorer-title" eyebrow={EXPLORER.eyebrow} title={EXPLORER.title} lead={EXPLORER.lead} />
       </div>
@@ -114,33 +115,19 @@ export default function Explorer() {
           </div>
         </div>
 
-        <div className="xp-below">
-          <div>
-            <h3 className="xp-below-title">Account capabilities</h3>
-            <ul className="checklist">
-              {EXPLORER.capabilities.map((c) => (
-                <li key={c}>
-                  <Icon name="check" size={18} strokeWidth={2.4} />
-                  <span>{c}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="xp-below-title">
-              Transfer methods ·
-              <Flag code={market.flag} size={22} />
-              {market.label}
-            </h3>
-            <dl className="kv kv-inset">
-              {market.routes.map(([name, desc]) => (
-                <div key={name}>
-                  <dt>{name}</dt>
-                  <dd>{desc}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        <div className="xp-soon">
+          <h3 className="xp-soon-title">
+            <span className="soon">{EXPLORER.soonLabel}</span>
+          </h3>
+          <ul className="xp-chips">
+            {EXPLORER.soon.map((code) => (
+              <li key={code}>
+                <Flag code={CURRENCY_FLAG[code]} size={18} />
+                {code}
+              </li>
+            ))}
+            <li className="xp-more">{EXPLORER.more}</li>
+          </ul>
         </div>
       </div>
     </section>

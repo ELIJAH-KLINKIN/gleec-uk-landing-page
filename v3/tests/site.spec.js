@@ -105,6 +105,8 @@ test("section anchors match the menu labels; old links still land", async ({ pag
   for (const [old, now] of [
     ["highlights", "product"],
     ["plans", "pricing"],
+    ["currencies", "accounts"],
+    ["finance", "payments"],
   ]) {
     await page.goto(`./#${old}`);
     await expect(page).toHaveURL(new RegExp(`#${now}$`));
@@ -514,17 +516,39 @@ test("headline reads as one sentence and its first line follows the demo tab", a
   await expect(page.locator(".rot-phrase")).toHaveCount(3);
 });
 
-test("product story: Global Account, Confirmation of Payee, SWIFT fee choice, finance tools", async ({ page }) => {
+test("product story: Global Account, Confirmation of Payee, SWIFT fee choice", async ({ page }) => {
   await page.goto("./");
   const product = page.locator("#product");
   await expect(product.getByRole("heading", { name: "One IBAN, 24 currencies" })).toHaveCount(1);
   await expect(product.getByRole("heading", { name: "Confirmation of Payee" })).toHaveCount(1);
   await expect(product.locator(".hl-tile", { hasText: "SWIFT" }).first()).toContainText("OUR");
-  await expect(page.locator("#currencies h2")).toContainText("24 currencies on one IBAN");
-  const finance = page.locator("#finance");
-  await expect(finance.getByRole("heading", { level: 2 })).toHaveText("Built for the way finance teams work.");
-  await expect(finance.locator(".ctrl-card")).toHaveCount(4);
-  await expect(finance).toContainText("camt.053");
+  // Tile 3 is a payment sent, not one received.
+  const uk = product.locator(".art-uk");
+  await expect(uk).toContainText("Sent");
+  await expect(uk).toContainText("to Hartwell & Frome LLP");
+  await expect(uk).not.toContainText("Received");
+});
+
+test("one section per job: Accounts is receiving, then the tools for paying", async ({ page }) => {
+  await page.goto("./");
+  // The merged-away sections are gone.
+  for (const id of ["currencies", "finance"]) await expect(page.locator(`#${id}`)).toHaveCount(0);
+  await expect(page.getByText("More than just account details.")).toHaveCount(0);
+  const sections = await page.locator("main > section").evaluateAll((els) => els.map((e) => e.id));
+  expect(sections.indexOf("payments")).toBe(sections.indexOf("accounts") + 1);
+
+  // Accounts: the details, the currencies still to come, and no "subject to…" list.
+  const accounts = page.locator("#accounts");
+  await expect(accounts.locator("#xp-panel")).toHaveCount(1);
+  await expect(accounts.locator(".xp-stat")).toContainText("24");
+  await expect(accounts.locator(".xp-chips li")).toHaveCount(11);
+  await expect(accounts).not.toContainText(/subject to|Transfer methods/i);
+
+  // Payments (until its own section ships): the tools for finance teams.
+  const payments = page.locator("#payments");
+  await expect(payments.getByRole("heading", { level: 2 })).toHaveText("Built for the way finance teams work.");
+  await expect(payments.locator(".ctrl-card")).toHaveCount(4);
+  await expect(payments).toContainText("camt.053");
 });
 
 const finishHighlight = (page) =>
@@ -619,13 +643,18 @@ test("product gallery: the account tile plays the new-account flow, and holds wh
   expect(await art.evaluate((el) => el.className + el.querySelector(".art-counter").textContent)).toBe(before);
 });
 
-test("product gallery: SEPA is tile 4, and the payee tile (5) plays the name check through to Send", async ({ page }) => {
+test("product gallery: SEPA is tile 4, and the payee tile (5) plays the name check through to Send", async ({
+  page,
+}) => {
   test.setTimeout(40_000);
   await page.goto("./#product");
   const titles = page.locator(".hl-tile h3");
   await expect(titles.nth(3)).toHaveText("SEPA & SEPA Instant");
   await expect(titles.nth(4)).toHaveText("Confirmation of Payee");
-  await page.locator(".hl").getByRole("button", { name: /Go to highlight 5:/ }).click();
+  await page
+    .locator(".hl")
+    .getByRole("button", { name: /Go to highlight 5:/ })
+    .click();
   await page.mouse.move(1, 1);
   const art = page.locator(".art-cop");
   await expect(art.locator(".art-bank")).toHaveClass(/is-on/, { timeout: 8000 });
@@ -694,8 +723,8 @@ test("cards: segmented control switches card (click + arrow keys)", async ({ pag
 });
 
 test("explorer: account details read like a payer's bank asks for them", async ({ page }, testInfo) => {
-  await page.goto("./#payments");
-  const section = page.locator("#payments");
+  await page.goto("./#accounts");
+  const section = page.locator("#accounts");
   const heading = section.locator("#xp-panel h3");
   const details = section.locator("#xp-panel dl");
   const markets = section.getByRole("tablist", { name: "Markets" }).getByRole("tab");
@@ -800,7 +829,9 @@ test("waitlist: pill field, live count and target launch", async ({ page }) => {
   await expect(form.getByText("Target launch 2027, subject to FCA authorisation")).toBeVisible();
 });
 
-test("waitlist: product updates are a separate, unticked opt-in, with no paragraph under the form", async ({ page }) => {
+test("waitlist: product updates are a separate, unticked opt-in, with no paragraph under the form", async ({
+  page,
+}) => {
   const bodies = [];
   await page.route(LEADS_API, async (route) => {
     bodies.push(route.request().postDataJSON());
@@ -813,7 +844,10 @@ test("waitlist: product updates are a separate, unticked opt-in, with no paragra
   // The footer's Privacy policy link covers it; nothing under the form.
   await expect(form.getByRole("link", { name: "Privacy policy" })).toHaveCount(0);
   await expect(form).not.toContainText("only to contact you");
-  await expect(page.locator("footer").getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy/");
+  await expect(page.locator("footer").getByRole("link", { name: "Privacy policy" })).toHaveAttribute(
+    "href",
+    "/privacy/",
+  );
   await expect(form).not.toContainText("By joining, you agree");
 
   await form.getByRole("textbox", { name: "Work email" }).fill("ada@example.co.uk");
@@ -1105,7 +1139,9 @@ test("demo: never auto-advances under Reduce Motion", async ({ page }) => {
 
 test("demo: visible on first load, with phone-sized screens on phones", async ({ page }, testInfo) => {
   await page.goto("./");
-  const visible = await page.evaluate(() => innerHeight - document.querySelector(".demo-window").getBoundingClientRect().top);
+  const visible = await page.evaluate(
+    () => innerHeight - document.querySelector(".demo-window").getBoundingClientRect().top,
+  );
   // At least ~200px of the app window shows without scrolling.
   expect(visible).toBeGreaterThan(200);
   if (isMobile(testInfo)) {
@@ -1138,19 +1174,22 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
     const art = tiles.nth(i).locator(".hl-art");
     await expect(art).toHaveCount(1);
     // Example data in drawings is decorative: either an img with empty alt or aria-hidden.
-    const hidden = await art.evaluate((el) => el.getAttribute("aria-hidden") === "true" || el.querySelector("img")?.alt === "");
+    const hidden = await art.evaluate(
+      (el) => el.getAttribute("aria-hidden") === "true" || el.querySelector("img")?.alt === "",
+    );
     expect(hidden).toBe(true);
   }
-  const spill = await tiles.evaluateAll((ts) =>
-    ts.filter((t) => {
-      const r = t.getBoundingClientRect();
-      // Screens that scroll or slide (.art-screen) clip their own content: check the screen, not what waits off it.
-      return [...t.querySelectorAll(".art *")].some((e) => {
-        if (e.parentElement.closest(".art-screen")) return false;
-        const q = e.getBoundingClientRect();
-        return q.width && (q.left < r.left - 1 || q.right > r.right + 1 || q.bottom > r.bottom + 1);
-      });
-    }).length,
+  const spill = await tiles.evaluateAll(
+    (ts) =>
+      ts.filter((t) => {
+        const r = t.getBoundingClientRect();
+        // Screens that scroll or slide (.art-screen) clip their own content: check the screen, not what waits off it.
+        return [...t.querySelectorAll(".art *")].some((e) => {
+          if (e.parentElement.closest(".art-screen")) return false;
+          const q = e.getBoundingClientRect();
+          return q.width && (q.left < r.left - 1 || q.right > r.right + 1 || q.bottom > r.bottom + 1);
+        });
+      }).length,
   );
   expect(spill).toBe(0);
 });
@@ -1187,7 +1226,9 @@ test("cards: the virtual card pays from the phone's wallet; a visitor can take o
   await expect(page.getByRole("button", { name: /Pay with the .* card ending/ })).toHaveCount(5);
   // The page scrolls smoothly; centre the phone at once so the card holds still for the tap.
   await phone.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.getByRole("button", { name: "Pay with the Engineering card ending 3094" }).click({ position: { x: 60, y: 12 } });
+  await page
+    .getByRole("button", { name: "Pay with the Engineering card ending 3094" })
+    .click({ position: { x: 60, y: 12 } });
   await expect(phone).toHaveAttribute("data-state", "pay", { timeout: 3000 });
   await expect(phone.locator(".wp-main-card")).toContainText("3094");
   // The card fills the screen's width, with equal margins (Safari once drew it narrow).
