@@ -177,12 +177,14 @@ export default function Highlights() {
 // real objects (scripts/art), one image per colour scheme. Decorative: the
 // card's own text says what it shows.
 const DRAWN = PRODUCT_ART;
+// Art that runs off the bottom edge of the tile (a phone rising from below).
+const BLEED = new Set(["add-account"]);
 
 function Art({ name }) {
   const Drawn = DRAWN[name];
   if (Drawn) {
     return (
-      <div className="hl-art" aria-hidden="true">
+      <div className={"hl-art" + (BLEED.has(name) ? " hl-art-bleed" : "")} aria-hidden="true">
         <Drawn />
       </div>
     );

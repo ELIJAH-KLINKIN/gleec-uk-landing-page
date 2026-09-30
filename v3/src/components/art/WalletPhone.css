@@ -17,51 +17,9 @@
   user-select: none;
 }
 
-/* ---------- Body ---------- */
-.wp-body {
-  position: relative;
-  height: calc(var(--pw) * 2.08);
-  padding: 0.95em;
-  border-radius: 5.4em;
-  background: linear-gradient(145deg, #6d6d73 0%, #2b2b2f 22%, #1a1a1d 55%, #3a3a3f 100%);
-  box-shadow:
-    inset 0 0 0 0.12em rgba(255, 255, 255, 0.22),
-    inset 0 0 0 0.5em #0c0c0e,
-    0 3em 6em -2.4em rgba(12, 6, 30, 0.6),
-    0 0.8em 2em rgba(12, 6, 30, 0.25);
-}
-.wp-screen {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 4.5em;
-  background: #000;
-  isolation: isolate;
-}
-.wp-vol,
+/* The frame itself (body, buttons, screen, island, status bar) is in
+   PhoneFrame.css. Below: the wallet's side button, which is a real button. */
 .wp-side {
-  position: absolute;
-  width: 0.5em;
-  background: linear-gradient(90deg, #2a2a2e, #5d5d63 60%, #2a2a2e);
-}
-.wp-vol {
-  left: -0.32em;
-  height: 4.4em;
-  border-radius: 0.3em 0 0 0.3em;
-}
-.wp-vol-1 {
-  top: 12em;
-}
-.wp-vol-2 {
-  top: 17.4em;
-}
-.wp-side {
-  right: -0.34em;
-  top: 15em;
-  height: 8.6em;
-  padding: 0;
-  border: 0;
-  border-radius: 0 0.3em 0.3em 0;
   cursor: pointer;
   touch-action: manipulation; /* a double tap must not zoom the page */
   transition: background var(--dur-2) var(--ease);
@@ -96,41 +54,6 @@
   50% {
     box-shadow: 0 0 0 0.6em rgba(140, 65, 255, 0.4);
   }
-}
-
-/* ---------- Status bar and island ---------- */
-.wp-island {
-  position: absolute;
-  z-index: 5;
-  top: 1.1em;
-  left: 50%;
-  width: 9.4em;
-  height: 2.75em;
-  translate: -50% 0;
-  border-radius: 1.4em;
-  background: #000;
-}
-.wp-status {
-  position: absolute;
-  z-index: 4;
-  top: 1.45em;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2.3em 0 2.9em;
-  font-size: 1.25em;
-  font-weight: 600;
-}
-.wp-status-icons {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-}
-.wp-status-icons svg {
-  width: auto;
-  height: 0.84em;
 }
 
 /* ---------- Layers: one per step, cross-faded ---------- */

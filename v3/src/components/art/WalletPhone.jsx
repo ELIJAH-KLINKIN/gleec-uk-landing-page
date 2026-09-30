@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import logoWhite from "../../assets/logo-g-mask.png";
 import logoColour from "../../assets/logo-g.png";
+import PhoneFrame from "./PhoneFrame.jsx";
 import "./WalletPhone.css";
 
 // Example cards (last four digits and merchants are illustrative).
@@ -79,90 +80,85 @@ export default function WalletPhone() {
 
   return (
     <div className="wp" data-state={state}>
-      <div className="wp-body">
-        <span className="wp-vol wp-vol-1" aria-hidden="true" />
-        <span className="wp-vol wp-vol-2" aria-hidden="true" />
-        <button
-          type="button"
-          className="wp-side"
-          data-nudge={nudge ? (nudge % 2 ? "a" : "b") : undefined}
-          onClick={onSide}
-          aria-label="Side button. Double-click to pay with a virtual card."
-        />
-
-        <div className="wp-screen">
-          <div className="wp-island" aria-hidden="true" />
-          <StatusBar />
-
-          {/* Lock screen */}
-          {/* A tap on the lock screen points at the side button (mouse and touch only). */}
-          <div className="wp-lock" aria-hidden={state !== "lock"} onClick={hint}>
-            <span className="wp-lock-time">9:41</span>
-            <span className="wp-lock-hint">Double-click the side button to pay</span>
-          </div>
-
-          {/* Pay: the card, the face check, hold near reader, done */}
-          <div className="wp-pay" aria-hidden={state === "lock" || state === "stack"}>
-            <CardFace card={card} className="wp-pay-card" />
-            <div className="wp-face" aria-hidden="true">
-              <FaceGlyph />
-            </div>
-            <div className="wp-reader" aria-hidden="true">
-              <span className="wp-ring">
-                <PhoneGlyph />
-                <CheckGlyph />
-              </span>
-              <span className="wp-reader-label wp-reader-hold">Hold Near Reader</span>
-              <span className="wp-reader-label wp-reader-done">Done</span>
-            </div>
-            <button
-              type="button"
-              className="wp-peek"
-              onClick={() => setState("stack")}
-              tabIndex={state === "pay" || state === "done" ? 0 : -1}
-              aria-label={`Show all cards (${CARDS.length})`}
-            >
-              {others.slice(0, 3).map((c, i) => (
-                <CardFace key={c.id} card={c} className={`wp-peek-card wp-peek-${i}`} />
-              ))}
-            </button>
-          </div>
-
-          {/* The whole stack */}
-          <div className="wp-stack" aria-hidden={state !== "stack"}>
-            {CARDS.map((c, i) => (
-              <button
-                key={c.id}
-                type="button"
-                className="wp-stack-item"
-                style={{ "--i": i }}
-                onClick={() => pick(c.id)}
-                tabIndex={state === "stack" ? 0 : -1}
-                aria-label={`Pay with the ${c.team} card ending ${c.last4}`}
-              >
-                <CardFace card={c} />
-              </button>
-            ))}
-          </div>
-
-          {/* The notification the payment sends */}
-          <div className="wp-banner" aria-hidden="true">
-            <span className="wp-banner-icon">
-              <img src={logoColour} alt="" width="10" height="14" />
-            </span>
-            <span className="wp-banner-text">
-              <span className="wp-banner-head">
-                <span>Gleec Business</span>
-                <span>now</span>
-              </span>
-              <strong>
-                {card.merchant} · {card.amount}
-              </strong>
-              <span>Virtual · {card.team} · within limit</span>
-            </span>
-          </div>
+      <PhoneFrame
+        side={
+          <button
+            type="button"
+            className="wp-side"
+            data-nudge={nudge ? (nudge % 2 ? "a" : "b") : undefined}
+            onClick={onSide}
+            aria-label="Side button. Double-click to pay with a virtual card."
+          />
+        }
+      >
+        {/* Lock screen */}
+        {/* A tap on the lock screen points at the side button (mouse and touch only). */}
+        <div className="wp-lock" aria-hidden={state !== "lock"} onClick={hint}>
+          <span className="wp-lock-time">9:41</span>
+          <span className="wp-lock-hint">Double-click the side button to pay</span>
         </div>
-      </div>
+
+        {/* Pay: the card, the face check, hold near reader, done */}
+        <div className="wp-pay" aria-hidden={state === "lock" || state === "stack"}>
+          <CardFace card={card} className="wp-pay-card" />
+          <div className="wp-face" aria-hidden="true">
+            <FaceGlyph />
+          </div>
+          <div className="wp-reader" aria-hidden="true">
+            <span className="wp-ring">
+              <PhoneGlyph />
+              <CheckGlyph />
+            </span>
+            <span className="wp-reader-label wp-reader-hold">Hold Near Reader</span>
+            <span className="wp-reader-label wp-reader-done">Done</span>
+          </div>
+          <button
+            type="button"
+            className="wp-peek"
+            onClick={() => setState("stack")}
+            tabIndex={state === "pay" || state === "done" ? 0 : -1}
+            aria-label={`Show all cards (${CARDS.length})`}
+          >
+            {others.slice(0, 3).map((c, i) => (
+              <CardFace key={c.id} card={c} className={`wp-peek-card wp-peek-${i}`} />
+            ))}
+          </button>
+        </div>
+
+        {/* The whole stack */}
+        <div className="wp-stack" aria-hidden={state !== "stack"}>
+          {CARDS.map((c, i) => (
+            <button
+              key={c.id}
+              type="button"
+              className="wp-stack-item"
+              style={{ "--i": i }}
+              onClick={() => pick(c.id)}
+              tabIndex={state === "stack" ? 0 : -1}
+              aria-label={`Pay with the ${c.team} card ending ${c.last4}`}
+            >
+              <CardFace card={c} />
+            </button>
+          ))}
+        </div>
+
+        {/* The notification the payment sends */}
+        <div className="wp-banner" aria-hidden="true">
+          <span className="wp-banner-icon">
+            <img src={logoColour} alt="" width="10" height="14" />
+          </span>
+          <span className="wp-banner-text">
+            <span className="wp-banner-head">
+              <span>Gleec Business</span>
+              <span>now</span>
+            </span>
+            <strong>
+              {card.merchant} · {card.amount}
+            </strong>
+            <span>Virtual · {card.team} · within limit</span>
+          </span>
+        </div>
+      </PhoneFrame>
 
       <p className={"wp-hint" + (nudge ? " is-nudged" : "")} aria-hidden="true">
         <span className="wp-hint-arrow">← </span>Double-click
@@ -188,30 +184,6 @@ function CardFace({ card, className = "" }) {
       </span>
       <span className="wp-card-num">•••• {card.last4}</span>
     </span>
-  );
-}
-
-function StatusBar() {
-  return (
-    <div className="wp-status" aria-hidden="true">
-      <span>9:41</span>
-      <span className="wp-status-icons">
-        <svg viewBox="0 0 18 12" width="1.6em" height="1.05em" fill="currentColor">
-          <rect x="0" y="8" width="3" height="4" rx="1" />
-          <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
-          <rect x="10" y="3" width="3" height="9" rx="1" />
-          <rect x="15" y="0" width="3" height="12" rx="1" />
-        </svg>
-        <svg viewBox="0 0 16 12" width="1.45em" height="1.05em" fill="currentColor">
-          <path d="M8 2.2c2.4 0 4.6.9 6.3 2.5l1.2-1.3C13.5 1.5 10.8.4 8 .4S2.5 1.5.5 3.4l1.2 1.3C3.4 3.1 5.6 2.2 8 2.2Zm0 3.6c1.4 0 2.7.5 3.7 1.4l1.2-1.3C11.6 4.7 9.9 4 8 4s-3.6.7-4.9 1.9l1.2 1.3c1-.9 2.3-1.4 3.7-1.4Zm0 3.6c.5 0 1 .2 1.3.5L8 11.6 6.7 9.9c.3-.3.8-.5 1.3-.5Z" />
-        </svg>
-        <svg viewBox="0 0 27 12" width="2.4em" height="1.05em">
-          <rect x="0.5" y="0.5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity="0.4" />
-          <rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor" />
-          <path d="M25 4v4c.8-.3 1.3-1.1 1.3-2S25.8 4.3 25 4Z" fill="currentColor" opacity="0.4" />
-        </svg>
-      </span>
-    </div>
   );
 }
 

@@ -71,6 +71,13 @@ picture.hl-art img {
   max-height: 300px;
   object-fit: contain;
 }
+/* A phone rising from the tile's bottom edge: no bottom padding, clipped. */
+.hl-art-bleed {
+  margin-bottom: calc(-1 * var(--s-8));
+}
+.hl-tile:has(.hl-art-bleed) {
+  overflow: hidden;
+}
 .hl-note {
   margin-top: var(--s-4);
   text-align: center;

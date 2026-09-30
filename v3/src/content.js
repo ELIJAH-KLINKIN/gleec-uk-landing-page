@@ -78,10 +78,9 @@ export const HIGHLIGHTS = {
       eyebrow: "Global Account",
       title: "One IBAN, 24 currencies",
       body: "GBP, EUR and USD from launch, 21 more planned — all on one IBAN in your company’s name.",
-      // Blender render (art-src/blender/ring.py): the account at the centre, the 24
-      // currencies around it; GBP, EUR and USD in colour, the 21 planned in silver.
-      // The other tiles are drawn (components/art/ProductArt.jsx). No tile has a notice.
-      art: "ring",
+      // The top of a phone with the app's "Add account" screen: GBP, EUR, USD and
+      // "+21 more" (components/art/AddAccountPhone.jsx). All tiles are drawn.
+      art: "add-account",
     },
     {
       id: "ibans",

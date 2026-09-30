@@ -7,6 +7,7 @@
 import Flag from "../ui/Flag.jsx";
 import Icon from "../ui/Icon.jsx";
 import logo from "../../assets/logo-g.png";
+import AddAccountPhone from "./AddAccountPhone.jsx";
 import "./ProductArt.css";
 
 // 2 · Named virtual IBANs — one IBAN per client; a payment lands on its own.
@@ -275,6 +276,7 @@ function Onboarding() {
 }
 
 export const PRODUCT_ART = {
+  "add-account": AddAccountPhone,
   named: NamedAccounts,
   "uk-rails": UkPayments,
   cop: PayeeCheck,
