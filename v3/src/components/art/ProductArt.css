@@ -148,47 +148,10 @@ div.hl-art {
   background: var(--tint);
 }
 
-/* ---------- 2 · Named accounts ---------- */
-.art-named .art-panel {
-  gap: 0.35em;
-}
-.art-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75em;
-  padding: 0.55em 0.6em;
-  border-radius: 0.9em;
-}
-.art-row.is-hi {
-  background: var(--cell);
-  box-shadow: var(--shadow-1);
-}
-.art-amount {
-  font-weight: 600;
-}
-.art-amount.is-pos {
-  color: var(--green);
-}
-.art-named .art-toast {
-  width: 62%;
-  margin: 0 0.4em -0.9em auto;
-}
-/* Option B: the invoice, and the "paid" toast tucked over its foot. */
-.art-invoice .art-payee {
-  padding: 0 0.2em 0.2em;
-}
-.art-invoice-iban {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6em;
-  margin-top: 0.15em;
-}
-.art-invoice .art-toast,
+/* ---------- 2 · Separate details, one account ---------- */
 .art-newdetails .art-created {
   margin: -0.9em 0 0 1.6em;
 }
-/* Option C: new details, created in the company's name. */
 .art-currency {
   display: flex;
   align-items: center;

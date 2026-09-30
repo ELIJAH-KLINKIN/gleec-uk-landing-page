@@ -82,27 +82,14 @@ export const HIGHLIGHTS = {
       // "+21 more" (components/art/AddAccountPhone.jsx). All tiles are drawn.
       art: "add-account",
     },
-    // Preview only: three options for this tile, side by side, until one is chosen.
     {
+      // Business banking, as at Revolut Business: extra details for the company's
+      // own regions, products or purposes, never for its customers' clients (no BaaS).
       id: "ibans",
-      eyebrow: "Option A · Account details",
-      title: "Named virtual IBANs",
-      body: "Extra account details in your company’s name for each client, region or product, so every payment lands where it belongs.",
-      art: "named",
-    },
-    {
-      id: "ibans-b",
-      eyebrow: "Option B · Account details",
-      title: "An IBAN for every client",
-      body: "Give each client its own account details in your company’s name. Their payments arrive already matched, with no reference to chase.",
-      art: "named-invoice",
-    },
-    {
-      id: "ibans-c",
-      eyebrow: "Option C · Account details",
+      eyebrow: "Account details",
       title: "Separate details, one account",
-      body: "Open account details for each region, product or entity — all in your company’s name, all in one Global Account.",
-      art: "named-new",
+      body: "Open account details for each region, product or purpose — all in your company’s name, all in one Global Account.",
+      art: "named",
     },
     {
       id: "uk-rails",
