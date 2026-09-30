@@ -104,6 +104,66 @@
     box-shadow: 0 0 1em 0.2em rgba(255, 255, 255, 0.55);
   }
 }
+/* The pointer target: from the words to the side button, level with both. It
+   stops at the phone's edge, so the button itself stays its own target. */
+.wp-dcp-hit {
+  position: absolute;
+  z-index: 7;
+  top: 18.6em;
+  right: 0.2em;
+  width: 11.6em;
+  height: 9em;
+  cursor: pointer;
+  pointer-events: none;
+}
+.wp[data-state="idle"] .wp-dcp-hit,
+.wp[data-state="done"] .wp-dcp-hit {
+  pointer-events: auto;
+}
+/* The button itself is thin: its target reaches out past the phone's edge. */
+.wp .wp-side {
+  cursor: pointer;
+}
+.wp .wp-side::before {
+  content: "";
+  position: absolute;
+  inset: -0.9em -1.6em -0.9em -0.2em;
+}
+/* While it waits, the side button glows purple, inviting the double-click, and
+   the light on the screen beside it breathes with it. The glow is its own layer,
+   so it fades rather than flips. */
+.wp .wp-side::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #a66bff;
+  box-shadow: 0 0 1.1em 0.25em rgba(140, 65, 255, 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+.wp[data-state="idle"] .wp-side::after {
+  animation: wp-side-glow 2.2s var(--ease) infinite;
+}
+.wp[data-state="idle"] .wp-dcp-pill {
+  animation: wp-pill-glow 2.2s var(--ease) infinite;
+}
+.wp[data-state="idle"]:has(.wp-dcp-hit:hover) .wp-side::after,
+.wp[data-state="idle"] .wp-side:hover::after {
+  opacity: 1;
+  animation: none;
+}
+@keyframes wp-side-glow {
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes wp-pill-glow {
+  50% {
+    background: #fff;
+    box-shadow: 0 0 0.8em 0.1em rgba(255, 255, 255, 0.45);
+  }
+}
 
 /* ---------- Card faces ---------- */
 .wp-card {
@@ -313,31 +373,24 @@
   opacity: 0;
   scale: 0.6;
 }
-.wp[data-state="done"] .wp-glyph-phone {
+/* Only while paying is it the phone; from Done on (and as it fades) the tick. */
+.wp:not([data-state="pay"]) .wp-glyph-phone {
   opacity: 0;
   scale: 0.6;
 }
-.wp[data-state="done"] .wp-glyph-check {
+.wp:not([data-state="pay"]) .wp-glyph-check {
   opacity: 1;
   scale: 1;
 }
 .wp-reader-label {
-  grid-area: 2 / 1;
   font-size: 1.27em;
   color: #8e8e93;
-  transition:
-    opacity 180ms var(--ease),
-    visibility 0s linear 180ms;
+  animation: wp-label-in 220ms var(--ease);
 }
-.wp-reader-done,
-.wp[data-state="done"] .wp-reader-hold {
-  opacity: 0;
-  visibility: hidden;
-}
-.wp[data-state="done"] .wp-reader-done {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 180ms var(--ease) 120ms;
+@keyframes wp-label-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* ---------- The other cards, peeking at the bottom ---------- */
@@ -471,24 +524,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 0.95em;
-}
-/* Our app's icon, badged on the merchant's logo (as the phone shows it). */
-.wp-banner-badge {
-  position: absolute;
-  right: -0.35em;
-  bottom: -0.35em;
-  display: grid;
-  place-items: center;
-  width: 1.75em;
-  height: 1.75em;
-  border-radius: 0.5em;
-  background: #8c41ff;
-  box-shadow: 0 0 0 0.18em rgba(44, 44, 48, 1);
-}
-.wp-banner-badge img {
-  width: auto;
-  height: 1em;
+  border-radius: 50%;
 }
 .wp-banner-text {
   display: grid;
@@ -517,7 +553,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wp *,
-  .wp *::before {
+  .wp *::before,
+  .wp *::after {
     transition: none !important;
     animation: none !important;
   }

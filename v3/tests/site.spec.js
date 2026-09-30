@@ -1082,21 +1082,31 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
 });
 
 test("cards: the virtual card pays from the phone's wallet; the stack opens and switches card", async ({ page }, testInfo) => {
-  test.setTimeout(60_000); // two full payments, each with its real timings
+  test.setTimeout(60_000); // up to three full payments, each with its real timings
   await page.goto("./#cards");
   const phone = page.locator(".wp");
   const side = page.getByRole("button", { name: /Side button/ });
+  const live = page.locator(".wp [aria-live]");
   await expect(phone).toHaveAttribute("data-state", "idle");
   await expect(phone.getByText("Double Click")).toBeVisible();
   // Nothing happens on its own, and one press is only a nudge.
   await page.waitForTimeout(1500);
   await side.click();
   await expect(phone).toHaveAttribute("data-state", "idle");
-  // Double-click: face check → hold near reader.
-  await side.dblclick();
+  // The whole area from "Double Click to Pay" to the side button takes the double-click.
+  await phone.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await phone.locator(".wp-dcp-hit").dblclick();
   await expect(phone).toHaveAttribute("data-state", "auth");
   await expect(phone).toHaveAttribute("data-state", "pay", { timeout: 3000 });
   await expect(phone.getByText("Hold Near Reader", { exact: true })).toBeVisible();
+  // Done: one label (never "Hold Near Reader" and "Done" at once) and the notification.
+  await expect(phone).toHaveAttribute("data-state", "done", { timeout: 6000 });
+  await expect(phone.locator(".wp-reader-label")).toHaveText("Done");
+  await expect(phone.locator(".wp-reader-label")).toHaveCount(1);
+  await expect(live).toContainText("Done. The Ritz-Carlton −£1,240");
+  await expect(phone.locator(".wp-banner")).toContainText("Marketing card · within limit");
+  await expect(phone).toHaveAttribute("data-state", "idle", { timeout: 6000 });
+
   // The cards at the bottom open the whole stack; pick another card (tap its visible strip).
   await page.getByRole("button", { name: /Show all cards/ }).click();
   await expect(phone).toHaveAttribute("data-state", "stack");
@@ -1113,18 +1123,17 @@ test("cards: the virtual card pays from the phone's wallet; the stack opens and 
     return [c.left - s.left, s.right - c.right];
   });
   expect(Math.abs(gaps[0] - gaps[1])).toBeLessThan(1.5);
-  // Done, with the payment notification (first the Ritz-Carlton), then back to the start.
+  // Each team card pays its own merchant: Engineering pays xAI.
   await expect(phone).toHaveAttribute("data-state", "done", { timeout: 6000 });
-  await expect(page.locator(".wp [aria-live]")).toContainText("Done. The Ritz-Carlton −£1,240");
-  await expect(phone.locator(".wp-banner")).toContainText("Virtual · Engineering");
+  await expect(live).toContainText("Done. xAI −$300");
+  await expect(phone.locator(".wp-banner")).toContainText("Engineering card · SuperGrok");
   await expect(phone).toHaveAttribute("data-state", "idle", { timeout: 6000 });
   if (!isMobile(testInfo)) {
     // Keyboard: one press of Enter on the side button starts it.
     await side.focus();
     await page.keyboard.press("Enter");
     await expect(phone).toHaveAttribute("data-state", "auth");
-    // The second payment is the coffee in New York, in dollars.
     await expect(phone).toHaveAttribute("data-state", "done", { timeout: 8000 });
-    await expect(page.locator(".wp [aria-live]")).toContainText("Done. Blue Bottle Coffee −$7.50");
+    await expect(live).toContainText("Done. xAI −$300");
   }
 });

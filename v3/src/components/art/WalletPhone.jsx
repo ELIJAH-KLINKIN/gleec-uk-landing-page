@@ -12,19 +12,40 @@ import MerchantLogo from "../ui/MerchantLogo.jsx";
 import PhoneFrame from "./PhoneFrame.jsx";
 import "./WalletPhone.css";
 
+// Example payments. Marketing and Travel take a hotel in pounds, then a coffee in
+// New York in dollars; the other cards each pay the merchant their team would.
+// Prices as published (30 Sep 2026): SuperGrok Heavy, $300 a month (shown as
+// "SuperGrok" so the line fits); a 4-person WeWork private office in West London,
+// from £1,840 a month before VAT; a Burning Man 2026 "Pay your Way" ticket, $775
+// before Nevada tax and fees, sold by Burning Man Project itself.
+const RITZ = { merchant: "ritzcarlton", name: "The Ritz-Carlton", amount: "−£1,240", note: "within limit" };
+const BLUE_BOTTLE = { merchant: "bluebottle", name: "Blue Bottle Coffee", amount: "−$7.50", note: "paid from USD" };
+
 // Example cards (last four digits are illustrative).
 const CARDS = [
-  { id: "marketing", team: "Marketing", last4: "7421", tone: "purple" },
-  { id: "travel", team: "Travel", last4: "5520", tone: "graphite" },
-  { id: "engineering", team: "Engineering", last4: "3094", tone: "midnight" },
-  { id: "office", team: "Office", last4: "8816", tone: "silver" },
-  { id: "events", team: "Events", last4: "1188", tone: "lilac" },
-];
-
-// Example payments, in turn: a hotel in pounds, then a coffee in New York in dollars.
-const PAYMENTS = [
-  { merchant: "ritzcarlton", name: "The Ritz-Carlton", amount: "−£1,240", note: "within limit" },
-  { merchant: "bluebottle", name: "Blue Bottle Coffee", amount: "−$7.50", note: "paid from USD" },
+  { id: "marketing", team: "Marketing", last4: "7421", tone: "purple", payments: [RITZ, BLUE_BOTTLE] },
+  { id: "travel", team: "Travel", last4: "5520", tone: "graphite", payments: [RITZ, BLUE_BOTTLE] },
+  {
+    id: "engineering",
+    team: "Engineering",
+    last4: "3094",
+    tone: "midnight",
+    payments: [{ merchant: "xai", name: "xAI", amount: "−$300", note: "SuperGrok" }],
+  },
+  {
+    id: "office",
+    team: "Office",
+    last4: "8816",
+    tone: "silver",
+    payments: [{ merchant: "wework", name: "WeWork", amount: "−£1,840", note: "4 desks, monthly" }],
+  },
+  {
+    id: "events",
+    team: "Events",
+    last4: "1188",
+    tone: "lilac",
+    payments: [{ merchant: "burningman", name: "Burning Man Project", amount: "−$775", note: "entry ticket" }],
+  },
 ];
 
 const T = { auth: 1300, pay: 3600, done: 3600 }; // ms in each step
@@ -33,14 +54,13 @@ const DOUBLE_CLICK = 650; // two presses within this count as a double-click
 export default function WalletPhone() {
   const [state, setState] = useState("idle"); // idle | auth | pay | done | stack
   const [cardId, setCardId] = useState(CARDS[0].id);
-  const [payIdx, setPayIdx] = useState(0);
+  const [payment, setPayment] = useState(CARDS[0].payments[0]);
   const [nudge, setNudge] = useState(0); // counts nudges, so the glow replays each time
-  const paid = useRef(0);
+  const paid = useRef({}); // payments made per card, to take each card's next merchant
   const timer = useRef(0);
   const lastPress = useRef(0);
   const card = CARDS.find((c) => c.id === cardId);
   const others = CARDS.filter((c) => c.id !== cardId);
-  const payment = PAYMENTS[payIdx];
 
   const go = useCallback((next, delay) => {
     clearTimeout(timer.current);
@@ -53,12 +73,13 @@ export default function WalletPhone() {
     if (state === "auth") go("pay", T.auth);
     else if (state === "pay") go("done", T.pay);
     else if (state === "done") {
-      // Each completed payment takes the next merchant.
-      setPayIdx(paid.current % PAYMENTS.length);
-      paid.current += 1;
+      // Each completed payment takes this card's next merchant.
+      const n = paid.current[card.id] ?? 0;
+      setPayment(card.payments[n % card.payments.length]);
+      paid.current[card.id] = n + 1;
       go("idle", T.done);
     } else clearTimeout(timer.current);
-  }, [state, go]);
+  }, [state, go, card]);
 
   const start = () => {
     setNudge(0);
@@ -96,12 +117,17 @@ export default function WalletPhone() {
     <div className="wp" data-state={state} data-nudge={nudge ? (nudge % 2 ? "a" : "b") : undefined}>
       <PhoneFrame
         side={
-          <button
-            type="button"
-            className="wp-btn wp-side"
-            onClick={onSide}
-            aria-label="Side button. Double-click to pay with a virtual card."
-          />
+          <>
+            <button
+              type="button"
+              className="wp-btn wp-side"
+              onClick={onSide}
+              aria-label="Side button. Double-click to pay with a virtual card."
+            />
+            {/* A generous target for pointers: from "Double Click to Pay" to the
+                side button. The side button stays the one keyboard control. */}
+            <span className="wp-dcp-hit" onClick={onSide} aria-hidden="true" />
+          </>
         }
       >
         {/* A tap on the screen points at the side button (mouse and touch only). */}
@@ -129,8 +155,10 @@ export default function WalletPhone() {
             <PhoneGlyph />
             <CheckGlyph />
           </span>
-          <span className="wp-reader-label wp-reader-hold">Hold Near Reader</span>
-          <span className="wp-reader-label wp-reader-done">Done</span>
+          {/* One label, swapped (never two crossfading over each other). */}
+          <span key={state === "pay" ? "hold" : "done"} className="wp-reader-label">
+            {state === "pay" ? "Hold Near Reader" : "Done"}
+          </span>
         </div>
 
         {/* The other cards, peeking at the bottom: tap to see them all */}
@@ -163,13 +191,10 @@ export default function WalletPhone() {
           ))}
         </div>
 
-        {/* The notification the payment sends: the merchant, badged with our app */}
+        {/* The notification the payment sends, with the merchant's circled logo */}
         <div className="wp-banner" aria-hidden="true">
           <span className="wp-banner-avatar">
             <MerchantLogo id={payment.merchant} size={38} className="wp-banner-merchant" />
-            <span className="wp-banner-badge">
-              <img src={logoWhite} alt="" width="6" height="8" />
-            </span>
           </span>
           <span className="wp-banner-text">
             <span className="wp-banner-head">
@@ -179,8 +204,9 @@ export default function WalletPhone() {
             <strong>
               {payment.name} · {payment.amount}
             </strong>
+            {/* The card face already says Virtual: here, which card and why. */}
             <span>
-              Virtual · {card.team} · {payment.note}
+              {card.team} card · {payment.note}
             </span>
           </span>
         </div>

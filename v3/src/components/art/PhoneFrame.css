@@ -18,6 +18,9 @@
   position: relative;
   height: 100%;
   overflow: hidden;
+  /* Clip, never scroll: focusing a card (Tab) or a scripted click could
+     otherwise scroll the screen inside itself and shift everything on it. */
+  overflow: clip;
   border-radius: 4.5em;
   background: #000;
   isolation: isolate;

@@ -55,8 +55,11 @@ function StatusBar() {
           <rect x="9.8" y="2.5" width="3.2" height="9.5" rx="1" />
           <rect x="14.7" y="0" width="3.2" height="12" rx="1" />
         </svg>
-        <svg viewBox="0 0 16 12" width="1.45em" height="1.05em" fill="currentColor">
-          <path d="M8 2.2c2.4 0 4.6.9 6.3 2.5l1.2-1.3C13.5 1.5 10.8.4 8 .4S2.5 1.5.5 3.4l1.2 1.3C3.4 3.1 5.6 2.2 8 2.2Zm0 3.6c1.4 0 2.7.5 3.7 1.4l1.2-1.3C11.6 4.7 9.9 4 8 4s-3.6.7-4.9 1.9l1.2 1.3c1-.9 2.3-1.4 3.7-1.4Zm0 3.6c.5 0 1 .2 1.3.5L8 11.6 6.7 9.9c.3-.3.8-.5 1.3-.5Z" />
+        {/* Wi-Fi at full strength: two arcs over a small fan, three bars in all. */}
+        <svg viewBox="0 0 17 12" width="1.5em" height="1.05em" fill="currentColor" stroke="currentColor">
+          <path d="M1.71 4.41a9.6 9.6 0 0 1 13.58 0" fill="none" strokeWidth="1.9" strokeLinecap="round" />
+          <path d="M4.19 6.89a6.1 6.1 0 0 1 8.62 0" fill="none" strokeWidth="1.9" strokeLinecap="round" />
+          <path d="M8.5 11.2 6.2 8.9a3.25 3.25 0 0 1 4.6 0Z" strokeWidth="0.9" strokeLinejoin="round" />
         </svg>
         {/* The current battery: a solid pill (full), with a small cap. */}
         <svg viewBox="0 0 28 13" width="2.5em" height="1.1em" fill="currentColor">

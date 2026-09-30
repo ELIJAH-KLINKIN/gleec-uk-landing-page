@@ -1,6 +1,7 @@
 .stage {
   position: relative;
   overflow: hidden;
+  overflow: clip; /* never scrolls inside itself (see PhoneFrame.css) */
   isolation: isolate;
   border-radius: var(--r-card-l);
 }
