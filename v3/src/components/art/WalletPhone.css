@@ -307,12 +307,16 @@
   height: 5.3em;
   overflow: visible;
 }
-/* Looking: the square frame blinks. Recognised: it gives way to a green ring,
-   drawn in from the top, around a smiling face; the panel's edge turns green. */
+/* Looking: the square frame blinks, already green (a shade dimmer, as the phone
+   shows it). Recognised: it gives way to a bright green ring, drawn in from the
+   top, around a smiling face; the panel's green edge brightens. */
 .wp-face-scan,
 .wp-face-ok {
   transform-box: view-box;
   transform-origin: 50% 50%;
+}
+.wp-face-scan {
+  color: #3fa65a;
 }
 .wp-face-ok {
   color: var(--green);
@@ -353,7 +357,7 @@
 @keyframes wp-face-panel {
   0%,
   52% {
-    box-shadow: inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 0.08em rgba(48, 209, 88, 0.3);
   }
   72%,
   100% {
