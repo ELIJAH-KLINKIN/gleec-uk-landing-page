@@ -1081,7 +1081,7 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
   expect(spill).toBe(0);
 });
 
-test("cards: the virtual card pays from the phone's wallet; the stack opens and switches card", async ({ page }, testInfo) => {
+test("cards: the virtual card pays from the phone's wallet; a visitor can take over", async ({ page }, testInfo) => {
   test.setTimeout(60_000); // up to three full payments, each with its real timings
   await page.goto("./#cards");
   const phone = page.locator(".wp");
@@ -1089,9 +1089,9 @@ test("cards: the virtual card pays from the phone's wallet; the stack opens and 
   const live = page.locator(".wp [aria-live]");
   await expect(phone).toHaveAttribute("data-state", "idle");
   await expect(phone.getByText("Double Click")).toBeVisible();
-  // Nothing happens on its own, and one press is only a nudge.
-  await page.waitForTimeout(1500);
+  // One press takes over from the autoplay (Play is offered instead), and is only a nudge.
   await side.click();
+  await expect(page.getByRole("button", { name: "Play the wallet demo" })).toBeVisible();
   await expect(phone).toHaveAttribute("data-state", "idle");
   // The whole area from "Double Click to Pay" to the side button takes the double-click.
   await phone.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
@@ -1103,8 +1103,8 @@ test("cards: the virtual card pays from the phone's wallet; the stack opens and 
   await expect(phone).toHaveAttribute("data-state", "done", { timeout: 6000 });
   await expect(phone.locator(".wp-reader-label")).toHaveText("Done");
   await expect(phone.locator(".wp-reader-label")).toHaveCount(1);
-  await expect(live).toContainText("Done. The Ritz-Carlton −£1,240");
-  await expect(phone.locator(".wp-banner")).toContainText("Marketing card · within limit");
+  await expect(live).toContainText("Done. OpenAI −$2,400");
+  await expect(phone.locator(".wp-banner")).toContainText("Marketing card · ChatGPT ads");
   await expect(phone).toHaveAttribute("data-state", "idle", { timeout: 6000 });
 
   // The cards at the bottom open the whole stack; pick another card (tap its visible strip).
@@ -1136,4 +1136,37 @@ test("cards: the virtual card pays from the phone's wallet; the stack opens and 
     await expect(phone).toHaveAttribute("data-state", "done", { timeout: 8000 });
     await expect(live).toContainText("Done. xAI −$300");
   }
+});
+
+test("cards: the wallet plays itself, Travel first; Pause freezes it and Play goes on", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.goto("./#cards");
+  const phone = page.locator(".wp");
+  await phone.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.mouse.move(1, 1);
+  // It opens the stack and taps the Travel card, which pays the hotel.
+  await expect(phone).toHaveAttribute("data-state", "stack", { timeout: 6000 });
+  await expect(phone).toHaveAttribute("data-state", "auth", { timeout: 4000 });
+  await expect(phone.locator(".wp-main-card")).toContainText("5520");
+  await expect(phone).toHaveAttribute("data-state", "done", { timeout: 8000 });
+  await expect(page.locator(".wp [aria-live]")).toContainText("Done. The Ritz-Carlton −£1,240");
+  // Pause freezes it where it is.
+  await page.getByRole("button", { name: "Pause the wallet demo" }).click();
+  await expect(phone).toHaveAttribute("data-paused", "");
+  await page.waitForTimeout(4500);
+  await expect(phone).toHaveAttribute("data-state", "done");
+  // Play goes on, with the pointer still on the button: next is the Engineering card.
+  await page.getByRole("button", { name: "Play the wallet demo" }).click();
+  await expect(phone).toHaveAttribute("data-state", "stack", { timeout: 8000 });
+  await expect(phone).toHaveAttribute("data-state", "auth", { timeout: 4000 });
+  await expect(phone.locator(".wp-main-card")).toContainText("3094");
+});
+
+test("cards: the wallet never plays itself under Reduce Motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#cards");
+  await page.locator(".wp").evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await expect(page.getByRole("button", { name: /the wallet demo/ })).toHaveCount(0);
+  await page.waitForTimeout(3000);
+  await expect(page.locator(".wp")).toHaveAttribute("data-state", "idle");
 });

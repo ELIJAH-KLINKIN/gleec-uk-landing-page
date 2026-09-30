@@ -284,49 +284,121 @@
 }
 
 /* ---------- Face check ---------- */
+/* The panel grows out of the camera island, as the phone does: over it, from its top. */
 .wp-face {
   position: absolute;
-  z-index: 3;
-  top: 0.9em;
+  z-index: 6;
+  top: 1.1em;
+  transform-origin: 50% 0;
   left: 50%;
   display: grid;
   place-items: center;
-  width: 10.2em;
-  height: 10.2em;
+  width: 10em;
+  height: 10em;
   translate: -50% 0;
-  border-radius: 2.4em;
+  border-radius: 2.5em;
   background: rgba(10, 10, 12, 0.94);
   box-shadow: inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
   color: #d1d1d6;
   scale: 0.9;
 }
 .wp-face svg {
-  width: 5.4em;
-  height: 5.4em;
+  width: 5.3em;
+  height: 5.3em;
+  overflow: visible;
+}
+/* Looking: the square frame blinks. Recognised: it gives way to a green ring,
+   drawn in from the top, around a smiling face; the panel's edge turns green. */
+.wp-face-scan,
+.wp-face-ok {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+.wp-face-ok {
+  color: var(--green);
+  opacity: 0;
+}
+.wp-face-ring {
+  stroke-dasharray: 1;
+}
+/* Outside the scan (as the panel fades away) it stays recognised: no flash of
+   the square frame. Each scan's animation starts from the square again. */
+.wp:not([data-state="auth"]) .wp-face {
+  box-shadow:
+    inset 0 0 0 0.1em rgba(48, 209, 88, 0.55),
+    0 0 1.4em rgba(48, 209, 88, 0.2);
+}
+.wp:not([data-state="auth"]) .wp-face-scan {
+  opacity: 0;
+}
+.wp:not([data-state="auth"]) .wp-face-ok {
+  opacity: 1;
 }
 .wp[data-state="auth"] .wp-face {
   scale: 1;
   transition:
     opacity 220ms var(--ease),
     scale 300ms var(--ease-out);
-  animation: wp-face 1.3s var(--ease) forwards;
+  animation: wp-face-panel 1.8s var(--ease) forwards;
 }
-@keyframes wp-face {
+.wp[data-state="auth"] .wp-face-scan {
+  animation: wp-face-scan 1.8s var(--ease) forwards;
+}
+.wp[data-state="auth"] .wp-face-ok {
+  animation: wp-face-ok 1.8s var(--ease-out) forwards;
+}
+.wp[data-state="auth"] .wp-face-ring {
+  animation: wp-face-ring 1.8s var(--ease-out) forwards;
+}
+@keyframes wp-face-panel {
   0%,
-  45% {
-    color: #d1d1d6;
+  52% {
+    box-shadow: inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
   }
-  60%,
+  72%,
   100% {
-    color: var(--green);
+    box-shadow:
+      inset 0 0 0 0.1em rgba(48, 209, 88, 0.55),
+      0 0 1.4em rgba(48, 209, 88, 0.2);
   }
 }
-.wp[data-state="auth"] .wp-face-feat {
-  animation: wp-scan 0.6s var(--ease) 2 alternate;
+@keyframes wp-face-scan {
+  0%,
+  24%,
+  48% {
+    opacity: 1;
+    scale: 1;
+  }
+  12%,
+  36% {
+    opacity: 0.3;
+  }
+  62%,
+  100% {
+    opacity: 0;
+    scale: 0.8;
+  }
 }
-@keyframes wp-scan {
-  to {
-    opacity: 0.35;
+@keyframes wp-face-ok {
+  0%,
+  50% {
+    opacity: 0;
+    scale: 0.82;
+  }
+  70%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+@keyframes wp-face-ring {
+  0%,
+  50% {
+    stroke-dashoffset: 1;
+  }
+  76%,
+  100% {
+    stroke-dashoffset: 0;
   }
 }
 
@@ -485,6 +557,14 @@
 .wp-stack-item:hover .wp-card {
   filter: brightness(1.12);
 }
+/* Autoplay "taps" the card it picks, so the visitor sees what happened. */
+.wp-stack-item.is-pressed .wp-card {
+  filter: brightness(1.25);
+  scale: 0.97;
+  transition:
+    filter 150ms var(--ease),
+    scale 150ms var(--ease);
+}
 .wp-stack-item:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 0.2em;
@@ -551,6 +631,43 @@
   color: rgba(235, 235, 245, 0.75);
 }
 
+/* ---------- Pause / Play, beside the phone ---------- */
+.wp-play {
+  position: absolute;
+  bottom: 0;
+  left: calc(100% + var(--s-6));
+  display: grid;
+  place-items: center;
+  width: var(--hit);
+  height: var(--hit);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fill);
+  color: var(--label);
+  cursor: pointer;
+  transition: background-color var(--dur-1);
+}
+.wp-play:hover {
+  background: var(--fill-2);
+}
+.wp-play svg {
+  fill: currentColor;
+}
+/* Phones: under the phone, at its right edge. */
+@media (max-width: 734px) {
+  .wp-play {
+    position: static;
+    margin: var(--s-4) 0 0 auto;
+  }
+}
+/* Paused: everything on the screen holds still. */
+.wp[data-paused] *,
+.wp[data-paused] *::before,
+.wp[data-paused] *::after {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wp *,
   .wp *::before,
@@ -558,7 +675,14 @@
     transition: none !important;
     animation: none !important;
   }
-  .wp[data-state="auth"] .wp-face {
-    color: var(--green);
+  /* No blinking or drawing: straight to the recognised face. */
+  .wp[data-state="auth"] .wp-face-scan {
+    opacity: 0;
+  }
+  .wp[data-state="auth"] .wp-face-ok {
+    opacity: 1;
+  }
+  .wp[data-state="auth"] .wp-face-ring {
+    stroke-dashoffset: 0;
   }
 }

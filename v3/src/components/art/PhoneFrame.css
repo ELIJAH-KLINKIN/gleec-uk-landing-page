@@ -90,7 +90,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.4em 0 3.1em;
+  /* Measured on the phone itself: the time from 12% of the width, the icons from
+     71% to 91%, which leaves room for the Face ID panel between them. */
+  padding: 0 1.85em 0 2.6em;
   font-size: 1.3em;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -98,9 +100,9 @@
 .wp-status-icons {
   display: inline-flex;
   align-items: center;
-  gap: 0.32em;
+  gap: 0.3em;
 }
 .wp-status-icons svg {
   width: auto;
-  height: 0.84em;
+  height: 0.74em;
 }
