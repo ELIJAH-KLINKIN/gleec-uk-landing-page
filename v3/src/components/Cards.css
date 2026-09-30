@@ -13,9 +13,17 @@
 }
 .cards-stage {
   position: relative;
-  height: clamp(220px, 34vw, 360px);
+  height: clamp(240px, 44vw, 480px);
   margin: 0 auto;
-  max-width: 640px;
+  max-width: 720px;
+}
+.cards-render {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: auto;
+  translate: -50% -50%;
 }
 .cards-scene {
   position: absolute;

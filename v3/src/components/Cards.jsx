@@ -9,16 +9,7 @@ import SegmentedControl from "./ui/SegmentedControl.jsx";
 import MerchantLogo from "./ui/MerchantLogo.jsx";
 import Stage from "./art/Stage.jsx";
 import appIcon from "../assets/logo-g.png";
-import virtualFront from "../assets/cards/card-virtual.svg";
-import virtualBack from "../assets/cards/card-virtual-alt.svg";
-import physicalFront from "../assets/cards/card-physical.svg";
-import physicalBack from "../assets/cards/card-physical-alt.svg";
 import "./Cards.css";
-
-const ART = {
-  virtual: { front: virtualFront, back: virtualBack },
-  physical: { front: physicalFront, back: physicalBack },
-};
 
 export default function Cards() {
   const [sceneId, setSceneId] = useState(CARDS.scenes[0].id);
@@ -46,21 +37,13 @@ export default function Cards() {
             <div className="cards-stage" aria-hidden="true">
               {CARDS.scenes.map((s) => (
                 <div key={s.id} className={"cards-scene" + (s.id === sceneId ? " is-current" : "")}>
+                  {/* Rendered in Blender (art-src/blender/cards.py): one shot per card type. */}
                   <img
-                    className="cards-img back"
-                    src={ART[s.id].back}
+                    className="cards-render"
+                    src={`/art/cards-${s.id}.webp`}
                     alt=""
-                    width="2064"
-                    height="1301"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <img
-                    className="cards-img front"
-                    src={ART[s.id].front}
-                    alt=""
-                    width="2064"
-                    height="1301"
+                    width="1600"
+                    height="1171"
                     loading="lazy"
                     decoding="async"
                   />
