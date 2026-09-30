@@ -619,6 +619,31 @@ test("product gallery: the account tile plays the new-account flow, and holds wh
   expect(await art.evaluate((el) => el.className + el.querySelector(".art-counter").textContent)).toBe(before);
 });
 
+test("product gallery: SEPA is tile 4, and the payee tile (5) plays the name check through to Send", async ({ page }) => {
+  test.setTimeout(40_000);
+  await page.goto("./#product");
+  const titles = page.locator(".hl-tile h3");
+  await expect(titles.nth(3)).toHaveText("SEPA & SEPA Instant");
+  await expect(titles.nth(4)).toHaveText("Confirmation of Payee");
+  await page.locator(".hl").getByRole("button", { name: /Go to highlight 5:/ }).click();
+  await page.mouse.move(1, 1);
+  const art = page.locator(".art-cop");
+  await expect(art.locator(".art-bank")).toHaveClass(/is-on/, { timeout: 8000 });
+  await expect(art).toHaveClass(/is-sheet/, { timeout: 10000 });
+  await expect(art.getByText("Name is a close match")).toBeVisible();
+  await expect(art.locator(".art-switch")).toHaveClass(/is-on/, { timeout: 12000 });
+  await expect(art).toHaveClass(/is-sent/, { timeout: 8000 });
+  await expect(art.getByText("€3,300 sent")).toBeVisible();
+});
+
+test("product gallery: the payee tile is a still of the name check under Reduce Motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#product");
+  const art = page.locator(".art-cop");
+  await expect(art).toHaveClass(/is-sheet/);
+  await expect(art.locator(".art-pointer")).toHaveCount(0);
+});
+
 test("product gallery: the account tile is a still picture under Reduce Motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./#product");
@@ -1119,7 +1144,9 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
   const spill = await tiles.evaluateAll((ts) =>
     ts.filter((t) => {
       const r = t.getBoundingClientRect();
+      // Screens that scroll or slide (.art-screen) clip their own content: check the screen, not what waits off it.
       return [...t.querySelectorAll(".art *")].some((e) => {
+        if (e.parentElement.closest(".art-screen")) return false;
         const q = e.getBoundingClientRect();
         return q.width && (q.left < r.left - 1 || q.right > r.right + 1 || q.bottom > r.bottom + 1);
       });

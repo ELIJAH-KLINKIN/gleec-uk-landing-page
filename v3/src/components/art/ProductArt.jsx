@@ -13,76 +13,108 @@ import { GalleryPaused } from "../../lib/galleryMotion.js";
 import { useAutoAdvance } from "../../lib/useAutoAdvance.js";
 import "./ProductArt.css";
 
-// 2 · Separate details, one account — the app's own new-account flow, played
-// like a short screen recording: "Kensington" is typed into the account name
-// (the counter climbs to 24/30), a pointer taps Create account, the "created"
-// dialog appears and it taps Not now (skipping team access), then the new GBP
-// account's details slide in. It plays only while the tile is on screen, holds
-// when the gallery is paused, and is a still picture under Reduce Motion.
-// Placeholder codes, as in the account-details explorer.
-const ACCT_NAME = "London Office Kensington";
-const ACCT_TYPED = 14; // "London Office " is already typed
-const ACCT_STEPS = [
-  { typed: ACCT_TYPED, at: "field", ms: 1000 },
-  ...Array.from({ length: ACCT_NAME.length - ACCT_TYPED }, (_, i) => ({ typed: ACCT_TYPED + i + 1, at: "field", ms: 120 })),
-  { at: "field", ms: 600 },
-  { at: "create", ms: 700 },
-  { at: "create", press: true, ms: 200 },
-  { at: "create", dialog: true, ms: 1400 },
-  { at: "notnow", dialog: true, ms: 700 },
-  { at: "notnow", dialog: true, press: true, ms: 200 },
-  { at: "rest", details: true, ms: 3600 },
-  { at: "rest", details: true, out: true, ms: 500 },
-];
+// ---------- Scripted art: short "screen recordings" drawn in HTML ----------
+// A script is a list of steps: each a full snapshot of the screen and how long
+// it lasts (`script` carries values forward; a press lasts one step). It plays
+// only while the tile is on screen, holds while the gallery is paused, and
+// doesn't play under Reduce Motion (the art shows a still instead).
+function script(parts) {
+  let state = {};
+  return parts.map((p) => (state = { ...state, press: false, ...p }));
+}
 
-function NewAccount() {
+function useScript(steps) {
   const paused = useContext(GalleryPaused);
   const { ref, running, autoplayAllowed } = useAutoAdvance({ enabled: !paused, threshold: 0.5 });
   const [i, setI] = useState(0);
-  const [spots, setSpots] = useState(null);
+  const still = !autoplayAllowed;
+  useEffect(() => {
+    if (still || !running) return undefined;
+    const t = setTimeout(() => setI((n) => (n + 1) % steps.length), steps[i].ms);
+    return () => clearTimeout(t);
+  }, [i, running, still, steps]);
+  return { ref, step: steps[i], i, still };
+}
+
+// Where the pointer goes: the named target ([ref, x, y] as fractions of its
+// box), measured as each step begins (after any scroll of the screen), so it
+// lands on the drawing at any tile size.
+function usePointer(root, targets, at, i) {
+  const [spot, setSpot] = useState(null);
+  const [resized, setResized] = useState(0);
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return undefined;
+    const ro = new ResizeObserver(() => setResized((n) => n + 1));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [root]);
+  useEffect(() => {
+    const r = root.current?.getBoundingClientRect();
+    if (!r || !at) return;
+    const [target, fx, fy] = targets[at] || [];
+    if (!target?.current) {
+      setSpot([r.width * 0.9, r.height * 0.94]);
+      return;
+    }
+    const b = target.current.getBoundingClientRect();
+    setSpot([b.left - r.left + b.width * fx, b.top - r.top + b.height * fy]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- targets are refs
+  }, [at, i, resized, root]);
+  return spot;
+}
+
+function Pointer({ spot, press }) {
+  return (
+    <span
+      className={"art-pointer" + (spot ? " is-on" : "") + (press ? " is-pressed" : "")}
+      style={spot ? { translate: `${spot[0]}px ${spot[1]}px` } : undefined}
+    >
+      <svg viewBox="0 0 22 28">
+        <path d="M2 2v20.5l5.2-5 3.3 7.6 3.4-1.5-3.2-7.4H18L2 2Z" fill="#000" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    </span>
+  );
+}
+
+const Caret = () => <span className="art-caret" />;
+
+// 2 · Separate details, one account — the app's own new-account flow: "Kensington"
+// is typed into the account name (the counter climbs to 24/30), the pointer taps
+// Create account, the "created" dialog appears and it taps Not now (skipping team
+// access), then the new GBP account's details slide in. Placeholder codes, as in
+// the account-details explorer.
+const ACCT_NAME = "London Office Kensington";
+const ACCT_TYPED = 14; // "London Office " is already typed
+const ACCT_STEPS = script([
+  { typed: ACCT_TYPED, at: "field", dialog: false, details: false, out: false, ms: 1000 },
+  ...Array.from({ length: ACCT_NAME.length - ACCT_TYPED }, (_, k) => ({ typed: ACCT_TYPED + k + 1, ms: 120 })),
+  { ms: 600 },
+  { at: "create", ms: 700 },
+  { press: true, ms: 200 },
+  { dialog: true, ms: 1400 },
+  { at: "notnow", ms: 700 },
+  { press: true, ms: 200 },
+  { at: "rest", dialog: false, details: true, ms: 3600 },
+  { out: true, ms: 500 },
+]);
+
+function NewAccount() {
+  const { ref, step, i, still } = useScript(ACCT_STEPS);
   const field = useRef(null);
   const create = useRef(null);
   const notNow = useRef(null);
-  const still = !autoplayAllowed; // Reduce Motion
-  const step = still ? { typed: ACCT_NAME.length } : ACCT_STEPS[i];
-  const typed = step.typed ?? ACCT_NAME.length;
-
-  // Where the pointer goes, measured from the drawing itself (it scales with the tile).
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return undefined;
-    const measure = () => {
-      const r = root.getBoundingClientRect();
-      const at = (el, fx, fy) => {
-        const b = el.getBoundingClientRect();
-        return [b.left - r.left + b.width * fx, b.top - r.top + b.height * fy];
-      };
-      setSpots({
-        field: at(field.current, 0.86, 0.72),
-        create: at(create.current, 0.62, 0.55),
-        notnow: at(notNow.current, 0.58, 0.55),
-        rest: [r.width * 0.9, r.height * 0.92],
-      });
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(root);
-    return () => ro.disconnect();
-  }, [ref]);
-
-  useEffect(() => {
-    if (still || !running) return undefined;
-    const t = setTimeout(() => setI((n) => (n + 1) % ACCT_STEPS.length), ACCT_STEPS[i].ms);
-    return () => clearTimeout(t);
-  }, [i, running, still]);
-
-  const spot = spots && !still ? spots[step.at] : null;
+  const s = still ? { typed: ACCT_NAME.length } : step;
+  const spot = usePointer(
+    ref,
+    { field: [field, 0.86, 0.72], create: [create, 0.62, 0.55], notnow: [notNow, 0.58, 0.55] },
+    still ? null : s.at,
+    i,
+  );
   return (
     <div
       ref={ref}
-      className={
-        "art art-newacct" + (step.dialog ? " is-dialog" : "") + (step.details && !step.out ? " is-details" : "")
-      }
+      className={"art art-newacct" + (s.dialog ? " is-dialog" : "") + (s.details && !s.out ? " is-details" : "")}
     >
       <div className="art-panel">
         <div className="art-title">
@@ -91,15 +123,15 @@ function NewAccount() {
             <Flag code="GB" size="1.15em" /> British pound · GBP
           </span>
         </div>
-        <div className="art-cell">
+        <div className="art-cell" ref={field}>
           <span className="art-muted">Account name</span>
-          <strong ref={field}>
-            {ACCT_NAME.slice(0, typed)}
-            <span className="art-caret" />
+          <strong>
+            {ACCT_NAME.slice(0, s.typed)}
+            <Caret />
           </strong>
         </div>
-        <span className="art-counter art-muted">{typed}/30</span>
-        <span ref={create} className={"art-cta" + (step.press && step.at === "create" ? " is-pressed" : "")}>
+        <span className="art-counter art-muted">{s.typed}/30</span>
+        <span ref={create} className={"art-cta" + (s.press && s.at === "create" ? " is-pressed" : "")}>
           Create account
         </span>
 
@@ -112,7 +144,7 @@ function NewAccount() {
             <strong>{ACCT_NAME} created</strong>
             <span className="art-muted">Choose which team members can view it.</span>
             <span className="art-btn is-primary">Manage access</span>
-            <span ref={notNow} className={"art-btn" + (step.press && step.at === "notnow" ? " is-pressed" : "")}>
+            <span ref={notNow} className={"art-btn" + (s.press && s.at === "notnow" ? " is-pressed" : "")}>
               Not now
             </span>
           </div>
@@ -153,14 +185,7 @@ function NewAccount() {
           <span className="art-amount">£0</span>
         </div>
       ) : (
-        <span
-          className={"art-pointer" + (spot ? " is-on" : "") + (step.press ? " is-pressed" : "")}
-          style={spot ? { translate: `${spot[0]}px ${spot[1]}px` } : undefined}
-        >
-          <svg viewBox="0 0 22 28">
-            <path d="M2 2v20.5l5.2-5 3.3 7.6 3.4-1.5-3.2-7.4H18L2 2Z" fill="#000" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
-          </svg>
-        </span>
+        <Pointer spot={spot} press={s.press} />
       )}
     </div>
   );
@@ -183,7 +208,7 @@ function UkPayments() {
         <span className="art-big">£12,480</span>
         <span className="art-status">
           <span className="art-live" />
-          Faster Payments · 4 seconds
+          Faster Payments · moments ago
         </span>
       </div>
       <div className="art-seg">
@@ -198,43 +223,222 @@ function UkPayments() {
   );
 }
 
-// 4 · Confirmation of Payee — the name is checked before the money moves.
-function PayeeCheck() {
+// 5 · Confirmation of Payee — adding a business recipient, as the app does it:
+// France and Euro already chosen, the last digits of the IBAN typed (the bank
+// shows up), the company name typed with a typo, "Name is a close match" →
+// Replace and continue, then the review: amount, reference, Add to trusted,
+// Send. About 13 seconds. The IBAN is made up (French format; the bank code is
+// CIC's, whose name the app shows); the payee is fictional.
+const COP_IBAN_HEAD = "FR76 3006 6100 1123 4567 ";
+const COP_IBAN_TAIL = "890";
+const COP_TYPO = "Acome Logistics";
+const COP_PAYEE = "Acme Logistics";
+const COP_AMOUNTS = ["€0", "€3", "€33", "€330", "€3,300"];
+const COP_REF = "Contract 121110-1";
+const COP_START = {
+  screen: "form",
+  iban: 0,
+  bank: false,
+  scroll: false,
+  name: 0,
+  replaced: false,
+  sheet: false,
+  amount: 0,
+  ref: 0,
+  rscroll: false,
+  trusted: false,
+  sent: false,
+  out: false,
+  at: "iban",
+};
+const COP_STEPS = script([
+  { ...COP_START, reset: true, ms: 700 },
+  { reset: false, iban: 1, ms: 180 },
+  { iban: 2, ms: 180 },
+  { iban: 3, ms: 250 },
+  { bank: true, ms: 600 },
+  { scroll: true, ms: 450 },
+  { at: "company", ms: 500 },
+  ...Array.from({ length: COP_TYPO.length }, (_, k) => ({ name: k + 1, ms: 75 })),
+  { at: "add", ms: 550 },
+  { press: true, ms: 180 },
+  { sheet: true, ms: 1300 },
+  { at: "replace", ms: 550 },
+  { press: true, ms: 180 },
+  { sheet: false, replaced: true, screen: "review", at: "amount", ms: 500 },
+  ...[1, 2, 3, 4].map((k) => ({ amount: k, ms: 130 })),
+  { at: "ref", ms: 450 },
+  ...Array.from({ length: COP_REF.length }, (_, k) => ({ ref: k + 1, ms: 45 })),
+  { rscroll: true, ms: 450 },
+  { at: "trust", ms: 500 },
+  { press: true, trusted: true, ms: 250 },
+  { at: "send", ms: 500 },
+  { press: true, ms: 180 },
+  { sent: true, at: "rest", ms: 1800 },
+  { out: true, ms: 400 },
+]);
+// Under Reduce Motion: the name check itself, over the filled form.
+const COP_STILL = { ...COP_START, iban: 3, bank: true, scroll: true, name: COP_TYPO.length, sheet: true, at: null };
+
+function BankGlyph() {
   return (
-    <div className="art art-cop">
-      <div className="art-panel">
-        <p className="art-head">
-          <span>New payee</span>
-        </p>
-        <div className="art-cell">
-          <span className="art-muted">Name on the invoice</span>
-          <strong>Hartwell & Frome Ltd</strong>
+    <svg viewBox="0 0 16 16" className="art-bank-glyph">
+      <path d="M8 1 1 4.6V6h14V4.6L8 1ZM2.5 7v5h2V7h-2Zm4.5 0v5h2V7H7Zm4.5 0v5h2V7h-2ZM1 13v2h14v-2H1Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function PayeeCheck() {
+  const { ref, step, i, still } = useScript(COP_STEPS);
+  const s = still ? COP_STILL : step;
+  const iban = useRef(null);
+  const company = useRef(null);
+  const add = useRef(null);
+  const replace = useRef(null);
+  const amount = useRef(null);
+  const refField = useRef(null);
+  const trust = useRef(null);
+  const send = useRef(null);
+  const spot = usePointer(
+    ref,
+    {
+      iban: [iban, 0.82, 0.72],
+      company: [company, 0.82, 0.72],
+      add: [add, 0.62, 0.55],
+      replace: [replace, 0.6, 0.55],
+      amount: [amount, 0.9, 0.85],
+      ref: [refField, 0.86, 0.72],
+      trust: [trust, 0.9, 0.55],
+      send: [send, 0.6, 0.55],
+    },
+    still ? null : s.at,
+    i,
+  );
+  const review = s.screen === "review";
+  const pressed = (at) => (s.press && s.at === at ? " is-pressed" : "");
+  return (
+    <div
+      ref={ref}
+      className={
+        "art art-cop" +
+        (s.sheet ? " is-sheet" : "") +
+        (s.sent && !s.out ? " is-sent" : "") +
+        (s.out ? " is-out" : "") +
+        (s.reset ? " is-reset" : "")
+      }
+    >
+      <div className="art-panel art-screen">
+        <div className="art-view" style={{ translate: `${review ? "-100%" : "0"} ${s.scroll ? -5.8 : 0}em` }}>
+          <strong className="art-screen-title">Add recipient</strong>
+          <span className="art-seg">
+            <span>Individual</span>
+            <span className="is-on">Business</span>
+          </span>
+          <div className="art-pair">
+            <div className="art-cell">
+              <span className="art-muted">Country or region</span>
+              <strong>France</strong>
+            </div>
+            <div className="art-cell">
+              <span className="art-muted">Currency</span>
+              <strong className="art-currency">
+                <Flag code="EU" size="1.15em" /> Euro
+              </strong>
+            </div>
+          </div>
+          <div className="art-cell" ref={iban}>
+            <span className="art-muted">IBAN</span>
+            <strong>
+              {COP_IBAN_HEAD + COP_IBAN_TAIL.slice(0, s.iban)}
+              {s.at === "iban" ? <Caret /> : null}
+            </strong>
+          </div>
+          <span className={"art-bank" + (s.bank ? " is-on" : "")}>
+            <BankGlyph /> CM - CIC Banques
+          </span>
+          <div className="art-cell" ref={company}>
+            <span className="art-muted">Company name</span>
+            <strong>
+              {s.replaced ? COP_PAYEE : COP_TYPO.slice(0, s.name)}
+              {s.at === "company" ? <Caret /> : null}
+            </strong>
+          </div>
+          <span ref={add} className={"art-cta" + pressed("add")}>
+            Add recipient
+          </span>
         </div>
-        <div className="art-pair">
-          <div className="art-cell">
-            <span className="art-muted">Sort code</span>
-            <strong className="art-mono">00-00-00</strong>
+
+        <div className="art-scrim" />
+        {/* The name check: a close match, as the payer's bank reports it */}
+        <div className="art-sheet">
+          <span className="art-sheet-grip" />
+          <Icon name="triangle-alert" size="1.7em" strokeWidth={2.2} />
+          <strong>Name is a close match</strong>
+          <span className="art-sheet-kv">
+            <span>
+              <span className="art-muted">You entered</span>
+              <span>{COP_TYPO}</span>
+            </span>
+            <span>
+              <span className="art-muted">Did you mean</span>
+              <span>ACME LOGISTICS?</span>
+            </span>
+          </span>
+          <span ref={replace} className={"art-btn is-primary" + pressed("replace")}>
+            Replace and continue
+          </span>
+          <span className="art-btn">Keep what I entered</span>
+        </div>
+
+        <div className="art-view" style={{ translate: `${review ? "0" : "100%"} ${s.rscroll ? -5.9 : 0}em` }}>
+          <span className="art-review-head">Review transfer</span>
+          <strong ref={amount} className="art-review-amount">
+            {COP_AMOUNTS[s.amount]}
+          </strong>
+          <div className="art-cop-payee">
+            <span className="art-avatar purple">AL</span>
+            <span className="art-grow">
+              <strong>
+                {COP_PAYEE}
+                <span className="art-ok">
+                  <Icon name="check" size="0.75em" strokeWidth={3.4} />
+                </span>
+              </strong>
+              <span className="art-match">All details match</span>
+              <span className="art-muted">{COP_IBAN_HEAD + COP_IBAN_TAIL}</span>
+              <span className="art-muted">CM - CIC Banques</span>
+            </span>
           </div>
-          <div className="art-cell">
-            <span className="art-muted">Account</span>
-            <strong className="art-mono">12345678</strong>
+          <div className="art-cell" ref={refField}>
+            <span className="art-muted">Reference</span>
+            <strong>
+              {COP_REF.slice(0, s.ref)}
+              {s.at === "ref" ? <Caret /> : " "}
+            </strong>
           </div>
+          <div className="art-toggle-row" ref={trust}>
+            <span>Add to trusted</span>
+            <span className={"art-switch" + (s.trusted ? " is-on" : "")} />
+          </div>
+          <span ref={send} className={"art-cta" + pressed("send")}>
+            Send
+          </span>
+        </div>
+
+        <div className="art-sent">
+          <span className="art-dialog-check">
+            <Icon name="check" size="1.6em" strokeWidth={3} />
+          </span>
+          <strong>€3,300 sent</strong>
+          <span className="art-muted">to {COP_PAYEE}</span>
         </div>
       </div>
-      <div className="art-float art-alert">
-        <span className="art-dot orange">
-          <Icon name="triangle-alert" size="1em" strokeWidth={2.6} />
-        </span>
-        <span className="art-grow">
-          <strong>Name doesn’t match</strong>
-          <span className="art-muted">Held by “HF Trading”. Check before you pay.</span>
-        </span>
-      </div>
+      {still ? null : <Pointer spot={spot} press={s.press} />}
     </div>
   );
 }
 
-// 5 · SEPA & SEPA Instant — the same payment, two speeds.
+// 4 · SEPA & SEPA Instant — the same payment, two speeds.
 function EuroPayment() {
   return (
     <div className="art art-sepa">

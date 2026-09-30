@@ -100,18 +100,19 @@ export const HIGHLIGHTS = {
       art: "uk-rails",
     },
     {
-      id: "cop",
-      eyebrow: "Fraud protection",
-      title: "Confirmation of Payee",
-      body: "Every UK payment is checked against the recipient’s name first, so a fake invoice gets caught before it becomes a loss.",
-      art: "cop",
-    },
-    {
       id: "sepa",
       eyebrow: "Euro rails",
       title: "SEPA & SEPA Instant",
       body: "Euro payments across Europe: SEPA Instant in seconds, or SEPA by the next business day.",
       art: "sepa",
+    },
+    {
+      id: "cop",
+      eyebrow: "Fraud protection",
+      title: "Confirmation of Payee",
+      // Both checks are planned: Confirmation of Payee (UK) and Verification of Payee (euros).
+      body: "Before you pay, the name is checked with the recipient’s bank — Confirmation of Payee in the UK, Verification of Payee for euros — so a fake invoice is caught first.",
+      art: "cop",
     },
     {
       id: "swift",
