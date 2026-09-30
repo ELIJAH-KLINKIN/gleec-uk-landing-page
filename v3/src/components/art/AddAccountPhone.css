@@ -79,6 +79,13 @@
   gap: 1.15em;
   padding: 0.7em 1.3em;
 }
+/* The currency being picked (British pound, as tile 2 goes on to open). */
+.aap-row.is-picked {
+  margin: 0 0.35em;
+  padding-inline: 0.95em;
+  border-radius: 1.65em;
+  background: #2c2c2e;
+}
 .aap-flag {
   flex-shrink: 0;
   width: 3.4em;

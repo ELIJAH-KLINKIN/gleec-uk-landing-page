@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HIGHLIGHTS } from "../content.js";
 import { usePrefersReducedMotion } from "../lib/motion.js";
 import { useAutoAdvance } from "../lib/useAutoAdvance.js";
+import { GalleryPaused } from "../lib/galleryMotion.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
 import Flag from "./ui/Flag.jsx";
@@ -30,6 +31,8 @@ export default function Highlights() {
   const [active, setActive] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
   const [playing, setPlaying] = useState(true);
+  // Pause pressed (not just the visitor moving the gallery): animated art holds still too.
+  const [paused, setPaused] = useState(false);
   const [runId, setRunId] = useState(0); // restarts the fill in the current dot
   // Hover and keyboard focus pause only over the tiles, so Play works at once.
   const { ref: autoRef, running, autoplayAllowed, pauseProps } = useAutoAdvance({ enabled: playing });
@@ -97,6 +100,7 @@ export default function Highlights() {
     setRunId((r) => r + 1);
   };
   const togglePlay = () => {
+    setPaused(playing);
     setPlaying((p) => !p);
     setRunId((r) => r + 1);
   };
@@ -155,6 +159,7 @@ export default function Highlights() {
         />
       </div>
 
+      <GalleryPaused.Provider value={paused}>
       <div className="hl">
         <div
           ref={(el) => {
@@ -255,6 +260,7 @@ export default function Highlights() {
           Highlight {active + 1} of {N}: {items[active].title}
         </p>
       </div>
+      </GalleryPaused.Provider>
     </section>
   );
 }

@@ -32,7 +32,7 @@ export default function AddAccountPhone() {
           </span>
           <span className="aap-list">
             {LIVE.map((c) => (
-              <span key={c.code} className="aap-row">
+              <span key={c.code} className={"aap-row" + (c.code === "GBP" ? " is-picked" : "")}>
                 <Flag code={c.flag} size={40} className="flag aap-flag" />
                 <span className="aap-text">
                   <strong>{c.name}</strong>

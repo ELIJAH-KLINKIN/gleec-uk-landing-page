@@ -598,6 +598,38 @@ test("highlights gallery: plays on its own, with a fill in the current dot; Paus
   await expect(gallery.getByRole("button", { name: "Pause highlights" })).toBeVisible();
 });
 
+test("product gallery: the account tile plays the new-account flow, and holds when paused", async ({ page }) => {
+  test.setTimeout(40_000);
+  await page.goto("./#product");
+  const gallery = page.locator(".hl");
+  // Bring tile 2 to the front (this takes over the gallery; it doesn't pause the art).
+  await gallery.getByRole("button", { name: /Go to highlight 2:/ }).click();
+  await page.mouse.move(1, 1);
+  const art = page.locator(".art-newacct");
+  await expect(art.locator(".art-counter")).toHaveText("24/30", { timeout: 8000 });
+  await expect(art).toHaveClass(/is-dialog/, { timeout: 8000 });
+  await expect(art.getByText("London Office Kensington created")).toBeVisible();
+  await expect(art).toHaveClass(/is-details/, { timeout: 8000 });
+  await expect(art.locator(".art-acct-details")).toContainText("12345678");
+  // Pause holds the drawing where it is.
+  await gallery.getByRole("button", { name: "Play highlights" }).click();
+  await gallery.getByRole("button", { name: "Pause highlights" }).click();
+  const before = await art.evaluate((el) => el.className + el.querySelector(".art-counter").textContent);
+  await page.waitForTimeout(4500);
+  expect(await art.evaluate((el) => el.className + el.querySelector(".art-counter").textContent)).toBe(before);
+});
+
+test("product gallery: the account tile is a still picture under Reduce Motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#product");
+  const art = page.locator(".art-newacct");
+  await expect(art.locator(".art-counter")).toHaveText("24/30");
+  await expect(art.locator(".art-created")).toHaveCount(1);
+  await expect(art.locator(".art-pointer")).toHaveCount(0);
+  await page.waitForTimeout(3000);
+  await expect(art).not.toHaveClass(/is-dialog|is-details/);
+});
+
 test("highlights gallery: holds while the pointer is over the tiles", async ({ page }, testInfo) => {
   test.skip(isMobile(testInfo), "hover");
   await page.goto("./#product");

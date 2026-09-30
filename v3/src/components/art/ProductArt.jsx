@@ -4,43 +4,164 @@
 // illustrative data, drawn in HTML so it is sharp at any size and follows light
 // and dark mode. Decorative: each tile's own text says what the art shows.
 // Placeholder bank codes (XXXX) as in the account-details explorer.
+import { useContext, useEffect, useRef, useState } from "react";
 import Flag from "../ui/Flag.jsx";
 import Icon from "../ui/Icon.jsx";
 import logo from "../../assets/logo-g.png";
 import AddAccountPhone from "./AddAccountPhone.jsx";
+import { GalleryPaused } from "../../lib/galleryMotion.js";
+import { useAutoAdvance } from "../../lib/useAutoAdvance.js";
 import "./ProductArt.css";
 
-// 2 · Separate details, one account — the app's own "new account" step, in its
-// words: name the account (London Office Kensington, in euros), then it sits in
-// the accounts list with its own IBAN. Placeholder IBAN, as in the explorer.
+// 2 · Separate details, one account — the app's own new-account flow, played
+// like a short screen recording: "Kensington" is typed into the account name
+// (the counter climbs to 24/30), a pointer taps Create account, the "created"
+// dialog appears and it taps Not now (skipping team access), then the new GBP
+// account's details slide in. It plays only while the tile is on screen, holds
+// when the gallery is paused, and is a still picture under Reduce Motion.
+// Placeholder codes, as in the account-details explorer.
+const ACCT_NAME = "London Office Kensington";
+const ACCT_TYPED = 14; // "London Office " is already typed
+const ACCT_STEPS = [
+  { typed: ACCT_TYPED, at: "field", ms: 1000 },
+  ...Array.from({ length: ACCT_NAME.length - ACCT_TYPED }, (_, i) => ({ typed: ACCT_TYPED + i + 1, at: "field", ms: 120 })),
+  { at: "field", ms: 600 },
+  { at: "create", ms: 700 },
+  { at: "create", press: true, ms: 200 },
+  { at: "create", dialog: true, ms: 1400 },
+  { at: "notnow", dialog: true, ms: 700 },
+  { at: "notnow", dialog: true, press: true, ms: 200 },
+  { at: "rest", details: true, ms: 3600 },
+  { at: "rest", details: true, out: true, ms: 500 },
+];
+
 function NewAccount() {
+  const paused = useContext(GalleryPaused);
+  const { ref, running, autoplayAllowed } = useAutoAdvance({ enabled: !paused, threshold: 0.5 });
+  const [i, setI] = useState(0);
+  const [spots, setSpots] = useState(null);
+  const field = useRef(null);
+  const create = useRef(null);
+  const notNow = useRef(null);
+  const still = !autoplayAllowed; // Reduce Motion
+  const step = still ? { typed: ACCT_NAME.length } : ACCT_STEPS[i];
+  const typed = step.typed ?? ACCT_NAME.length;
+
+  // Where the pointer goes, measured from the drawing itself (it scales with the tile).
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return undefined;
+    const measure = () => {
+      const r = root.getBoundingClientRect();
+      const at = (el, fx, fy) => {
+        const b = el.getBoundingClientRect();
+        return [b.left - r.left + b.width * fx, b.top - r.top + b.height * fy];
+      };
+      setSpots({
+        field: at(field.current, 0.86, 0.72),
+        create: at(create.current, 0.62, 0.55),
+        notnow: at(notNow.current, 0.58, 0.55),
+        rest: [r.width * 0.9, r.height * 0.92],
+      });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, [ref]);
+
+  useEffect(() => {
+    if (still || !running) return undefined;
+    const t = setTimeout(() => setI((n) => (n + 1) % ACCT_STEPS.length), ACCT_STEPS[i].ms);
+    return () => clearTimeout(t);
+  }, [i, running, still]);
+
+  const spot = spots && !still ? spots[step.at] : null;
   return (
-    <div className="art art-newacct">
+    <div
+      ref={ref}
+      className={
+        "art art-newacct" + (step.dialog ? " is-dialog" : "") + (step.details && !step.out ? " is-details" : "")
+      }
+    >
       <div className="art-panel">
         <div className="art-title">
           <strong>Account name</strong>
           <span className="art-currency art-muted">
-            <Flag code="EU" size="1.15em" /> Euro · EUR
+            <Flag code="GB" size="1.15em" /> British pound · GBP
           </span>
         </div>
         <div className="art-cell">
           <span className="art-muted">Account name</span>
-          <strong>
-            London Office Kensington
+          <strong ref={field}>
+            {ACCT_NAME.slice(0, typed)}
             <span className="art-caret" />
           </strong>
         </div>
-        <span className="art-counter art-muted">24/30</span>
-        <span className="art-cta">Create account</span>
-      </div>
-      <div className="art-float art-created">
-        <Flag code="EU" size="2.2em" />
-        <span className="art-grow">
-          <strong>London Office Kensington</strong>
-          <span className="art-mono art-muted">EUR · LU00 XXX0 ···· 3309</span>
+        <span className="art-counter art-muted">{typed}/30</span>
+        <span ref={create} className={"art-cta" + (step.press && step.at === "create" ? " is-pressed" : "")}>
+          Create account
         </span>
-        <span className="art-amount">€0</span>
+
+        {/* The app's "created" dialog; the team-access step is skipped */}
+        <div className="art-dialog-wrap">
+          <div className="art-dialog">
+            <span className="art-dialog-check">
+              <Icon name="check" size="1.4em" strokeWidth={3} />
+            </span>
+            <strong>{ACCT_NAME} created</strong>
+            <span className="art-muted">Choose which team members can view it.</span>
+            <span className="art-btn is-primary">Manage access</span>
+            <span ref={notNow} className={"art-btn" + (step.press && step.at === "notnow" ? " is-pressed" : "")}>
+              Not now
+            </span>
+          </div>
+        </div>
+
+        {/* The new account's own details, in the company's name */}
+        <div className="art-acct-details">
+          <p className="art-head">
+            <span>Account details</span>
+          </p>
+          <span className="art-acct-chip">
+            <Flag code="GB" size="1.5em" />
+            <strong>{ACCT_NAME} · GBP</strong>
+          </span>
+          <span className="art-kv">
+            <span className="art-muted">Recipient</span>
+            <strong>ACME Studios Ltd</strong>
+          </span>
+          <span className="art-kv">
+            <span className="art-muted">Sort code</span>
+            <strong className="art-mono">00-00-00</strong>
+          </span>
+          <span className="art-kv">
+            <span className="art-muted">Account number</span>
+            <strong className="art-mono">12345678</strong>
+          </span>
+        </div>
       </div>
+
+      {still ? (
+        // The still picture: the finished form, and the account it made.
+        <div className="art-float art-created">
+          <Flag code="GB" size="2.2em" />
+          <span className="art-grow">
+            <strong>{ACCT_NAME}</strong>
+            <span className="art-mono art-muted">GBP · 00-00-00 · 12345678</span>
+          </span>
+          <span className="art-amount">£0</span>
+        </div>
+      ) : (
+        <span
+          className={"art-pointer" + (spot ? " is-on" : "") + (step.press ? " is-pressed" : "")}
+          style={spot ? { translate: `${spot[0]}px ${spot[1]}px` } : undefined}
+        >
+          <svg viewBox="0 0 22 28">
+            <path d="M2 2v20.5l5.2-5 3.3 7.6 3.4-1.5-3.2-7.4H18L2 2Z" fill="#000" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+          </svg>
+        </span>
+      )}
     </div>
   );
 }
