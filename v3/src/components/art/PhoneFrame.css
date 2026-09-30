@@ -1,10 +1,10 @@
 /* PhoneFrame: the shared phone drawing (body, buttons, screen, camera island,
    status bar). 1em = 1/30 of the phone's width; the parent sets --pw (the width)
-   and font-size: calc(var(--pw) / 30), so everything scales as one piece. */
-/* ---------- Body ---------- */
+   and font-size: calc(var(--pw) / 30), so everything scales as one piece.
+   Proportions follow a current 6.3-inch phone (about 71.5 × 149.6 mm). */
 .wp-body {
   position: relative;
-  height: calc(var(--pw) * 2.08);
+  height: calc(var(--pw) * 2.09);
   padding: 0.95em;
   border-radius: 5.4em;
   background: linear-gradient(145deg, #6d6d73 0%, #2b2b2f 22%, #1a1a1d 55%, #3a3a3f 100%);
@@ -22,31 +22,50 @@
   background: #000;
   isolation: isolate;
 }
-.wp-vol,
-.wp-side {
+
+/* ---------- Buttons ---------- */
+.wp-btn {
   position: absolute;
   width: 0.5em;
-  background: linear-gradient(90deg, #2a2a2e, #5d5d63 60%, #2a2a2e);
-}
-.wp-vol {
-  left: -0.32em;
-  height: 4.4em;
-  border-radius: 0.3em 0 0 0.3em;
-}
-.wp-vol-1 {
-  top: 12em;
-}
-.wp-vol-2 {
-  top: 17.4em;
-}
-.wp-side {
-  right: -0.34em;
-  top: 15em;
-  height: 8.6em;
   padding: 0;
   border: 0;
+  background: linear-gradient(90deg, #2a2a2e, #5d5d63 60%, #2a2a2e);
+}
+/* Left: Action button, volume up, volume down. */
+.wp-action,
+.wp-vol {
+  left: -0.32em;
+  border-radius: 0.3em 0 0 0.3em;
+}
+.wp-action {
+  top: 13.4em;
+  height: 2.9em;
+}
+.wp-vol-1 {
+  top: 18.6em;
+  height: 5.2em;
+}
+.wp-vol-2 {
+  top: 24.8em;
+  height: 5.2em;
+}
+/* Right: the side button, level with the wallet's "Double Click to Pay" hint,
+   and the flush Camera Control lower down. */
+.wp-side {
+  right: -0.34em;
+  top: 19.4em;
+  height: 7.3em;
   border-radius: 0 0.3em 0.3em 0;
 }
+.wp-camera {
+  right: -0.16em;
+  top: 35.2em;
+  width: 0.3em;
+  height: 5.4em;
+  border-radius: 0 0.2em 0.2em 0;
+  background: linear-gradient(90deg, #1c1c20, #46464d 60%, #1c1c20);
+}
+
 /* ---------- Status bar and island ---------- */
 .wp-island {
   position: absolute;
@@ -62,23 +81,23 @@
 .wp-status {
   position: absolute;
   z-index: 4;
-  top: 1.45em;
+  top: 1.55em;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.3em 0 2.9em;
-  font-size: 1.25em;
+  padding: 0 2.4em 0 3.1em;
+  font-size: 1.3em;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 .wp-status-icons {
   display: inline-flex;
   align-items: center;
-  gap: 0.3em;
+  gap: 0.32em;
 }
 .wp-status-icons svg {
   width: auto;
   height: 0.84em;
 }
-

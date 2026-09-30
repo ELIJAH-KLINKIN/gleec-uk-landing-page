@@ -1,36 +1,46 @@
 // WalletPhone.jsx — "try paying with a virtual card": a phone drawn in HTML/CSS
-// that behaves like paying from the phone's wallet. Double-click the side
-// button → face check → the card with "Hold Near Reader" → Done, with the
-// payment notification. Tap the cards at the bottom to see the whole stack of
-// Gleec cards and pick another. A generic phone (no maker's logo, no wallet
-// brand): it shows how the card will feel, subject to issuer and scheme approval.
-// Nothing moves until the visitor starts it; Reduce Motion drops the animations.
+// that behaves like paying from the phone's wallet. It opens on the card with
+// "Double Click to Pay" beside the side button. Double-click it → face check →
+// "Hold Near Reader" → Done, with the payment notification. Tap the cards at the
+// bottom to see the whole stack of Gleec cards and pick another. A generic phone
+// (no maker's logo, no wallet brand): it shows how the card will feel, subject to
+// issuer and scheme approval. Nothing moves until the visitor starts it; Reduce
+// Motion drops the animations.
 import { useCallback, useEffect, useRef, useState } from "react";
 import logoWhite from "../../assets/logo-g-mask.png";
-import logoColour from "../../assets/logo-g.png";
+import MerchantLogo from "../ui/MerchantLogo.jsx";
 import PhoneFrame from "./PhoneFrame.jsx";
 import "./WalletPhone.css";
 
-// Example cards (last four digits and merchants are illustrative).
+// Example cards (last four digits are illustrative).
 const CARDS = [
-  { id: "marketing", team: "Marketing", last4: "7421", tone: "purple", merchant: "Pret A Manger", amount: "−£8.40" },
-  { id: "travel", team: "Travel", last4: "5520", tone: "graphite", merchant: "Heathrow Express", amount: "−£25" },
-  { id: "engineering", team: "Engineering", last4: "3094", tone: "midnight", merchant: "Currys", amount: "−£149" },
-  { id: "office", team: "Office", last4: "8816", tone: "silver", merchant: "Ryman", amount: "−£36.20" },
-  { id: "events", team: "Events", last4: "1188", tone: "lilac", merchant: "Dishoom", amount: "−£96.50" },
+  { id: "marketing", team: "Marketing", last4: "7421", tone: "purple" },
+  { id: "travel", team: "Travel", last4: "5520", tone: "graphite" },
+  { id: "engineering", team: "Engineering", last4: "3094", tone: "midnight" },
+  { id: "office", team: "Office", last4: "8816", tone: "silver" },
+  { id: "events", team: "Events", last4: "1188", tone: "lilac" },
 ];
 
-const T = { auth: 1300, pay: 4200, done: 3400 }; // ms in each step
+// Example payments, in turn: a hotel in pounds, then a coffee in New York in dollars.
+const PAYMENTS = [
+  { merchant: "ritzcarlton", name: "The Ritz-Carlton", amount: "−£1,240", note: "within limit" },
+  { merchant: "bluebottle", name: "Blue Bottle Coffee", amount: "−$7.50", note: "paid from USD" },
+];
+
+const T = { auth: 1300, pay: 3600, done: 3600 }; // ms in each step
 const DOUBLE_CLICK = 650; // two presses within this count as a double-click
 
 export default function WalletPhone() {
-  const [state, setState] = useState("lock"); // lock | auth | pay | done | stack
+  const [state, setState] = useState("idle"); // idle | auth | pay | done | stack
   const [cardId, setCardId] = useState(CARDS[0].id);
+  const [payIdx, setPayIdx] = useState(0);
   const [nudge, setNudge] = useState(0); // counts nudges, so the glow replays each time
+  const paid = useRef(0);
   const timer = useRef(0);
   const lastPress = useRef(0);
   const card = CARDS.find((c) => c.id === cardId);
   const others = CARDS.filter((c) => c.id !== cardId);
+  const payment = PAYMENTS[payIdx];
 
   const go = useCallback((next, delay) => {
     clearTimeout(timer.current);
@@ -38,12 +48,16 @@ export default function WalletPhone() {
   }, []);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  // The flow runs itself once started: face check → hold near reader → done → lock.
+  // The flow runs itself once started: face check → hold near reader → done → idle.
   useEffect(() => {
     if (state === "auth") go("pay", T.auth);
     else if (state === "pay") go("done", T.pay);
-    else if (state === "done") go("lock", T.done);
-    else clearTimeout(timer.current);
+    else if (state === "done") {
+      // Each completed payment takes the next merchant.
+      setPayIdx(paid.current % PAYMENTS.length);
+      paid.current += 1;
+      go("idle", T.done);
+    } else clearTimeout(timer.current);
   }, [state, go]);
 
   const start = () => {
@@ -54,7 +68,7 @@ export default function WalletPhone() {
 
   // Mouse and touch: two presses. Keyboard (Enter/Space, detail 0): one press.
   const onSide = (e) => {
-    if (state !== "lock" && state !== "done") return;
+    if (state !== "idle" && state !== "done") return;
     const now = Date.now();
     if (e.detail === 0 || now - lastPress.current < DOUBLE_CLICK) {
       lastPress.current = 0;
@@ -71,59 +85,66 @@ export default function WalletPhone() {
   };
 
   const status = {
-    lock: "Locked. Double-click the side button to pay.",
+    idle: `${card.team} card. Double-click the side button to pay.`,
     auth: "Checking your face.",
     pay: `${card.team} card ready. Hold near reader.`,
-    done: `Done. ${card.merchant} ${card.amount}.`,
+    done: `Done. ${payment.name} ${payment.amount}.`,
     stack: "All cards. Choose a card to pay with.",
   }[state];
 
   return (
-    <div className="wp" data-state={state}>
+    <div className="wp" data-state={state} data-nudge={nudge ? (nudge % 2 ? "a" : "b") : undefined}>
       <PhoneFrame
         side={
           <button
             type="button"
-            className="wp-side"
-            data-nudge={nudge ? (nudge % 2 ? "a" : "b") : undefined}
+            className="wp-btn wp-side"
             onClick={onSide}
             aria-label="Side button. Double-click to pay with a virtual card."
           />
         }
       >
-        {/* Lock screen */}
-        {/* A tap on the lock screen points at the side button (mouse and touch only). */}
-        <div className="wp-lock" aria-hidden={state !== "lock"} onClick={hint}>
-          <span className="wp-lock-time">9:41</span>
-          <span className="wp-lock-hint">Double-click the side button to pay</span>
+        {/* A tap on the screen points at the side button (mouse and touch only). */}
+        <div className="wp-tap" onClick={state === "idle" ? hint : undefined} />
+
+        {/* Beside the side button, as the phone shows it */}
+        <div className="wp-dcp" aria-hidden="true">
+          <span className="wp-dcp-text">
+            Double Click
+            <br />
+            to Pay
+          </span>
+          <span className="wp-dcp-pill" />
         </div>
 
-        {/* Pay: the card, the face check, hold near reader, done */}
-        <div className="wp-pay" aria-hidden={state === "lock" || state === "stack"}>
-          <CardFace card={card} className="wp-pay-card" />
-          <div className="wp-face" aria-hidden="true">
-            <FaceGlyph />
-          </div>
-          <div className="wp-reader" aria-hidden="true">
-            <span className="wp-ring">
-              <PhoneGlyph />
-              <CheckGlyph />
-            </span>
-            <span className="wp-reader-label wp-reader-hold">Hold Near Reader</span>
-            <span className="wp-reader-label wp-reader-done">Done</span>
-          </div>
-          <button
-            type="button"
-            className="wp-peek"
-            onClick={() => setState("stack")}
-            tabIndex={state === "pay" || state === "done" ? 0 : -1}
-            aria-label={`Show all cards (${CARDS.length})`}
-          >
-            {others.slice(0, 3).map((c, i) => (
-              <CardFace key={c.id} card={c} className={`wp-peek-card wp-peek-${i}`} />
-            ))}
-          </button>
+        {/* The chosen card: low on the screen at first, at the top while paying */}
+        <CardFace card={card} className="wp-main-card" />
+
+        <div className="wp-face" aria-hidden="true">
+          <FaceGlyph />
         </div>
+
+        <div className="wp-reader" aria-hidden="true">
+          <span className="wp-ring">
+            <PhoneGlyph />
+            <CheckGlyph />
+          </span>
+          <span className="wp-reader-label wp-reader-hold">Hold Near Reader</span>
+          <span className="wp-reader-label wp-reader-done">Done</span>
+        </div>
+
+        {/* The other cards, peeking at the bottom: tap to see them all */}
+        <button
+          type="button"
+          className="wp-peek"
+          onClick={() => setState("stack")}
+          tabIndex={state === "idle" || state === "pay" || state === "done" ? 0 : -1}
+          aria-label={`Show all cards (${CARDS.length})`}
+        >
+          {others.map((c, i) => (
+            <CardFace key={c.id} card={c} className={`wp-peek-card wp-peek-${i}`} />
+          ))}
+        </button>
 
         {/* The whole stack */}
         <div className="wp-stack" aria-hidden={state !== "stack"}>
@@ -142,10 +163,13 @@ export default function WalletPhone() {
           ))}
         </div>
 
-        {/* The notification the payment sends */}
+        {/* The notification the payment sends: the merchant, badged with our app */}
         <div className="wp-banner" aria-hidden="true">
-          <span className="wp-banner-icon">
-            <img src={logoColour} alt="" width="10" height="14" />
+          <span className="wp-banner-avatar">
+            <MerchantLogo id={payment.merchant} size={38} className="wp-banner-merchant" />
+            <span className="wp-banner-badge">
+              <img src={logoWhite} alt="" width="6" height="8" />
+            </span>
           </span>
           <span className="wp-banner-text">
             <span className="wp-banner-head">
@@ -153,16 +177,15 @@ export default function WalletPhone() {
               <span>now</span>
             </span>
             <strong>
-              {card.merchant} · {card.amount}
+              {payment.name} · {payment.amount}
             </strong>
-            <span>Virtual · {card.team} · within limit</span>
+            <span>
+              Virtual · {card.team} · {payment.note}
+            </span>
           </span>
         </div>
       </PhoneFrame>
 
-      <p className={"wp-hint" + (nudge ? " is-nudged" : "")} aria-hidden="true">
-        <span className="wp-hint-arrow">← </span>Double-click
-      </p>
       <p className="visually-hidden" aria-live="polite">
         {status}
       </p>

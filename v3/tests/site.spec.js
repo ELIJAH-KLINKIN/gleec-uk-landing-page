@@ -1035,14 +1035,16 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
 });
 
 test("cards: the virtual card pays from the phone's wallet; the stack opens and switches card", async ({ page }, testInfo) => {
+  test.setTimeout(60_000); // two full payments, each with its real timings
   await page.goto("./#cards");
   const phone = page.locator(".wp");
   const side = page.getByRole("button", { name: /Side button/ });
-  await expect(phone).toHaveAttribute("data-state", "lock");
+  await expect(phone).toHaveAttribute("data-state", "idle");
+  await expect(phone.getByText("Double Click")).toBeVisible();
   // Nothing happens on its own, and one press is only a nudge.
   await page.waitForTimeout(1500);
   await side.click();
-  await expect(phone).toHaveAttribute("data-state", "lock");
+  await expect(phone).toHaveAttribute("data-state", "idle");
   // Double-click: face check → hold near reader.
   await side.dblclick();
   await expect(phone).toHaveAttribute("data-state", "auth");
@@ -1052,17 +1054,30 @@ test("cards: the virtual card pays from the phone's wallet; the stack opens and 
   await page.getByRole("button", { name: /Show all cards/ }).click();
   await expect(phone).toHaveAttribute("data-state", "stack");
   await expect(page.getByRole("button", { name: /Pay with the .* card ending/ })).toHaveCount(5);
+  // The page scrolls smoothly; centre the phone at once so the card holds still for the tap.
+  await phone.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await page.getByRole("button", { name: "Pay with the Engineering card ending 3094" }).click({ position: { x: 60, y: 12 } });
   await expect(phone).toHaveAttribute("data-state", "pay", { timeout: 3000 });
-  await expect(phone.locator(".wp-pay-card")).toContainText("3094");
-  // Done, with the payment notification, then back to the lock screen.
+  await expect(phone.locator(".wp-main-card")).toContainText("3094");
+  // The card fills the screen's width, with equal margins (Safari once drew it narrow).
+  const gaps = await phone.evaluate((el) => {
+    const s = el.querySelector(".wp-screen").getBoundingClientRect();
+    const c = el.querySelector(".wp-main-card").getBoundingClientRect();
+    return [c.left - s.left, s.right - c.right];
+  });
+  expect(Math.abs(gaps[0] - gaps[1])).toBeLessThan(1.5);
+  // Done, with the payment notification (first the Ritz-Carlton), then back to the start.
   await expect(phone).toHaveAttribute("data-state", "done", { timeout: 6000 });
-  await expect(page.locator(".wp [aria-live]")).toContainText("Done. Currys");
-  await expect(phone).toHaveAttribute("data-state", "lock", { timeout: 6000 });
+  await expect(page.locator(".wp [aria-live]")).toContainText("Done. The Ritz-Carlton −£1,240");
+  await expect(phone.locator(".wp-banner")).toContainText("Virtual · Engineering");
+  await expect(phone).toHaveAttribute("data-state", "idle", { timeout: 6000 });
   if (!isMobile(testInfo)) {
     // Keyboard: one press of Enter on the side button starts it.
     await side.focus();
     await page.keyboard.press("Enter");
     await expect(phone).toHaveAttribute("data-state", "auth");
+    // The second payment is the coffee in New York, in dollars.
+    await expect(phone).toHaveAttribute("data-state", "done", { timeout: 8000 });
+    await expect(page.locator(".wp [aria-live]")).toContainText("Done. Blue Bottle Coffee −$7.50");
   }
 });

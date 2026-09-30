@@ -6,10 +6,10 @@
 }
 /* Shown until the shader draws (and if WebGL is off). */
 .stage-dark {
-  background: radial-gradient(90% 80% at 50% 110%, #2b1470 0%, #121116 55%, #050507 100%);
+  background: radial-gradient(90% 80% at 50% 110%, #1c0e45 0%, #0a090d 55%, #050507 100%);
 }
 .stage-light {
-  background: radial-gradient(90% 80% at 50% 110%, #e2d3ff 0%, #f2f2f7 55%, #fbfbfd 100%);
+  background: radial-gradient(90% 80% at 50% 110%, #ebe2fb 0%, #f6f6f9 55%, #fbfbfd 100%);
 }
 .stage-bg {
   position: absolute;

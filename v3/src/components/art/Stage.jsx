@@ -7,11 +7,11 @@ import { StaticMeshGradient } from "@paper-design/shaders-react";
 import "./Stage.css";
 
 // One palette per colour scheme; the stage reads as the same object in both.
-// Mostly graphite (or pale grey) with a quiet purple glow, so a purple card on
-// top still stands out. Picked from four variants side by side.
+// Quiet on purpose ("use shaders more concisely"): near-black graphite (or pale
+// grey) with only a faint purple glow, so the phone and the cards carry the colour.
 const PALETTES = {
-  dark: ["#050507", "#121116", "#1d1a24", "#4a1fb0"],
-  light: ["#fbfbfd", "#f2f2f7", "#ece4ff", "#c9adff"],
+  dark: ["#050507", "#08080b", "#0c0b10", "#170b3a"],
+  light: ["#fbfbfd", "#f8f8fa", "#f4f1fb", "#ebe4fb"],
 };
 
 function useColorScheme() {
@@ -40,8 +40,8 @@ export default function Stage({ className = "", children }) {
         waveY={0.9}
         waveYShift={0.35}
         mixing={0.85}
-        grainMixer={0.12}
-        grainOverlay={0.08}
+        grainMixer={0.06}
+        grainOverlay={0.03}
         rotation={300}
         speed={0}
         maxPixelCount={1920 * 1080}
