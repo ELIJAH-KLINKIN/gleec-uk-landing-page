@@ -173,6 +173,27 @@ div.hl-art {
   width: 62%;
   margin: 0 0.4em -0.9em auto;
 }
+/* Option B: the invoice, and the "paid" toast tucked over its foot. */
+.art-invoice .art-payee {
+  padding: 0 0.2em 0.2em;
+}
+.art-invoice-iban {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  margin-top: 0.15em;
+}
+.art-invoice .art-toast,
+.art-newdetails .art-created {
+  margin: -0.9em 0 0 1.6em;
+}
+/* Option C: new details, created in the company's name. */
+.art-currency {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
 
 /* ---------- 3 · UK payments ---------- */
 .art-uk {

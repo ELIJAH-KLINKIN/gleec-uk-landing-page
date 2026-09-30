@@ -82,12 +82,27 @@ export const HIGHLIGHTS = {
       // "+21 more" (components/art/AddAccountPhone.jsx). All tiles are drawn.
       art: "add-account",
     },
+    // Preview only: three options for this tile, side by side, until one is chosen.
     {
       id: "ibans",
-      eyebrow: "Account details",
+      eyebrow: "Option A · Account details",
       title: "Named virtual IBANs",
-      body: "Dedicated account details for each client, region or product, so every payment lands where it belongs.",
+      body: "Extra account details in your company’s name for each client, region or product, so every payment lands where it belongs.",
       art: "named",
+    },
+    {
+      id: "ibans-b",
+      eyebrow: "Option B · Account details",
+      title: "An IBAN for every client",
+      body: "Give each client its own account details in your company’s name. Their payments arrive already matched, with no reference to chase.",
+      art: "named-invoice",
+    },
+    {
+      id: "ibans-c",
+      eyebrow: "Option C · Account details",
+      title: "Separate details, one account",
+      body: "Open account details for each region, product or entity — all in your company’s name, all in one Global Account.",
+      art: "named-new",
     },
     {
       id: "uk-rails",

@@ -11,11 +11,14 @@ import AddAccountPhone from "./AddAccountPhone.jsx";
 import "./ProductArt.css";
 
 // 2 · Named virtual IBANs — one IBAN per client; a payment lands on its own.
+// Euros and dollars arrive on the Luxembourg IBAN, pounds on the UK details, as
+// in the account-details explorer. ACME Studios Ltd is the account holder there,
+// so it is not one of its own clients here.
 function NamedAccounts() {
   const rows = [
-    { initials: "NT", tone: "purple", name: "Northwind Trading", iban: "GB00 XXXX ···· 1042", amount: "+€4,210", hi: true },
+    { initials: "NG", tone: "purple", name: "Northwind GmbH", iban: "LU00 XXX0 ···· 4821", amount: "+€4,210", hi: true },
     { initials: "HF", tone: "graphite", name: "Hartwell & Frome", iban: "GB00 XXXX ···· 2291", amount: "£12,480" },
-    { initials: "AS", tone: "silver", name: "ACME Studios", iban: "GB00 XXXX ···· 5678", amount: "$9,184" },
+    { initials: "KT", tone: "silver", name: "Kanto Trading", iban: "LU00 XXX0 ···· 7710", amount: "$9,184" },
   ];
   return (
     <div className="art art-named">
@@ -43,6 +46,84 @@ function NamedAccounts() {
             <span className={"art-amount" + (r.hi ? " is-pos" : "")}>{r.amount}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// 2 · Option B — the invoice carries the client's own IBAN, so it pays itself off.
+function InvoiceIban() {
+  return (
+    <div className="art art-invoice">
+      <div className="art-panel">
+        <p className="art-head">
+          <span>Invoice 1042</span>
+          <span className="art-muted">Due 14 Oct</span>
+        </p>
+        <div className="art-payee">
+          <span className="art-avatar graphite">NG</span>
+          <span className="art-grow">
+            <strong>Northwind GmbH</strong>
+            <span className="art-muted">Consulting, September</span>
+          </span>
+          <span className="art-amount-lg">€4,210</span>
+        </div>
+        <div className="art-cell">
+          <span className="art-muted">Pay to</span>
+          <strong>ACME Studios Ltd</strong>
+          <span className="art-invoice-iban">
+            <span className="art-mono">LU00 XXX0 ···· 4821</span>
+            <span className="art-pill">Northwind’s IBAN</span>
+          </span>
+        </div>
+      </div>
+      <div className="art-float art-toast">
+        <span className="art-dot green">
+          <Icon name="check" size="1em" strokeWidth={3} />
+        </span>
+        <span className="art-grow">
+          <strong>Paid · matched to Invoice 1042</strong>
+          <span className="art-muted">SEPA Instant · just now</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// 2 · Option C — new details for a region, in the company's name, ready to share.
+function NewDetails() {
+  return (
+    <div className="art art-newdetails">
+      <div className="art-panel">
+        <p className="art-head">
+          <span>New account details</span>
+        </p>
+        <div className="art-cell">
+          <span className="art-muted">Use for</span>
+          <strong>EU clients</strong>
+        </div>
+        <div className="art-pair">
+          <div className="art-cell">
+            <span className="art-muted">Name on account</span>
+            <strong>ACME Studios Ltd</strong>
+          </div>
+          <div className="art-cell">
+            <span className="art-muted">Currency</span>
+            <strong className="art-currency">
+              <Flag code="EU" size="1.15em" /> EUR
+            </strong>
+          </div>
+        </div>
+      </div>
+      <div className="art-float art-created">
+        <span className="art-dot purple">
+          <Icon name="check" size="1em" strokeWidth={3} />
+        </span>
+        <span className="art-grow">
+          <strong className="art-mono">LU00 XXX0 ···· 4821</strong>
+          <span className="art-muted">Ready to share</span>
+        </span>
+        <span className="art-pill">Share</span>
       </div>
     </div>
   );
@@ -278,6 +359,8 @@ function Onboarding() {
 export const PRODUCT_ART = {
   "add-account": AddAccountPhone,
   named: NamedAccounts,
+  "named-invoice": InvoiceIban,
+  "named-new": NewDetails,
   "uk-rails": UkPayments,
   cop: PayeeCheck,
   sepa: EuroPayment,
