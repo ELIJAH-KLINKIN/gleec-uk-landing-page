@@ -9,7 +9,8 @@
 // or under Reduce Motion.
 import { useRef, useState } from "react";
 import { DISCLAIMER_SHORT, HERO } from "../content.js";
-import { DEMO_MEDIA, DEMO_SIZE, DEMO_SIZE_MOBILE } from "../lib/demoMedia.js";
+import { DEMO_MEDIA, DEMO_SIZE, DEMO_SIZE_MOBILE, PHONE_QUERY, VIDEO_QUERY } from "../lib/demoMedia.js";
+import { useMediaQuery } from "../lib/useMediaQuery.js";
 import { useAutoAdvance } from "../lib/useAutoAdvance.js";
 import HeroJoin from "./HeroJoin.jsx";
 import RotatingPhrase from "./RotatingPhrase.jsx";
@@ -49,6 +50,12 @@ export default function Hero() {
   };
 
   const current = demos[active];
+  // A tab with a recording stays up for the whole recording (where it plays).
+  const wide = useMediaQuery(VIDEO_QUERY);
+  const phone = useMediaQuery(PHONE_QUERY);
+  const videoPlays = wide && !phone;
+  const video = DEMO_MEDIA[current.id].video;
+  const advanceMs = videoPlays && video ? video.seconds * 1000 + 400 : ADVANCE_MS;
 
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
@@ -86,7 +93,7 @@ export default function Hero() {
                       aria-hidden="true"
                       onAnimationEnd={advance}
                       style={{
-                        animationDuration: `${ADVANCE_MS}ms`,
+                        animationDuration: `${advanceMs}ms`,
                         animationPlayState: running ? "running" : "paused",
                       }}
                     />

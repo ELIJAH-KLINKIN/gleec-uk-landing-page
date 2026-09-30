@@ -1005,13 +1005,14 @@ test("demo: tabs switch the demo screen (click + arrow keys)", async ({ page }, 
   }
 });
 
-test("demo: advances on its own, with a running progress fill in the current pill", async ({ page }) => {
+test("demo: advances on its own, with a running progress fill in the current pill", async ({ page }, testInfo) => {
   await page.goto("./");
   await page.locator(".demo").scrollIntoViewIfNeeded();
   await page.mouse.move(1, 1);
   const fill = page.locator(".demo-tab.is-selected .demo-tab-progress");
   await expect.poll(() => fill.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("running");
-  expect(await fill.evaluate((el) => getComputedStyle(el).animationDuration)).toBe("7s");
+  // 7 s a tab; where the Accounts recording plays (wider screens), its whole 17 s.
+  expect(await fill.evaluate((el) => getComputedStyle(el).animationDuration)).toBe(isMobile(testInfo) ? "7s" : "17.4s");
   await finishProgress(page);
   await expect(demoTab(page, "Cards")).toHaveAttribute("aria-selected", "true");
   await finishProgress(page);
@@ -1047,15 +1048,29 @@ test("demo: never auto-advances under Reduce Motion", async ({ page }) => {
 
 test("demo: visible on first load, with phone-sized screens on phones", async ({ page }, testInfo) => {
   await page.goto("./");
-  const r = await page.evaluate(() => {
-    const win = document.querySelector(".demo-window").getBoundingClientRect();
-    const img = document.querySelector(".demo-screen.is-active img");
-    return { visible: innerHeight - win.top, src: img.currentSrc };
-  });
+  const visible = await page.evaluate(() => innerHeight - document.querySelector(".demo-window").getBoundingClientRect().top);
   // At least ~200px of the app window shows without scrolling.
-  expect(r.visible).toBeGreaterThan(200);
-  if (isMobile(testInfo)) expect(r.src).toMatch(/-mobile-/);
-  else expect(r.src).not.toMatch(/-mobile-/);
+  expect(visible).toBeGreaterThan(200);
+  if (isMobile(testInfo)) {
+    // Phones keep the phone-shaped still (no video to download).
+    await expect(page.locator(".demo-screen.is-active video")).toHaveCount(0);
+    expect(await page.locator(".demo-screen.is-active img").evaluate((img) => img.currentSrc)).toMatch(/-mobile-/);
+  } else {
+    // Wider screens play the Accounts recording.
+    await expect(page.locator(".demo-screen.is-active video")).toHaveCount(1);
+  }
+});
+
+test("demo: the Accounts recording plays in the visitor's colour scheme", async ({ page }, testInfo) => {
+  test.skip(isMobile(testInfo), "phones keep the still");
+  for (const scheme of ["dark", "light"]) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto("./");
+    const video = page.locator(".demo-screen.is-active video");
+    await expect(video.locator("source")).toHaveAttribute("src", new RegExp(`accounts-${scheme}.*\\.mp4`));
+    await expect(video).toHaveAttribute("poster", new RegExp(`accounts-${scheme}-poster`));
+    await expect.poll(() => video.evaluate((v) => !v.paused && v.readyState >= 2), { timeout: 8000 }).toBe(true);
+  }
 });
 
 test("product gallery: every tile has art, hidden from screen readers, inside its tile", async ({ page }) => {
