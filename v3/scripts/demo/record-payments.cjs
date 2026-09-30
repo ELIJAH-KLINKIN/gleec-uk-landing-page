@@ -1,5 +1,6 @@
 // record-payments.cjs — records the Payments section's video from the banking
-// app (branch no-crypto, served locally), in dark and light:
+// app's UK edition (branch uk-emi: GBP-first accounts, UK Ltd/LLP recipients,
+// Faster Payments "in seconds"), served locally, in dark and light:
 //   New transfer → search "Hart" → Hartwell & Frome LLP → £4,850 from the GBP
 //   account, reference INV-2291 → Review (Faster Payments, arrival, approvals)
 //   → Send → the payment's panel: Sent, and its tracking.
@@ -10,19 +11,17 @@
 //     numbers, sort codes, IBAN bank codes) → placeholders;
 //   - no fees on screen (Ilia, 2026-09-30: "No need to show fees"): the fee,
 //     total and plan-fee lines are hidden;
-//   - arrival: "within minutes" → "in seconds", as the partners' documents
-//     give for Faster Payments (usually within seconds, 24/7);
-//   - the app's upgrade and verification notices are hidden;
-//   - off camera, $9,000 is moved into the GBP account first (its balance is
-//     too small for a supplier invoice), then the page opens New transfer
-//     from the GBP account without a reload (the app keeps no state across one).
+//   - the app's upgrade and verification notices are hidden.
+// (The older no-crypto build also needed the arrival wording, a GBP top-up
+// and its real sort codes changing; those swaps are harmless on uk-emi.)
 //
-// Usage (app on :3100):  node scripts/demo/record-payments.cjs
+// Usage (UK edition on :3100, e.g. `npm run build && npm run start -- -p 3100`
+// in its worktree):  node scripts/demo/record-payments.cjs
 // Env: BASE (default http://localhost:3100), OUT (default src/assets/demo), MODES.
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const { W, H, pageSetup, glide, dismissNotices, tap, startCapture, assemble } = require("./lib.cjs");
+const { W, H, pageSetup, glide, tap, startCapture, assemble } = require("./lib.cjs");
 
 const BASE = process.env.BASE || "http://localhost:3100";
 const OUT = process.env.OUT || path.join(__dirname, "../../src/assets/demo");
@@ -69,23 +68,8 @@ async function record(browser, mode) {
   await ctx.addInitScript(pageSetup, { ...SETUP, mode });
   const page = await ctx.newPage();
 
-  // Off camera: move $9,000 into the GBP account, then open New transfer
-  // from it with the app's own router (no reload).
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
-  await dismissNotices(page);
-  await page.getByRole("button", { name: "Move", exact: true }).first().click();
-  await page.getByRole("button", { name: "Choose destination account" }).click();
-  await page
-    .getByRole("button", { name: /Main GBP ·/ })
-    .first()
-    .click();
-  await page.getByLabel("From amount in USD").click();
-  await page.keyboard.press("Meta+A");
-  await page.keyboard.type("9000");
-  await page.getByRole("button", { name: "Review order" }).click();
-  await page.getByRole("button", { name: /^Sell / }).click();
-  await page.waitForTimeout(1500);
-  await page.evaluate(() => window.next.router.push("/transactions/new?fromAccountId=acc_gbp_main"));
+  // Off camera: New transfer, paying from the default (GBP) account.
+  await page.goto(`${BASE}/transactions/new`, { waitUntil: "networkidle" });
   await page.getByText("New transfer").first().waitFor();
   await page.waitForTimeout(800);
   let at = { x: 1200, y: 700 }; // empty space beside the list: no hover in the first frame
@@ -122,7 +106,7 @@ async function record(browser, mode) {
   // Sent: the payment's panel with its tracking
   await page.getByText("Transfer tracking").first().waitFor();
   await page.waitForTimeout(600);
-  at = await glide(page, at, { x: 700, y: 118 }, 700); // beside the balance: no row lights up
+  at = await glide(page, at, { x: 520, y: 140 }, 700); // beside the balance: nothing lights up
   await page.waitForTimeout(3000);
 
   const take = await stop();
