@@ -3,6 +3,7 @@
 // Paths from Simple Icons (CC0 artwork; the marks remain their owners' trademarks),
 // except where noted.
 import weworkWordmark from "../../assets/merchants/wework-white.png";
+import burningMan from "../../assets/merchants/burningman-man.png";
 
 const MERCHANTS = {
   ritzcarlton: {
@@ -20,27 +21,24 @@ const MERCHANTS = {
     transform: "matrix(1.1963261,0,0,1.1963261,-27.276235,-3.149038)",
     path: "m 122,10.5 c -5.6,-0.8 -7.1,-0.2 -7.1,-5.7 0.1,-1.3 1.5,-4.2 4.1,0.1 1.2,1.4 2.7,2.1 3.9,2.5 -1.1,-0.4 7.3,1.5 12.9,0.4 1.4,1 0,2.7 -0.5,3.2 -0.1,0.1 -5.5,1.5 -10.6,1.1 0,-0.1 -0.6,-1.5 -0.5,-1.5 -0.1,0.1 -2.1,0 -2.2,-0.1 M 161.1,82 c -0.3,-2.2 -0.6,-4.3 -1,-6.2 -2.7,-9.4 -6.2,-19.3 -15.6,-23.6 -4,-1.5 -11.5,-1.2 -12.6,-10.5 0,-2.5 0,-28.3 0,-28.3 l -12,2.4 c 0,0 0,1.8 0,1.8 0,0 -0.2,5.4 -0.2,5.4 0,0 0,2.5 0.1,5.7 0.2,14.4 1,23.6 -14.7,29.5 -9.7,3.7 -10.3,8 -11.4,19.2 -0.1,0.8 -0.2,1.6 -0.2,2.4 0,-0.3 -3.2,31.2 7.4,81.4 0,0 1.6,8.2 1.8,9.3 0.1,0.6 0.7,1.4 2.4,2.6 18,4.3 21.9,1.2 31.3,2.4 9.6,1.3 18.1,-4.9 18.3,-5 0.9,-0.3 4.1,-6.7 4.5,-14.9 3.9,-21.9 2.9,-56.9 1.9,-73.6",
   },
-  // Not in Simple Icons: xAI's mark from Wikimedia Commons ("XAI Logo.svg"),
-  // four shapes in its own coordinates, centred in a square view box.
+  // Not in Simple Icons: xAI's mark from Wikimedia Commons ("XAI-Logo.svg", public
+  // domain as simple shapes; still xAI's trademark), centred in a square view box.
   xai: {
     bg: "#000000",
     fg: "#ffffff",
-    view: "40.95 -82.36 760 760",
-    path: "M557.09 211.99 565.4 538.36 631.96 538.36 640.28 93.18ZM640.28 56.91 538.72 56.91 379.35 284.53 430.13 357.05ZM201.61 538.36 303.17 538.36 353.96 465.84 303.17 393.31ZM201.61 211.99 430.13 538.36 531.69 538.36 303.17 211.99Z",
+    view: "-176.98 -151.53 820 820",
+    path: "M0.12 182.71 234.14 516.92 338.15 516.92 104.13 182.71ZM0 516.92 104.08 516.92 156.08 442.67 104.04 368.34ZM466.04 0 361.96 0 182.1 256.86 234.15 331.18ZM380.78 516.92 466.04 516.92 466.04 37.16 380.78 158.92Z",
   },
   // WeWork's wordmark (Wikimedia Commons, public domain as simple text), white on black.
   wework: {
     bg: "#000000",
     image: { href: weworkWordmark, width: 16.4, height: 3.48 },
   },
-  // Burning Man Project guards its name and "the Man" closely, so no mark of
-  // theirs: a ticket on a playa-dust circle, as a phone shows a merchant with no logo.
+  // The Man from Burning Man Project's logo (Wikimedia Commons, CC BY-SA 4.0),
+  // cropped from the wordmark: black on white.
   burningman: {
-    bg: "#c2622d",
-    fg: "#ffffff",
-    inset: 3,
-    evenodd: true, // the perforation is cut out
-    path: "M5 5h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5V7a2 2 0 0 1 2-2Zm9.5 2.2v1.6h1.2V7.2Zm0 3v1.6h1.2v-1.6Zm0 3v1.6h1.2v-1.6Zm0 3v.6h1.2v-.6Z",
+    bg: "#ffffff",
+    image: { href: burningMan, width: 7.85, height: 16 },
   },
   openai: {
     bg: "#000000",
@@ -90,7 +88,7 @@ export default function MerchantLogo({ id, size = 36, className = "merchant-logo
       className={className}
     >
       <rect x={-m.inset} y={-m.inset} width={box} height={box} fill={m.bg} />
-      <path d={m.path} fill={m.fg} fillRule={m.evenodd ? "evenodd" : undefined} />
+      <path d={m.path} fill={m.fg} />
     </svg>
   );
 }
