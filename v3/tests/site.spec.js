@@ -527,17 +527,20 @@ test("product story: Global Account, Confirmation of Payee, SWIFT fee choice, fi
   await expect(finance).toContainText("camt.053");
 });
 
-test("highlights gallery: dots and paddles move it; it never moves on its own", async ({ page }, testInfo) => {
+const finishHighlight = (page) =>
+  page.locator(".hl-dot-progress").evaluate((el) => el.getAnimations().forEach((a) => a.finish()));
+
+test("highlights gallery: dots and paddles move it, and stop it playing", async ({ page }, testInfo) => {
   await page.goto("./#product");
   const gallery = page.locator(".hl");
   const current = gallery.locator(".hl-dot[aria-current='true']");
   await expect(current).toHaveAttribute("aria-label", /highlight 1:/);
 
-  await page.waitForTimeout(3000);
-  await expect(current, "gallery advanced by itself").toHaveAttribute("aria-label", /highlight 1:/);
-
   await gallery.getByRole("button", { name: /Go to highlight 4:/ }).click();
   await expect(current).toHaveAttribute("aria-label", /highlight 4:/);
+  // Picking a tile stops it playing; Play is offered instead.
+  await expect(gallery.locator(".hl-dot-progress")).toHaveCount(0);
+  await expect(gallery.getByRole("button", { name: "Play highlights" })).toBeVisible();
   // The chosen tile now sits at the gallery's leading edge.
   await expect
     .poll(() =>
@@ -559,12 +562,56 @@ test("highlights gallery: dots and paddles move it; it never moves on its own", 
     await expect(current).toHaveAttribute("aria-label", /highlight 4:/);
     await gallery.getByRole("button", { name: /Go to highlight 1:/ }).click();
     await expect(gallery.getByRole("button", { name: "Previous highlight" })).toBeDisabled();
+    // Let the glide back finish: jumping mid-glide races the scroll snap.
+    await expect.poll(() => gallery.locator(".hl-scroller").evaluate((el) => el.scrollLeft)).toBe(0);
   }
 
   // Scrolling the gallery directly (swipe / trackpad) updates the page control.
   const last = await gallery.locator(".hl-tile").count();
   await gallery.locator(".hl-scroller").evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: "instant" }));
   await expect(current).toHaveAttribute("aria-label", new RegExp(`highlight ${last}:`));
+});
+
+test("highlights gallery: plays on its own, with a fill in the current dot; Pause stops it", async ({ page }) => {
+  await page.goto("./#product");
+  await page.mouse.move(1, 1);
+  const gallery = page.locator(".hl");
+  const current = gallery.locator(".hl-dot[aria-current='true']");
+  const fill = gallery.locator(".hl-dot.is-current .hl-dot-progress");
+  await expect.poll(() => fill.evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("running");
+  // About 7 s a tile, longer for more words.
+  const secs = parseFloat(await fill.evaluate((el) => getComputedStyle(el).animationDuration));
+  expect(secs).toBeGreaterThanOrEqual(7);
+  expect(secs).toBeLessThanOrEqual(11);
+  await finishHighlight(page);
+  await expect(current).toHaveAttribute("aria-label", /highlight 2:/);
+
+  // Pause sits between the paddles and stops it; Play starts it again.
+  const pause = gallery.getByRole("button", { name: "Pause highlights" });
+  await expect(pause).toBeVisible();
+  await pause.click();
+  await expect(gallery.locator(".hl-dot-progress")).toHaveCount(0);
+  await page.waitForTimeout(500);
+  await expect(current).toHaveAttribute("aria-label", /highlight 2:/);
+  await gallery.getByRole("button", { name: "Play highlights" }).click();
+  await expect(gallery.locator(".hl-dot-progress")).toHaveCount(1);
+  await expect(gallery.getByRole("button", { name: "Pause highlights" })).toBeVisible();
+});
+
+test("highlights gallery: holds while the pointer is over the tiles", async ({ page }, testInfo) => {
+  test.skip(isMobile(testInfo), "hover");
+  await page.goto("./#product");
+  await page.locator(".hl-tile").first().hover();
+  await expect
+    .poll(() => page.locator(".hl-dot-progress").evaluate((el) => getComputedStyle(el).animationPlayState))
+    .toBe("paused");
+});
+
+test("highlights gallery: never plays under Reduce Motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#product");
+  await expect(page.locator(".hl-dot-progress")).toHaveCount(0);
+  await expect(page.locator(".hl").getByRole("button", { name: /Pause highlights|Play highlights/ })).toHaveCount(0);
 });
 
 test("cards: segmented control switches card (click + arrow keys)", async ({ page }, testInfo) => {

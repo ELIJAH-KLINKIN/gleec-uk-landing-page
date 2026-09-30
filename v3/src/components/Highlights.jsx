@@ -1,15 +1,27 @@
 // Highlights.jsx — horizontally scrolling gallery of product highlights.
 // Native scroll + snap, so swipe, trackpad and arrow keys just work; paddles
-// and a page control for pointer users. It never advances on its own (the HIG
-// lists self-playing carousels as an anti-pattern): people move at their pace.
+// and a page control for pointer users. It plays on its own, like the hero
+// demo, with the time left shown as a fill in the current dot, and a Pause
+// button between the paddles (WCAG 2.2.2). Each tile stays for its reading
+// time. It holds while the pointer is over the tiles, keyboard focus is in
+// them, it is off screen or the tab is hidden, never plays under Reduce
+// Motion, and stops once the visitor moves it themselves (dot, paddle, swipe).
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HIGHLIGHTS } from "../content.js";
 import { usePrefersReducedMotion } from "../lib/motion.js";
+import { useAutoAdvance } from "../lib/useAutoAdvance.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import Icon from "./ui/Icon.jsx";
 import Flag from "./ui/Flag.jsx";
 import { PRODUCT_ART } from "./art/ProductArt.jsx";
 import "./Highlights.css";
+
+// Time on a tile: about 250 ms a word (an average reading pace) plus a moment
+// for the drawing, never under 7 s. The tiles come out at 7–8.5 s.
+const readMs = (item) => {
+  const words = `${item.title} ${item.body}`.split(/\s+/).filter(Boolean).length;
+  return Math.min(11000, Math.max(7000, 2000 + words * 250));
+};
 
 export default function Highlights() {
   const items = HIGHLIGHTS.items;
@@ -17,6 +29,12 @@ export default function Highlights() {
   const scrollerRef = useRef(null);
   const [active, setActive] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
+  const [playing, setPlaying] = useState(true);
+  const [runId, setRunId] = useState(0); // restarts the fill in the current dot
+  // Hover and keyboard focus pause only over the tiles, so Play works at once.
+  const { ref: autoRef, running, autoplayAllowed, pauseProps } = useAutoAdvance({ enabled: playing });
+  const autoplay = playing && autoplayAllowed;
+  const touchingRef = useRef(false);
 
   // While a paddle / dot / autoplay scroll is animating, ignore the tiles it
   // passes on the way so the page control doesn't flicker through them.
@@ -65,14 +83,43 @@ export default function Highlights() {
     [reducedMotion, measure],
   );
 
+  // The visitor moved it: stop playing (Play resumes it).
+  const pick = (i) => {
+    setPlaying(false);
+    goTo(i);
+  };
+  // Next tile when the fill runs out; back to the first once the gallery can't
+  // scroll any further (on wide screens the last tiles are already in view).
+  const advance = () => {
+    const scroller = scrollerRef.current;
+    const atEnd = scroller && scroller.scrollLeft >= scroller.scrollWidth - scroller.clientWidth - 4;
+    goTo(atEnd || active === N - 1 ? 0 : active + 1);
+    setRunId((r) => r + 1);
+  };
+  const togglePlay = () => {
+    setPlaying((p) => !p);
+    setRunId((r) => r + 1);
+  };
+
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return undefined;
     let frame = 0;
     const onScroll = () => {
       if (lockRef.current.index !== null) return;
+      if (touchingRef.current) setPlaying(false); // a swipe
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => measure());
+    };
+    // A sideways trackpad swipe, or a touch that scrolls the tiles.
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) setPlaying(false);
+    };
+    const onTouchStart = () => {
+      touchingRef.current = true;
+    };
+    const onTouchEnd = () => {
+      touchingRef.current = false;
     };
     const onScrollEnd = () => {
       const requested = lockRef.current.index;
@@ -82,9 +129,17 @@ export default function Highlights() {
     };
     scroller.addEventListener("scroll", onScroll, { passive: true });
     scroller.addEventListener("scrollend", onScrollEnd);
+    scroller.addEventListener("wheel", onWheel, { passive: true });
+    scroller.addEventListener("touchstart", onTouchStart, { passive: true });
+    scroller.addEventListener("touchend", onTouchEnd, { passive: true });
+    scroller.addEventListener("touchcancel", onTouchEnd, { passive: true });
     return () => {
       scroller.removeEventListener("scroll", onScroll);
       scroller.removeEventListener("scrollend", onScrollEnd);
+      scroller.removeEventListener("wheel", onWheel);
+      scroller.removeEventListener("touchstart", onTouchStart);
+      scroller.removeEventListener("touchend", onTouchEnd);
+      scroller.removeEventListener("touchcancel", onTouchEnd);
       cancelAnimationFrame(frame);
     };
   }, [measure]);
@@ -102,7 +157,10 @@ export default function Highlights() {
 
       <div className="hl">
         <div
-          ref={scrollerRef}
+          ref={(el) => {
+            scrollerRef.current = el;
+            autoRef.current = el;
+          }}
           className="hl-scroller"
           role="region"
           aria-roledescription="carousel"
@@ -110,6 +168,10 @@ export default function Highlights() {
           // Focusable so keyboard users can scroll it with the arrow keys.
           // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
           tabIndex={0}
+          {...pauseProps}
+          onKeyDown={(e) => {
+            if (["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(e.key)) setPlaying(false);
+          }}
         >
           {items.map((item, i) => (
             <article
@@ -136,36 +198,60 @@ export default function Highlights() {
               <button
                 key={item.id}
                 type="button"
-                className={"hl-dot" + (i === active ? " is-current" : "")}
+                className={"hl-dot" + (i === active ? " is-current" : "") + (i === active && autoplay ? " is-playing" : "")}
                 aria-label={`Go to highlight ${i + 1}: ${item.title}`}
                 aria-current={i === active ? "true" : undefined}
-                onClick={() => goTo(i)}
-              />
+                onClick={() => pick(i)}
+              >
+                {i === active && autoplay ? (
+                  <span
+                    key={runId}
+                    className="hl-dot-progress"
+                    aria-hidden="true"
+                    onAnimationEnd={advance}
+                    style={{
+                      animationDuration: `${readMs(item)}ms`,
+                      animationPlayState: running ? "running" : "paused",
+                    }}
+                  />
+                ) : null}
+              </button>
             ))}
           </div>
           <div className="hl-paddles">
             <button
               type="button"
-              className="hl-paddle"
+              className="hl-paddle hl-arrow"
               aria-label="Previous highlight"
               disabled={active === 0}
-              onClick={() => goTo(active - 1)}
+              onClick={() => pick(active - 1)}
             >
               <Icon name="chevron-left" size={20} />
             </button>
+            {autoplayAllowed ? (
+              <button
+                type="button"
+                className="hl-paddle hl-play"
+                aria-label={playing ? "Pause highlights" : "Play highlights"}
+                onClick={togglePlay}
+              >
+                <Icon name={playing ? "pause" : "play"} size={16} />
+              </button>
+            ) : null}
             <button
               type="button"
-              className="hl-paddle"
+              className="hl-paddle hl-arrow"
               aria-label="Next highlight"
               disabled={active === N - 1}
-              onClick={() => goTo(active + 1)}
+              onClick={() => pick(active + 1)}
             >
               <Icon name="chevron-right" size={20} />
             </button>
           </div>
         </div>
         {HIGHLIGHTS.note ? <p className="footnote hl-note container-wide">{HIGHLIGHTS.note}</p> : null}
-        <p className="visually-hidden" aria-live="polite" aria-atomic="true">
+        {/* Quiet while it plays, so a screen reader isn't interrupted every few seconds. */}
+        <p className="visually-hidden" aria-live={autoplay ? "off" : "polite"} aria-atomic="true">
           Highlight {active + 1} of {N}: {items[active].title}
         </p>
       </div>

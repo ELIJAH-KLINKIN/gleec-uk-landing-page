@@ -176,6 +176,7 @@ picture.hl-art img {
   background: var(--fill);
 }
 .hl-dot {
+  position: relative;
   display: grid;
   place-items: center;
   width: 22px;
@@ -183,6 +184,7 @@ picture.hl-art img {
   padding: 0;
   border: 0;
   background: none;
+  transition: width var(--dur-1);
 }
 .hl-dot::before {
   content: "";
@@ -192,6 +194,7 @@ picture.hl-art img {
   background: var(--label-3);
   opacity: 0.55;
   transition:
+    width var(--dur-1),
     opacity var(--dur-1),
     background-color var(--dur-1);
 }
@@ -201,6 +204,36 @@ picture.hl-art img {
 .hl-dot.is-current::before {
   background: var(--label);
   opacity: 1;
+}
+/* While it plays, the current dot stretches into a pill that fills up over the
+   tile's time, like the hero demo's tabs. */
+.hl-dot.is-playing {
+  width: 38px;
+}
+.hl-dot.is-playing::before {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--label-3);
+  opacity: 0.55;
+}
+.hl-dot-progress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 8px;
+  margin: -4px 0 0 -12px;
+  border-radius: 4px;
+  background: var(--label);
+  clip-path: inset(0 100% 0 0 round 4px);
+  animation-name: hl-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes hl-progress {
+  to {
+    clip-path: inset(0 0 0 0 round 4px);
+  }
 }
 .hl-paddle {
   display: grid;
@@ -229,10 +262,18 @@ picture.hl-art img {
   opacity: 0.35;
   cursor: default;
 }
+/* Pause / Play: SF Symbols' filled glyphs. */
+.hl-play svg {
+  fill: currentColor;
+}
 
 @media (max-width: 734px) {
-  .hl-paddles {
+  /* Phones swipe; Pause stays (WCAG 2.2.2), centred with the dots as one group. */
+  .hl-arrow {
     display: none;
+  }
+  .hl-paddles {
+    position: static;
   }
   .hl-tile {
     min-height: 480px;
