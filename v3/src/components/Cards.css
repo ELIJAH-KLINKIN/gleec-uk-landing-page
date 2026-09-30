@@ -25,6 +25,25 @@
   height: auto;
   translate: -50% -50%;
 }
+/* The phone (virtual) fades in when its tab is chosen. */
+.cards-phone {
+  padding: var(--s-4) 0;
+  animation: cards-in var(--dur-3) var(--ease) both;
+}
+.cards-stage {
+  animation: cards-in var(--dur-3) var(--ease) both;
+}
+@keyframes cards-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cards-phone,
+  .cards-stage {
+    animation: none;
+  }
+}
 .cards-scene {
   position: absolute;
   inset: 0;

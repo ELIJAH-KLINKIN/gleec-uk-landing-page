@@ -1,0 +1,595 @@
+/* WalletPhone: 1em = 1/30 of the phone's width, so the whole drawing scales as
+   one piece. The phone is always dark (like a phone's wallet), whatever the page
+   theme. */
+.wp {
+  --pw: min(300px, 70vw);
+  --blue: #0a84ff;
+  --green: #30d158;
+  position: relative;
+  width: var(--pw);
+  margin: 0 auto;
+  font-size: calc(var(--pw) / 30);
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ---------- Body ---------- */
+.wp-body {
+  position: relative;
+  height: calc(var(--pw) * 2.08);
+  padding: 0.95em;
+  border-radius: 5.4em;
+  background: linear-gradient(145deg, #6d6d73 0%, #2b2b2f 22%, #1a1a1d 55%, #3a3a3f 100%);
+  box-shadow:
+    inset 0 0 0 0.12em rgba(255, 255, 255, 0.22),
+    inset 0 0 0 0.5em #0c0c0e,
+    0 3em 6em -2.4em rgba(12, 6, 30, 0.6),
+    0 0.8em 2em rgba(12, 6, 30, 0.25);
+}
+.wp-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4.5em;
+  background: #000;
+  isolation: isolate;
+}
+.wp-vol,
+.wp-side {
+  position: absolute;
+  width: 0.5em;
+  background: linear-gradient(90deg, #2a2a2e, #5d5d63 60%, #2a2a2e);
+}
+.wp-vol {
+  left: -0.32em;
+  height: 4.4em;
+  border-radius: 0.3em 0 0 0.3em;
+}
+.wp-vol-1 {
+  top: 12em;
+}
+.wp-vol-2 {
+  top: 17.4em;
+}
+.wp-side {
+  right: -0.34em;
+  top: 15em;
+  height: 8.6em;
+  padding: 0;
+  border: 0;
+  border-radius: 0 0.3em 0.3em 0;
+  cursor: pointer;
+  touch-action: manipulation; /* a double tap must not zoom the page */
+  transition: background var(--dur-2) var(--ease);
+}
+/* A generous hit area around the thin button (WCAG 2.5.8). */
+.wp-side::before {
+  content: "";
+  position: absolute;
+  inset: -1.2em -1.6em;
+}
+.wp[data-state="lock"] .wp-side {
+  background: linear-gradient(90deg, #5a2bc4, #a878ff 60%, #5a2bc4);
+}
+.wp-side:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 0.4em;
+  border-radius: 0.3em;
+}
+/* Two identical keyframes, alternated, so each nudge replays the glow. */
+.wp-side[data-nudge="a"] {
+  animation: wp-nudge-a 0.9s var(--ease) 2;
+}
+.wp-side[data-nudge="b"] {
+  animation: wp-nudge-b 0.9s var(--ease) 2;
+}
+@keyframes wp-nudge-a {
+  50% {
+    box-shadow: 0 0 0 0.6em rgba(140, 65, 255, 0.4);
+  }
+}
+@keyframes wp-nudge-b {
+  50% {
+    box-shadow: 0 0 0 0.6em rgba(140, 65, 255, 0.4);
+  }
+}
+
+/* ---------- Status bar and island ---------- */
+.wp-island {
+  position: absolute;
+  z-index: 5;
+  top: 1.1em;
+  left: 50%;
+  width: 9.4em;
+  height: 2.75em;
+  translate: -50% 0;
+  border-radius: 1.4em;
+  background: #000;
+}
+.wp-status {
+  position: absolute;
+  z-index: 4;
+  top: 1.45em;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2.3em 0 2.9em;
+  font-size: 1.25em;
+  font-weight: 600;
+}
+.wp-status-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.wp-status-icons svg {
+  width: auto;
+  height: 0.84em;
+}
+
+/* ---------- Layers: one per step, cross-faded ---------- */
+.wp-lock,
+.wp-pay,
+.wp-stack {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 320ms var(--ease),
+    visibility 0s linear 320ms;
+}
+.wp[data-state="lock"] .wp-lock,
+.wp[data-state="auth"] .wp-pay,
+.wp[data-state="pay"] .wp-pay,
+.wp[data-state="done"] .wp-pay,
+.wp[data-state="stack"] .wp-stack {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 320ms var(--ease);
+}
+
+/* ---------- Lock screen ---------- */
+.wp-lock {
+  display: grid;
+  justify-items: center;
+  align-content: space-between;
+  padding: 7.5em 1.6em 4.6em;
+  background:
+    radial-gradient(90% 55% at 50% 100%, rgba(140, 65, 255, 0.55), transparent 70%),
+    radial-gradient(70% 40% at 80% 20%, rgba(100, 60, 200, 0.25), transparent 70%),
+    #07060b;
+}
+.wp-lock-time {
+  font-family: var(--font-display);
+  font-size: 7.4em;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+.wp-lock-hint {
+  padding: 0.55em 1em;
+  border-radius: 2em;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(1em);
+  backdrop-filter: blur(1em);
+  font-size: 1.12em;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ---------- Card faces ---------- */
+.wp-card {
+  display: grid;
+  grid-template: "brand type" 1fr "num num" auto / 1fr auto;
+  align-items: start;
+  aspect-ratio: 85.6 / 53.98;
+  padding: 1.35em 1.5em 1.25em;
+  border-radius: 1.3em;
+  color: #fff;
+  box-shadow:
+    inset 0 0.06em 0 rgba(255, 255, 255, 0.25),
+    0 0.6em 1.6em rgba(0, 0, 0, 0.45);
+}
+.wp-card-brand {
+  grid-area: brand;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--font-display);
+  font-size: 2.05em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.wp-card-logo {
+  width: auto;
+  height: 1.08em;
+}
+.wp-card-type {
+  grid-area: type;
+  display: grid;
+  justify-items: end;
+  gap: 0.15em;
+  font-size: 0.95em;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.wp-card-type strong {
+  font-weight: 700;
+}
+.wp-card-type {
+  color: inherit;
+}
+.wp-card-type > :not(strong) {
+  opacity: 0.7;
+}
+.wp-card-num {
+  grid-area: num;
+  align-self: end;
+  justify-self: start;
+  font-size: 1.3em;
+  letter-spacing: 0.04em;
+}
+.wp-card-purple {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 0.6em),
+    linear-gradient(135deg, #9d5bff 0%, #8c41ff 45%, #6423d8 100%);
+}
+.wp-card-graphite {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(135deg, #4a4a52 0%, #2c2c31 55%, #1b1b1f 100%);
+}
+.wp-card-midnight {
+  background:
+    radial-gradient(90% 120% at 100% 100%, rgba(140, 65, 255, 0.55), transparent 60%),
+    linear-gradient(135deg, #231a45 0%, #120e22 60%, #0a0812 100%);
+}
+.wp-card-silver {
+  color: #1d1d1f;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
+    linear-gradient(135deg, #f2f2f5 0%, #dcdce2 60%, #c4c4cc 100%);
+}
+.wp-card-lilac {
+  color: #2a1466;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.6), transparent 60%),
+    linear-gradient(135deg, #efe6ff 0%, #d6bfff 55%, #b58bff 100%);
+}
+/* Dark print on light cards: the white G turned near-black or deep purple. */
+.wp-card-silver .wp-card-logo {
+  filter: brightness(0) opacity(0.85);
+}
+.wp-card-lilac .wp-card-logo {
+  filter: brightness(0) invert(13%) sepia(60%) saturate(4000%) hue-rotate(255deg);
+}
+
+/* ---------- Pay: card, face check, reader ---------- */
+.wp-pay-card {
+  position: absolute;
+  top: 5.6em;
+  left: 1.3em;
+  right: 1.3em;
+  transition:
+    filter 400ms var(--ease),
+    transform 500ms var(--ease-out);
+}
+.wp[data-state="auth"] .wp-pay-card {
+  filter: blur(0.5em) brightness(0.7);
+  transform: translateY(0.8em) scale(0.97);
+}
+.wp-face {
+  position: absolute;
+  z-index: 3;
+  top: 3.4em;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 11.2em;
+  height: 11.2em;
+  translate: -50% 0;
+  border-radius: 2.6em;
+  background: rgba(10, 10, 12, 0.92);
+  box-shadow: inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
+  color: #d1d1d6;
+  opacity: 0;
+  scale: 0.9;
+  transition:
+    opacity 220ms var(--ease),
+    scale 300ms var(--ease-out);
+}
+.wp-face svg {
+  width: 5.8em;
+  height: 5.8em;
+}
+.wp[data-state="auth"] .wp-face {
+  opacity: 1;
+  scale: 1;
+  animation: wp-face 1.3s var(--ease) forwards;
+}
+@keyframes wp-face {
+  0%,
+  45% {
+    color: #d1d1d6;
+  }
+  60%,
+  100% {
+    color: var(--green);
+  }
+}
+.wp[data-state="auth"] .wp-face-feat {
+  animation: wp-scan 0.6s var(--ease) 2 alternate;
+}
+@keyframes wp-scan {
+  to {
+    opacity: 0.35;
+  }
+}
+
+.wp-reader {
+  position: absolute;
+  top: 27.5em;
+  left: 0;
+  right: 0;
+  display: grid;
+  justify-items: center;
+  gap: 1.4em;
+  opacity: 0;
+  transition: opacity 300ms var(--ease);
+}
+.wp[data-state="pay"] .wp-reader,
+.wp[data-state="done"] .wp-reader {
+  opacity: 1;
+}
+.wp-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7.6em;
+  height: 7.6em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.42em var(--blue);
+}
+.wp[data-state="pay"] .wp-ring {
+  animation: wp-pulse 1.6s var(--ease) infinite;
+}
+@keyframes wp-pulse {
+  50% {
+    box-shadow:
+      inset 0 0 0 0.42em var(--blue),
+      0 0 0 0.9em rgba(10, 132, 255, 0.16);
+  }
+}
+.wp-glyph-phone,
+.wp-glyph-check {
+  position: absolute;
+  width: 4.4em;
+  height: 4.4em;
+  transition:
+    opacity 250ms var(--ease),
+    scale 350ms var(--ease-out);
+}
+.wp-glyph-check {
+  color: var(--blue);
+  opacity: 0;
+  scale: 0.6;
+}
+.wp[data-state="done"] .wp-glyph-phone {
+  opacity: 0;
+  scale: 0.6;
+}
+.wp[data-state="done"] .wp-glyph-check {
+  opacity: 1;
+  scale: 1;
+}
+.wp-reader-label {
+  grid-area: 2 / 1;
+  font-size: 1.75em;
+  color: #8e8e93;
+  transition: opacity 250ms var(--ease);
+}
+.wp-reader-done,
+.wp[data-state="done"] .wp-reader-hold {
+  opacity: 0;
+}
+.wp[data-state="done"] .wp-reader-done {
+  opacity: 1;
+}
+
+/* The other cards, peeking at the bottom: tap them to open the stack. */
+.wp-peek {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8.6em;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: transform 450ms var(--ease-out);
+}
+.wp[data-state="auth"] .wp-peek {
+  transform: translateY(100%);
+}
+.wp-peek:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -0.4em;
+  border-radius: 2em;
+}
+.wp-peek-card {
+  position: absolute;
+  transition: translate 250ms var(--ease-out);
+}
+.wp-peek-0 {
+  z-index: 3;
+  top: 4.4em;
+  left: 1.3em;
+  right: 1.3em;
+}
+.wp-peek-1 {
+  z-index: 2;
+  top: 2.8em;
+  left: 2.3em;
+  right: 2.3em;
+}
+.wp-peek-2 {
+  z-index: 1;
+  top: 1.3em;
+  left: 3.3em;
+  right: 3.3em;
+}
+/* The cards further back show only their coloured edge. */
+.wp-peek-1 > *,
+.wp-peek-2 > * {
+  visibility: hidden;
+}
+.wp-peek:hover .wp-peek-card {
+  translate: 0 -0.5em;
+}
+
+/* ---------- The whole stack ---------- */
+.wp-stack {
+  padding-top: 5.4em;
+}
+.wp-stack-item {
+  position: absolute;
+  top: calc(5.4em + var(--i) * 5.6em);
+  left: 1.3em;
+  right: 1.3em;
+  padding: 0;
+  border: 0;
+  border-radius: 1.3em;
+  background: none;
+  cursor: pointer;
+  transition: transform 450ms var(--ease-out);
+  transition-delay: calc(var(--i) * 35ms);
+}
+.wp-stack-item .wp-card {
+  width: 100%;
+}
+.wp:not([data-state="stack"]) .wp-stack-item {
+  transform: translateY(calc(30em - var(--i) * 3em));
+}
+.wp-stack-item:hover {
+  transform: translateY(-0.4em);
+}
+.wp-stack-item:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 0.2em;
+}
+
+/* ---------- Notification after the payment ---------- */
+.wp-banner {
+  position: absolute;
+  z-index: 6;
+  top: 4.6em;
+  left: 0.9em;
+  right: 0.9em;
+  display: flex;
+  gap: 0.9em;
+  padding: 1em 1.1em;
+  border-radius: 2.2em;
+  background: rgba(44, 44, 48, 0.94);
+  -webkit-backdrop-filter: blur(1.5em);
+  backdrop-filter: blur(1.5em);
+  box-shadow: 0 0.8em 2em rgba(0, 0, 0, 0.5);
+  font-size: 1em;
+  opacity: 0;
+  transform: translateY(-140%);
+  transition:
+    transform 450ms var(--ease-out),
+    opacity 300ms var(--ease);
+}
+.wp[data-state="done"] .wp-banner {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 500ms;
+}
+.wp-banner-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 3.8em;
+  height: 3.8em;
+  border-radius: 0.95em;
+  background: #fff;
+}
+.wp-banner-icon img {
+  width: auto;
+  height: 2.2em;
+}
+.wp-banner-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  font-size: 1.15em;
+  line-height: 1.3;
+}
+.wp-banner-text > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.wp-banner-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88em;
+  color: rgba(235, 235, 245, 0.6);
+}
+.wp-banner-text strong {
+  font-weight: 600;
+}
+.wp-banner-text > span:last-child {
+  color: rgba(235, 235, 245, 0.75);
+}
+
+/* ---------- Hint outside the phone, pointing at the side button ---------- */
+.wp-hint {
+  position: absolute;
+  /* level with the middle of the side button */
+  top: calc(var(--pw) * 0.643 - 0.7em);
+  left: calc(100% + 1em);
+  margin: 0;
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--label-2);
+  transition: color var(--dur-2) var(--ease);
+}
+.wp-hint.is-nudged {
+  color: var(--tint-text);
+}
+.wp:not([data-state="lock"]) .wp-hint {
+  opacity: 0;
+}
+/* On narrow screens the lock screen's own hint is enough. */
+@media (max-width: 600px) {
+  .wp-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wp *,
+  .wp *::before {
+    transition: none !important;
+    animation: none !important;
+  }
+  .wp[data-state="auth"] .wp-face {
+    color: var(--green);
+  }
+}

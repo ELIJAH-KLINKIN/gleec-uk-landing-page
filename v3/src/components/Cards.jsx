@@ -1,13 +1,14 @@
 // Cards.jsx — company cards. A segmented control switches between the virtual
-// and physical card; each shows an illustrative spend notification led by the
-// merchant's logo, with the app's icon as a small badge (as iOS shows a
-// notification about someone else).
+// card (an interactive phone: pay from the wallet, see the whole stack) and the
+// physical card (a Blender render with a spend notification led by the
+// merchant's logo, the app's icon as a small badge).
 import { useState } from "react";
 import { CARDS } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
 import MerchantLogo from "./ui/MerchantLogo.jsx";
 import Stage from "./art/Stage.jsx";
+import WalletPhone from "./art/WalletPhone.jsx";
 import appIcon from "../assets/logo-g.png";
 import "./Cards.css";
 
@@ -34,13 +35,18 @@ export default function Cards() {
 
         <div id="cards-panel" role="tabpanel" aria-labelledby={`cards-tab-${sceneId}`} className="cards-panel">
           <Stage className="cards-studio">
-            <div className="cards-stage" aria-hidden="true">
-              {CARDS.scenes.map((s) => (
-                <div key={s.id} className={"cards-scene" + (s.id === sceneId ? " is-current" : "")}>
-                  {/* Rendered in Blender (art-src/blender/cards.py): one shot per card type. */}
+            {scene.id === "virtual" ? (
+              // Virtual: try paying from a phone (interactive, so not hidden from screen readers).
+              <div className="cards-phone" key="virtual">
+                <WalletPhone />
+              </div>
+            ) : (
+              <div className="cards-stage" aria-hidden="true" key="physical">
+                <div className="cards-scene is-current">
+                  {/* Rendered in Blender (art-src/blender/cards.py). */}
                   <img
                     className="cards-render"
-                    src={`/art/cards-${s.id}.webp`}
+                    src={`/art/cards-${scene.id}.webp`}
                     alt=""
                     width="1600"
                     height="1171"
@@ -49,25 +55,25 @@ export default function Cards() {
                   />
                   <div className="cards-notice">
                     <span className="cards-notice-avatar">
-                      <MerchantLogo id={s.notice.merchant} size={36} className="cards-notice-merchant" />
+                      <MerchantLogo id={scene.notice.merchant} size={36} className="cards-notice-merchant" />
                       <span className="cards-notice-badge">
                         <img src={appIcon} alt="" width="6" height="8" />
                       </span>
                     </span>
                     <span className="cards-notice-text">
                       <span className="cards-notice-head">
-                        <span>{s.notice.app}</span>
+                        <span>{scene.notice.app}</span>
                         <span>now</span>
                       </span>
                       <strong>
-                        {s.notice.title} · {s.notice.amount}
+                        {scene.notice.title} · {scene.notice.amount}
                       </strong>
-                      <span>{s.notice.detail}</span>
+                      <span>{scene.notice.detail}</span>
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </Stage>
 
           <div className="cards-caption">

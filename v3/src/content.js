@@ -319,13 +319,6 @@ export const CARDS = {
         "Set daily, monthly and category limits",
         "Track every transaction from one workspace",
       ],
-      notice: {
-        app: "Gleec Business",
-        merchant: "openai",
-        title: "OpenAI · Subscription",
-        detail: "Virtual · Marketing · within limit",
-        amount: "−£82",
-      },
     },
     {
       id: "physical",

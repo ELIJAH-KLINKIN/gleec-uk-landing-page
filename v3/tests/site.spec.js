@@ -1033,3 +1033,36 @@ test("product gallery: every tile has art, hidden from screen readers, inside it
   );
   expect(spill).toBe(0);
 });
+
+test("cards: the virtual card pays from the phone's wallet; the stack opens and switches card", async ({ page }, testInfo) => {
+  await page.goto("./#cards");
+  const phone = page.locator(".wp");
+  const side = page.getByRole("button", { name: /Side button/ });
+  await expect(phone).toHaveAttribute("data-state", "lock");
+  // Nothing happens on its own, and one press is only a nudge.
+  await page.waitForTimeout(1500);
+  await side.click();
+  await expect(phone).toHaveAttribute("data-state", "lock");
+  // Double-click: face check → hold near reader.
+  await side.dblclick();
+  await expect(phone).toHaveAttribute("data-state", "auth");
+  await expect(phone).toHaveAttribute("data-state", "pay", { timeout: 3000 });
+  await expect(phone.getByText("Hold Near Reader", { exact: true })).toBeVisible();
+  // The cards at the bottom open the whole stack; pick another card (tap its visible strip).
+  await page.getByRole("button", { name: /Show all cards/ }).click();
+  await expect(phone).toHaveAttribute("data-state", "stack");
+  await expect(page.getByRole("button", { name: /Pay with the .* card ending/ })).toHaveCount(5);
+  await page.getByRole("button", { name: "Pay with the Engineering card ending 3094" }).click({ position: { x: 60, y: 12 } });
+  await expect(phone).toHaveAttribute("data-state", "pay", { timeout: 3000 });
+  await expect(phone.locator(".wp-pay-card")).toContainText("3094");
+  // Done, with the payment notification, then back to the lock screen.
+  await expect(phone).toHaveAttribute("data-state", "done", { timeout: 6000 });
+  await expect(page.locator(".wp [aria-live]")).toContainText("Done. Currys");
+  await expect(phone).toHaveAttribute("data-state", "lock", { timeout: 6000 });
+  if (!isMobile(testInfo)) {
+    // Keyboard: one press of Enter on the side button starts it.
+    await side.focus();
+    await page.keyboard.press("Enter");
+    await expect(phone).toHaveAttribute("data-state", "auth");
+  }
+});
