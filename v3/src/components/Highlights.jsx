@@ -190,7 +190,7 @@ function Art({ name }) {
   return (
     <picture className="hl-art">
       <source srcSet={`/art/${name}-dark.webp`} media="(prefers-color-scheme: dark)" />
-      <img src={`/art/${name}-light.webp`} alt="" width="1008" height="720" loading="lazy" decoding="async" />
+      <img src={`/art/${name}-light.webp`} alt="" width="1200" height="743" loading="lazy" decoding="async" />
     </picture>
   );
 }

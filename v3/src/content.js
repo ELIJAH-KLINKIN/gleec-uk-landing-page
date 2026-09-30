@@ -78,10 +78,10 @@ export const HIGHLIGHTS = {
       eyebrow: "Global Account",
       title: "One IBAN, 24 currencies",
       body: "GBP, EUR and USD from launch, 21 more planned — all on one IBAN in your company’s name.",
-      // 3D art rendered by scripts/art (public/art/<name>-light|dark.webp); the
-      // other tiles are drawn (components/art/ProductArt.jsx) and have no notice.
-      art: "coins",
-      notice: { kind: "balance", flag: "GB", title: "Main GBP", detail: "Operating account", amount: "£84,250" },
+      // Blender render (art-src/blender/ring.py): the account at the centre, the 24
+      // currencies around it; GBP, EUR and USD in colour, the 21 planned in silver.
+      // The other tiles are drawn (components/art/ProductArt.jsx). No tile has a notice.
+      art: "ring",
     },
     {
       id: "ibans",

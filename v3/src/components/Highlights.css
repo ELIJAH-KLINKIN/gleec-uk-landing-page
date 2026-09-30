@@ -68,7 +68,7 @@
 picture.hl-art img {
   width: 100%;
   height: auto;
-  max-height: 250px;
+  max-height: 300px;
   object-fit: contain;
 }
 .hl-note {
