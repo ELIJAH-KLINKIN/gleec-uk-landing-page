@@ -149,13 +149,53 @@ div.hl-art {
 }
 
 /* ---------- 2 · Separate details, one account ---------- */
-.art-newdetails .art-created {
-  margin: -0.9em 0 0 1.6em;
+.art-newacct .art-panel {
+  gap: 0.5em;
+  padding-bottom: 1.8em; /* the result row overlaps this, not the button */
+}
+.art-title {
+  display: grid;
+  gap: 0.3em;
+  margin: 0.1em 0.2em 0.2em;
+}
+.art-title strong {
+  font-size: 1.35em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .art-currency {
   display: flex;
   align-items: center;
   gap: 0.4em;
+}
+.art-caret {
+  display: inline-block;
+  width: 0.09em;
+  height: 1.05em;
+  margin-left: 0.08em;
+  vertical-align: -0.15em;
+  background: currentColor;
+}
+.art-counter {
+  margin: -0.35em 0.2em 0 auto;
+  font-size: 0.82em;
+}
+.art-cta {
+  justify-self: center;
+  width: 70%;
+  margin-top: 0.3em;
+  padding: 0.6em 0;
+  border-radius: 2em;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  background: var(--tint);
+}
+.art-newacct .art-created {
+  margin: -0.9em 0 0 1.6em;
+}
+.art-amount {
+  font-weight: 600;
 }
 
 /* ---------- 3 · UK payments ---------- */

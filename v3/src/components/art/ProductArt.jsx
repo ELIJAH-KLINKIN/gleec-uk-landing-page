@@ -10,41 +10,36 @@ import logo from "../../assets/logo-g.png";
 import AddAccountPhone from "./AddAccountPhone.jsx";
 import "./ProductArt.css";
 
-// 2 · Separate details, one account — new details for a region, in the company's
-// own name, ready to share (business banking, not details for its customers' clients).
-function NewDetails() {
+// 2 · Separate details, one account — the app's own "new account" step, in its
+// words: name the account (London Office Kensington, in euros), then it sits in
+// the accounts list with its own IBAN. Placeholder IBAN, as in the explorer.
+function NewAccount() {
   return (
-    <div className="art art-newdetails">
+    <div className="art art-newacct">
       <div className="art-panel">
-        <p className="art-head">
-          <span>New account details</span>
-        </p>
+        <div className="art-title">
+          <strong>Account name</strong>
+          <span className="art-currency art-muted">
+            <Flag code="EU" size="1.15em" /> Euro · EUR
+          </span>
+        </div>
         <div className="art-cell">
-          <span className="art-muted">Use for</span>
-          <strong>Sales in Europe</strong>
+          <span className="art-muted">Account name</span>
+          <strong>
+            London Office Kensington
+            <span className="art-caret" />
+          </strong>
         </div>
-        <div className="art-pair">
-          <div className="art-cell">
-            <span className="art-muted">Name on account</span>
-            <strong>ACME Studios Ltd</strong>
-          </div>
-          <div className="art-cell">
-            <span className="art-muted">Currency</span>
-            <strong className="art-currency">
-              <Flag code="EU" size="1.15em" /> EUR
-            </strong>
-          </div>
-        </div>
+        <span className="art-counter art-muted">24/30</span>
+        <span className="art-cta">Create account</span>
       </div>
       <div className="art-float art-created">
-        <span className="art-dot purple">
-          <Icon name="check" size="1em" strokeWidth={3} />
-        </span>
+        <Flag code="EU" size="2.2em" />
         <span className="art-grow">
-          <strong className="art-mono">LU00 XXX0 ···· 4821</strong>
-          <span className="art-muted">Ready to share</span>
+          <strong>London Office Kensington</strong>
+          <span className="art-mono art-muted">EUR · LU00 XXX0 ···· 3309</span>
         </span>
-        <span className="art-pill">Share</span>
+        <span className="art-amount">€0</span>
       </div>
     </div>
   );
@@ -279,7 +274,7 @@ function Onboarding() {
 
 export const PRODUCT_ART = {
   "add-account": AddAccountPhone,
-  named: NewDetails,
+  named: NewAccount,
   "uk-rails": UkPayments,
   cop: PayeeCheck,
   sepa: EuroPayment,
