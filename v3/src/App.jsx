@@ -2,7 +2,7 @@ import Nav from "./components/Nav.jsx";
 import Hero from "./components/Hero.jsx";
 import Highlights from "./components/Highlights.jsx";
 import Explorer from "./components/Explorer.jsx";
-import FinanceTools from "./components/FinanceTools.jsx";
+import Payments from "./components/Payments.jsx";
 import Cards from "./components/Cards.jsx";
 import Segments from "./components/Segments.jsx";
 import Plans from "./components/Plans.jsx";
@@ -23,7 +23,7 @@ export default function App() {
         <Hero />
         <Highlights />
         <Explorer />
-        <FinanceTools />
+        <Payments />
         <Cards />
         <Segments />
         <Plans />

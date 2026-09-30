@@ -529,7 +529,7 @@ test("product story: Global Account, Confirmation of Payee, SWIFT fee choice", a
   await expect(uk).not.toContainText("Received");
 });
 
-test("one section per job: Accounts is receiving, then the tools for paying", async ({ page }) => {
+test("one section per job: Accounts is receiving, Payments is sending", async ({ page }) => {
   await page.goto("./");
   // The merged-away sections are gone.
   for (const id of ["currencies", "finance"]) await expect(page.locator(`#${id}`)).toHaveCount(0);
@@ -544,11 +544,45 @@ test("one section per job: Accounts is receiving, then the tools for paying", as
   await expect(accounts.locator(".xp-chips li")).toHaveCount(11);
   await expect(accounts).not.toContainText(/subject to|Transfer methods/i);
 
-  // Payments (until its own section ships): the tools for finance teams.
+  // Payments: the send flow, how long each method takes (no fees), the tools.
   const payments = page.locator("#payments");
-  await expect(payments.getByRole("heading", { level: 2 })).toHaveText("Built for the way finance teams work.");
-  await expect(payments.locator(".ctrl-card")).toHaveCount(4);
+  await expect(payments.getByRole("heading", { level: 2 })).toHaveText("Pay suppliers and staff. See when it lands.");
+  await expect(payments.locator(".pay-timings dt")).toHaveText([
+    "Faster Payments",
+    "CHAPS",
+    "SEPA Instant",
+    "SEPA",
+    "SWIFT",
+  ]);
+  await expect(payments.locator(".pay-timings")).toContainText("Usually within seconds, 24/7");
+  await expect(payments).not.toContainText(/£\d|fee/i);
+  await expect(payments.locator(".pay-tools li")).toHaveCount(4);
   await expect(payments).toContainText("camt.053");
+  await expect(payments).toContainText("60+ payout markets");
+});
+
+test("payments: the send-flow recording plays on screen, in the visitor's colour scheme", async ({ page }) => {
+  for (const scheme of ["dark", "light"]) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto("./");
+    const screen = page.locator("#payments .pay-screen");
+    await expect(screen).toHaveAttribute("role", "img");
+    await expect(screen.locator("video")).toHaveCount(0); // off screen: just its first frame
+    await screen.scrollIntoViewIfNeeded();
+    const video = screen.locator("video");
+    await expect(video.locator("source")).toHaveAttribute("src", new RegExp(`payments-${scheme}.*\\.mp4`));
+    await expect(video).toHaveAttribute("poster", new RegExp(`payments-${scheme}-poster`));
+    await expect.poll(() => video.evaluate((v) => v.muted && !v.paused)).toBe(true);
+  }
+});
+
+test("payments: under Reduce Motion the recording is a still", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#payments");
+  const screen = page.locator("#payments .pay-screen");
+  await expect(screen.locator("img")).toBeVisible();
+  await page.waitForTimeout(800);
+  await expect(screen.locator("video")).toHaveCount(0);
 });
 
 const finishHighlight = (page) =>

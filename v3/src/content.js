@@ -248,15 +248,35 @@ export const EXPLORER = {
   ],
 };
 
-export const FINANCE = {
-  eyebrow: "Finance teams",
-  title: "Built for the way finance teams work.",
-  lead: "Pay in bulk, connect your systems and reconcile without copy and paste. Planned from launch, subject to authorisation.",
-  items: [
+// The Payments section: sending money. The recording is the app's own send
+// flow (scripts/demo/record-payments.cjs). Timings come from the partners'
+// documents (feedback rule 51); no fees on the page (Ilia, 2026-09-30).
+export const PAYMENTS = {
+  eyebrow: "Payments",
+  title: "Pay suppliers and staff. See when it lands.",
+  lead: "Choose who to pay and which account to pay from. Before you send, you see how the payment travels and when it will arrive. After, you can follow it to the recipient’s bank.",
+  videoLabel:
+    "Recording of the Gleec Business app: a payment of £4,850 to Hartwell & Frome LLP by Faster Payments, reviewed and sent, then tracked to the recipient’s bank.",
+  timingsTitle: "How long it takes",
+  timings: [
+    ["Faster Payments", "Usually within seconds, 24/7"],
+    ["CHAPS", "The same working day, before the cut-off"],
+    ["SEPA Instant", "Usually within seconds"],
+    ["SEPA", "The next business day"],
+    ["SWIFT", "Sent the same day, before the cut-off"],
+  ],
+  reach: "60+ payout markets via SWIFT and our partners.",
+  toolsTitle: "Built for finance teams",
+  tools: [
     {
       icon: "file-spreadsheet",
       title: "Bulk payments",
       body: "Pay hundreds of suppliers or staff from one CSV file, checked and approved in one go.",
+    },
+    {
+      icon: "users",
+      title: "Roles and approvals",
+      body: "Give each person the access they need, and send payments over your limits for a second approval.",
     },
     {
       icon: "code",
@@ -267,11 +287,6 @@ export const FINANCE = {
       icon: "file-text",
       title: "Statements your systems read",
       body: "Download statements as CSV, PDF or ISO 20022 (camt.053), ready for your accounting software.",
-    },
-    {
-      icon: "users",
-      title: "Roles and approvals",
-      body: "Give each person the access they need, and send payments over your limits for a second approval.",
     },
   ],
 };

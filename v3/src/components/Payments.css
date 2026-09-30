@@ -1,0 +1,101 @@
+/* Payments: the recording in the hero's app-window chrome, then how long each
+   method takes beside the tools for finance teams. */
+.pay-window {
+  border-radius: 14px;
+}
+.pay-screen {
+  position: relative;
+  aspect-ratio: 2000 / 1250;
+  background: var(--surface);
+}
+.pay-screen img,
+.pay-screen video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pay-below {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-12);
+  margin-top: var(--s-12);
+}
+.pay-below-title {
+  margin-bottom: var(--s-4);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: var(--track-title);
+}
+.payments .kv {
+  background: var(--surface);
+}
+.pay-timings > div {
+  grid-template-columns: minmax(120px, 150px) 1fr;
+}
+.pay-reach {
+  margin: var(--s-3) var(--s-4) 0;
+}
+
+.pay-tools {
+  display: grid;
+  gap: var(--s-5);
+}
+.pay-tools li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-4);
+  align-items: start;
+}
+.pay-tool-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--label);
+}
+.pay-tools strong {
+  display: block;
+  font-size: var(--t-body);
+  font-weight: 600;
+  letter-spacing: var(--track-title);
+}
+.pay-tool-body {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--t-subhead);
+  line-height: 1.47;
+  color: var(--label-2);
+}
+
+@media (max-width: 900px) {
+  .pay-below {
+    grid-template-columns: 1fr;
+    gap: var(--s-10);
+  }
+}
+@media (max-width: 600px) {
+  .pay-window {
+    border-radius: 10px;
+  }
+  /* Phones: the app's centre column (its send screens), not the whole window;
+     back Home, the view pans to the payment's panel on the right. */
+  .pay-screen {
+    aspect-ratio: 0.72;
+  }
+  .pay-screen video {
+    transition: object-position 700ms var(--ease);
+  }
+  .pay-screen.is-home video {
+    object-position: 100% 50%;
+  }
+  /* Label above value, as on the account details. */
+  .pay-timings > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
