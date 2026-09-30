@@ -133,11 +133,11 @@ function NewAccount() {
           </span>
           <span className="art-kv">
             <span className="art-muted">Sort code</span>
-            <strong className="art-mono">00-00-00</strong>
+            <strong>00-00-00</strong>
           </span>
           <span className="art-kv">
             <span className="art-muted">Account number</span>
-            <strong className="art-mono">12345678</strong>
+            <strong>12345678</strong>
           </span>
         </div>
       </div>
@@ -148,7 +148,7 @@ function NewAccount() {
           <Flag code="GB" size="2.2em" />
           <span className="art-grow">
             <strong>{ACCT_NAME}</strong>
-            <span className="art-mono art-muted">GBP · 00-00-00 · 12345678</span>
+            <span className="art-muted">GBP · 00-00-00 · 12345678</span>
           </span>
           <span className="art-amount">£0</span>
         </div>

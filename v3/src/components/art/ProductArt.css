@@ -322,6 +322,34 @@ div.hl-art {
 .art-kv strong {
   font-weight: 600;
 }
+/* Tile 2 speaks the phone's type (tile 1's "Add account"): bold display titles
+   at the phone title's size, medium body text, grey secondary text, and codes
+   in the normal font, as the app shows them. */
+.art-newacct .art-title strong,
+.art-newacct .art-acct-details .art-head {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.art-newacct .art-title strong {
+  font-size: 1.75em;
+}
+.art-newacct .art-acct-details .art-head {
+  margin: 0 0.1em 0.2em;
+  font-size: 1.5em;
+}
+.art-newacct .art-cell strong,
+.art-newacct .art-acct-chip strong,
+.art-newacct .art-kv strong,
+.art-newacct .art-created .art-grow strong {
+  font-weight: 500;
+}
+@media (prefers-color-scheme: dark) {
+  .art-newacct .art-muted {
+    color: #8e8e93;
+  }
+}
 /* The pointer that plays the visitor */
 .art-pointer {
   position: absolute;
