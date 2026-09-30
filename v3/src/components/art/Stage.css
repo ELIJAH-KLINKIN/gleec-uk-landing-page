@@ -1,0 +1,26 @@
+.stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--r-card-l);
+}
+/* Shown until the shader draws (and if WebGL is off). */
+.stage-dark {
+  background: radial-gradient(90% 80% at 50% 110%, #2b1470 0%, #121116 55%, #050507 100%);
+}
+.stage-light {
+  background: radial-gradient(90% 80% at 50% 110%, #e2d3ff 0%, #f2f2f7 55%, #fbfbfd 100%);
+}
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.stage-content {
+  position: relative;
+}
+
+/* The liquid-metal G above the waitlist title. */
+.waitlist-mark {
+  margin: 0 auto var(--s-6);
+}

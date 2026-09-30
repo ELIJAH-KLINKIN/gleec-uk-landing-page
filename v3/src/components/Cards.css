@@ -6,10 +6,15 @@
   display: flex;
   justify-content: center;
 }
+/* The cards sit on a still mesh-gradient stage (art/Stage.jsx). */
+.cards-studio {
+  margin: var(--s-10) auto var(--s-10);
+  padding: clamp(28px, 5vw, 64px) clamp(16px, 4vw, 48px);
+}
 .cards-stage {
   position: relative;
   height: clamp(220px, 34vw, 360px);
-  margin: var(--s-12) auto var(--s-10);
+  margin: 0 auto;
   max-width: 640px;
 }
 .cards-scene {

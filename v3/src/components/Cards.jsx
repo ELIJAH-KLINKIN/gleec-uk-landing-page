@@ -7,6 +7,7 @@ import { CARDS } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
 import MerchantLogo from "./ui/MerchantLogo.jsx";
+import Stage from "./art/Stage.jsx";
 import appIcon from "../assets/logo-g.png";
 import virtualFront from "../assets/cards/card-virtual.svg";
 import virtualBack from "../assets/cards/card-virtual-alt.svg";
@@ -41,48 +42,50 @@ export default function Cards() {
         </div>
 
         <div id="cards-panel" role="tabpanel" aria-labelledby={`cards-tab-${sceneId}`} className="cards-panel">
-          <div className="cards-stage" aria-hidden="true">
-            {CARDS.scenes.map((s) => (
-              <div key={s.id} className={"cards-scene" + (s.id === sceneId ? " is-current" : "")}>
-                <img
-                  className="cards-img back"
-                  src={ART[s.id].back}
-                  alt=""
-                  width="2064"
-                  height="1301"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <img
-                  className="cards-img front"
-                  src={ART[s.id].front}
-                  alt=""
-                  width="2064"
-                  height="1301"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="cards-notice">
-                  <span className="cards-notice-avatar">
-                    <MerchantLogo id={s.notice.merchant} size={36} className="cards-notice-merchant" />
-                    <span className="cards-notice-badge">
-                      <img src={appIcon} alt="" width="6" height="8" />
+          <Stage className="cards-studio">
+            <div className="cards-stage" aria-hidden="true">
+              {CARDS.scenes.map((s) => (
+                <div key={s.id} className={"cards-scene" + (s.id === sceneId ? " is-current" : "")}>
+                  <img
+                    className="cards-img back"
+                    src={ART[s.id].back}
+                    alt=""
+                    width="2064"
+                    height="1301"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <img
+                    className="cards-img front"
+                    src={ART[s.id].front}
+                    alt=""
+                    width="2064"
+                    height="1301"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="cards-notice">
+                    <span className="cards-notice-avatar">
+                      <MerchantLogo id={s.notice.merchant} size={36} className="cards-notice-merchant" />
+                      <span className="cards-notice-badge">
+                        <img src={appIcon} alt="" width="6" height="8" />
+                      </span>
                     </span>
-                  </span>
-                  <span className="cards-notice-text">
-                    <span className="cards-notice-head">
-                      <span>{s.notice.app}</span>
-                      <span>now</span>
+                    <span className="cards-notice-text">
+                      <span className="cards-notice-head">
+                        <span>{s.notice.app}</span>
+                        <span>now</span>
+                      </span>
+                      <strong>
+                        {s.notice.title} · {s.notice.amount}
+                      </strong>
+                      <span>{s.notice.detail}</span>
                     </span>
-                    <strong>
-                      {s.notice.title} · {s.notice.amount}
-                    </strong>
-                    <span>{s.notice.detail}</span>
-                  </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Stage>
 
           <div className="cards-caption">
             <h3 className="title-3">{scene.title}</h3>
