@@ -88,7 +88,7 @@ export const HIGHLIGHTS = {
       id: "ibans",
       eyebrow: "Account details",
       title: "Separate details, one account",
-      body: "Open account details for each region, product or purpose — all in your company’s name, all in one Global Account.",
+      body: "Get account details for each region, product or purpose — all in your company’s name, all in one Global Account.",
       art: "named",
     },
     {
