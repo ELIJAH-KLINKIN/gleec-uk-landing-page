@@ -189,7 +189,7 @@ div.hl-art {
   justify-self: center;
   width: 70%;
   margin-top: 0.3em;
-  padding: 0.6em 0;
+  padding: 0.95em 0;
   border-radius: 2em;
   font-weight: 600;
   text-align: center;
@@ -258,7 +258,7 @@ div.hl-art {
 }
 .art-btn {
   width: 100%;
-  padding: 0.5em 0;
+  padding: 0.85em 0;
   border-radius: 2em;
   font-weight: 600;
   background: color-mix(in srgb, var(--label) 10%, transparent);
@@ -460,7 +460,7 @@ div.hl-art {
 .art-cop .art-screen {
   position: relative;
   display: block;
-  height: 19em; /* the form and the review are ~24.7em: they scroll 5.7em */
+  height: 20em; /* the form is ~22.6em and the review ~25.5em: they scroll to their ends */
   padding: 0;
   overflow: hidden;
   transition: opacity 400ms var(--ease);
@@ -487,24 +487,6 @@ div.hl-art {
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
-.art-seg {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 0.2em;
-  border-radius: 2em;
-  background: var(--cell);
-  font-weight: 500;
-  text-align: center;
-}
-.art-seg span {
-  padding: 0.4em 0;
-  border-radius: 2em;
-  color: var(--label-2);
-}
-.art-seg .is-on {
-  color: var(--label);
-  background: color-mix(in srgb, var(--label) 14%, transparent);
-}
 .art-bank {
   display: flex;
   align-items: center;
@@ -522,9 +504,29 @@ div.hl-art {
   opacity: 1;
   translate: 0 0;
 }
-.art-bank-glyph {
-  width: 1.1em;
-  height: 1.1em;
+.art-bank-logo {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #000 8%, transparent);
+}
+.art-bank-logo svg {
+  width: 78%;
+}
+.art-avatar:has(.is-badge) {
+  position: relative;
+}
+.art-bank-logo.is-badge {
+  position: absolute;
+  right: -0.3em;
+  bottom: -0.3em;
+  width: 1.15em;
+  height: 1.15em;
+  box-shadow: 0 0 0 0.15em var(--cell);
 }
 .art-cop .art-cell strong,
 .art-cop .art-cop-payee strong,
@@ -551,13 +553,15 @@ div.hl-art {
 }
 .art-sheet {
   position: absolute;
+  top: 1.1em;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 3;
   display: grid;
+  grid-template-rows: auto auto auto auto 1fr auto auto;
   justify-items: center;
-  gap: 0.4em;
+  gap: 0.45em;
   padding: 0.6em 1em 1em;
   border-radius: 1.4em 1.4em 0 0;
   background: var(--float);
@@ -580,7 +584,12 @@ div.hl-art {
   border-radius: 1em;
   background: color-mix(in srgb, var(--label) 25%, transparent);
 }
+.art-sheet-text {
+  font-size: 0.86em;
+  line-height: 1.35;
+}
 .art-sheet-kv {
+  align-self: start;
   display: grid;
   gap: 0.25em;
   width: 100%;
@@ -592,9 +601,6 @@ div.hl-art {
   display: flex;
   justify-content: space-between;
   gap: 1em;
-}
-.art-cop .art-btn {
-  padding: 0.55em 0;
 }
 /* The review */
 .art-review-head {

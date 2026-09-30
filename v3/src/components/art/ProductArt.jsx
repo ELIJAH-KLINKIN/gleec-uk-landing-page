@@ -71,7 +71,13 @@ function Pointer({ spot, press }) {
       style={spot ? { translate: `${spot[0]}px ${spot[1]}px` } : undefined}
     >
       <svg viewBox="0 0 22 28">
-        <path d="M2 2v20.5l5.2-5 3.3 7.6 3.4-1.5-3.2-7.4H18L2 2Z" fill="#000" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+        <path
+          d="M2 2v20.5l5.2-5 3.3 7.6 3.4-1.5-3.2-7.4H18L2 2Z"
+          fill="#000"
+          stroke="#fff"
+          strokeWidth="1.6"
+          strokeLinejoin="round"
+        />
       </svg>
     </span>
   );
@@ -227,10 +233,13 @@ function UkPayments() {
 // France and Euro already chosen, the last digits of the IBAN typed (the bank
 // shows up), the company name typed with a typo, "Name is a close match" →
 // Replace and continue, then the review: amount, reference, Add to trusted,
-// Send. About 13 seconds. The IBAN is made up (French format; the bank code is
-// CIC's, whose name the app shows); the payee is fictional.
-const COP_IBAN_HEAD = "FR76 3006 6100 1123 4567 ";
-const COP_IBAN_TAIL = "890";
+// Send. About 19 seconds (Ilia: 0.7× the first cut's pace). The IBAN is made
+// up (French format; the bank code is CIC's, whose name and logo the app shows);
+// the payee is fictional.
+const COP_IBAN_HEAD = "FR76 3006 6100 1123 4";
+const COP_IBAN_TAIL = "567 890";
+const COP_IBAN_CUTS = [0, 1, 2, 3, 5, 6, 7]; // after each digit typed (the space comes with the next)
+const COP_PACE = 1 / 0.7;
 const COP_TYPO = "Acome Logistics";
 const COP_PAYEE = "Acme Logistics";
 const COP_AMOUNTS = ["€0", "€3", "€33", "€330", "€3,300"];
@@ -254,8 +263,8 @@ const COP_START = {
 const COP_STEPS = script([
   { ...COP_START, reset: true, ms: 700 },
   { reset: false, iban: 1, ms: 180 },
-  { iban: 2, ms: 180 },
-  { iban: 3, ms: 250 },
+  ...[2, 3, 4, 5].map((k) => ({ iban: k, ms: 180 })),
+  { iban: 6, ms: 250 },
   { bank: true, ms: 600 },
   { scroll: true, ms: 450 },
   { at: "company", ms: 500 },
@@ -276,15 +285,29 @@ const COP_STEPS = script([
   { press: true, ms: 180 },
   { sent: true, at: "rest", ms: 1800 },
   { out: true, ms: 400 },
-]);
+]).map((step) => ({ ...step, ms: Math.round(step.ms * COP_PACE) }));
 // Under Reduce Motion: the name check itself, over the filled form.
-const COP_STILL = { ...COP_START, iban: 3, bank: true, scroll: true, name: COP_TYPO.length, sheet: true, at: null };
+const COP_STILL = { ...COP_START, iban: 6, bank: true, scroll: true, name: COP_TYPO.length, sheet: true, at: null };
 
-function BankGlyph() {
+// CIC's mark (public domain, Wikimedia Commons: "Crédit Industriel et Commercial
+// Logo.svg"), on a white disc as the app shows a recipient's bank.
+function CicLogo({ badge }) {
   return (
-    <svg viewBox="0 0 16 16" className="art-bank-glyph">
-      <path d="M8 1 1 4.6V6h14V4.6L8 1ZM2.5 7v5h2V7h-2Zm4.5 0v5h2V7H7Zm4.5 0v5h2V7h-2ZM1 13v2h14v-2H1Z" fill="currentColor" />
-    </svg>
+    <span className={"art-bank-logo" + (badge ? " is-badge" : "")}>
+      <svg viewBox="388.78 509.44 113.87 51.56">
+        <path d="m451.09 561v-11.11h-10.76l.007-40.44h-51.55v51.55z" fill="#254aa5" />
+        <path d="m502.64 561v-51.55h-62.3v11.12l10.75.002v40.43z" fill="#008b91" />
+        <path
+          d="m427.63 543.72-1.32 4.8c-2.71 1.31-5.93 1.82-8.96 1.82-9.69 0-17.02-5.58-17.02-14.25 0-11.04 8.14-16.07 18.01-16.07 2.99 0 6.61.72 9.24 2.07-.41 1.44-.85 3.6-1.21 5.08l-.47-.72c-1.67-2.28-4.57-3.89-7.51-3.89-7.52 0-10.55 6.73-10.55 12.94 0 7.24 3.8 12.31 10.77 12.31 2.8 0 6.06-1.36 8.1-3.17l.91-.92z"
+          fill="#fff"
+        />
+        <path
+          d="m490.07 543.77-1.32 4.8c-2.72 1.31-5.93 1.82-8.96 1.82-9.69 0-17.01-5.59-17.01-14.26 0-11.04 8.14-16.07 18.01-16.07 2.99 0 6.61.72 9.24 2.07-.41 1.44-.84 3.59-1.21 5.07l-.47-.72c-1.67-2.28-4.57-3.89-7.51-3.89-7.51 0-10.54 6.72-10.54 12.94 0 7.24 3.8 12.31 10.77 12.31 2.8 0 6.06-1.35 8.1-3.17l.91-.91z"
+          fill="#fff"
+        />
+        <path d="m451.09 549.88v-29.32h-10.75v29.32z" fill="#f1471d" stroke="#f1471d" strokeWidth="1.25" />
+      </svg>
+    </span>
   );
 }
 
@@ -328,16 +351,14 @@ function PayeeCheck() {
       }
     >
       <div className="art-panel art-screen">
-        <div className="art-view" style={{ translate: `${review ? "-100%" : "0"} ${s.scroll ? -5.8 : 0}em` }}>
+        <div className="art-view" style={{ translate: `${review ? "-100%" : "0"} ${s.scroll ? -2.65 : 0}em` }}>
           <strong className="art-screen-title">Add recipient</strong>
-          <span className="art-seg">
-            <span>Individual</span>
-            <span className="is-on">Business</span>
-          </span>
           <div className="art-pair">
             <div className="art-cell">
               <span className="art-muted">Country or region</span>
-              <strong>France</strong>
+              <strong className="art-currency">
+                <Flag code="FR" size="1.15em" /> France
+              </strong>
             </div>
             <div className="art-cell">
               <span className="art-muted">Currency</span>
@@ -349,18 +370,18 @@ function PayeeCheck() {
           <div className="art-cell" ref={iban}>
             <span className="art-muted">IBAN</span>
             <strong>
-              {COP_IBAN_HEAD + COP_IBAN_TAIL.slice(0, s.iban)}
+              {COP_IBAN_HEAD + COP_IBAN_TAIL.slice(0, COP_IBAN_CUTS[s.iban])}
               {s.at === "iban" ? <Caret /> : null}
             </strong>
           </div>
           <span className={"art-bank" + (s.bank ? " is-on" : "")}>
-            <BankGlyph /> CM - CIC Banques
+            <CicLogo /> CM - CIC Banques
           </span>
           <div className="art-cell" ref={company}>
             <span className="art-muted">Company name</span>
             <strong>
               {s.replaced ? COP_PAYEE : COP_TYPO.slice(0, s.name)}
-              {s.at === "company" ? <Caret /> : null}
+              {s.at === "company" ? <Caret /> : "\u200b" /* holds the line while empty */}
             </strong>
           </div>
           <span ref={add} className={"art-cta" + pressed("add")}>
@@ -374,6 +395,7 @@ function PayeeCheck() {
           <span className="art-sheet-grip" />
           <Icon name="triangle-alert" size="1.7em" strokeWidth={2.2} />
           <strong>Name is a close match</strong>
+          <span className="art-sheet-text">Money sent to the wrong account may not come back.</span>
           <span className="art-sheet-kv">
             <span>
               <span className="art-muted">You entered</span>
@@ -390,13 +412,16 @@ function PayeeCheck() {
           <span className="art-btn">Keep what I entered</span>
         </div>
 
-        <div className="art-view" style={{ translate: `${review ? "0" : "100%"} ${s.rscroll ? -5.9 : 0}em` }}>
+        <div className="art-view" style={{ translate: `${review ? "0" : "100%"} ${s.rscroll ? -5.5 : 0}em` }}>
           <span className="art-review-head">Review transfer</span>
           <strong ref={amount} className="art-review-amount">
             {COP_AMOUNTS[s.amount]}
           </strong>
           <div className="art-cop-payee">
-            <span className="art-avatar purple">AL</span>
+            <span className="art-avatar purple">
+              AL
+              <CicLogo badge />
+            </span>
             <span className="art-grow">
               <strong>
                 {COP_PAYEE}
@@ -546,7 +571,14 @@ function CompanyCards() {
 
 function Contactless() {
   return (
-    <svg className="art-contactless" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <svg
+      className="art-contactless"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
       <path d="M8.5 8.5a5 5 0 0 1 0 7" />
       <path d="M12 6a8.5 8.5 0 0 1 0 12" />
       <path d="M15.5 3.5a12 12 0 0 1 0 17" />
