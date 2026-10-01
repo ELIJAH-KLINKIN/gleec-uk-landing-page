@@ -17,14 +17,6 @@
   margin: 0 auto;
   max-width: 720px;
 }
-.cards-render {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: auto;
-  translate: -50% -50%;
-}
 /* The phone (virtual) fades in when its tab is chosen. */
 .cards-phone {
   padding: var(--s-4) 0;
@@ -43,33 +35,6 @@
   .cards-stage {
     animation: none;
   }
-}
-.cards-scene {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity var(--dur-3) var(--ease);
-  pointer-events: none;
-}
-.cards-scene.is-current {
-  opacity: 1;
-}
-.cards-img {
-  position: absolute;
-  width: 78%;
-  height: auto;
-  left: 11%;
-  border-radius: 5%;
-  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.22));
-}
-.cards-img.back {
-  top: 0;
-  transform: translate(9%, -4%) rotate(6deg);
-  opacity: 0.85;
-}
-.cards-img.front {
-  top: 8%;
-  transform: rotate(-3deg);
 }
 
 /* Notification banner */
@@ -110,13 +75,12 @@
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  background: var(--tint);
+  background: #000; /* the app icon: the red G on black */
   box-shadow: 0 0 0 2px var(--surface);
 }
 .cards-notice-badge img {
-  width: 7px;
+  width: 8px;
   height: auto;
-  filter: brightness(0) invert(1);
 }
 .cards-notice-text {
   display: grid;

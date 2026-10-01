@@ -314,13 +314,6 @@ export const CARDS = {
         "Set card limits from central controls",
         "Keep card activity visible in one workspace",
       ],
-      notice: {
-        app: "Gleec Pay",
-        merchant: "booking",
-        title: "Booking.com · Travel",
-        detail: "Physical · Travel team · within limit",
-        amount: "−£420",
-      },
     },
   ],
   cta: { label: "Join the Waitlist", href: "#waitlist" },

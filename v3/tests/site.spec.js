@@ -737,6 +737,38 @@ test("highlights gallery: never plays under Reduce Motion", async ({ page }) => 
   await expect(page.locator(".hl").getByRole("button", { name: /Pause highlights|Play highlights/ })).toHaveCount(0);
 });
 
+test("cards: the physical card taps a terminal — Approved, then the notification; Pause holds it", async ({ page }) => {
+  test.setTimeout(40_000);
+  await page.goto("./#cards");
+  await page.locator("#cards").getByRole("tab", { name: "Physical" }).click();
+  const stage = page.locator(".ct-stage");
+  await expect(page.locator(".ct-amount")).toHaveText("S$248.60");
+  await expect(stage).toHaveClass(/is-processing/, { timeout: 8000 });
+  await expect(page.locator(".ct-status")).toHaveText(/Approved/, { timeout: 8000 });
+  await expect(page.locator(".ct-notice")).toHaveClass(/is-on/, { timeout: 4000 });
+  await expect(page.locator(".ct-notice")).toContainText("Telok Ayer Kitchen · −S$248.60");
+  // Then the hotel deposit.
+  await expect(page.locator(".ct-amount")).toHaveText("£300.00", { timeout: 10000 });
+  // Pause holds the scene where it is; Play goes on.
+  await page.getByRole("button", { name: "Pause the card demo" }).click();
+  const before = await stage.getAttribute("class");
+  await page.waitForTimeout(3000);
+  expect(await stage.getAttribute("class")).toBe(before);
+  await page.getByRole("button", { name: "Play the card demo" }).click();
+  await expect(page.getByRole("button", { name: "Pause the card demo" })).toBeVisible();
+});
+
+test("cards: under Reduce Motion the physical card is a still, approved", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("./#cards");
+  await page.locator("#cards").getByRole("tab", { name: "Physical" }).click();
+  await expect(page.locator(".ct-status")).toHaveText(/Approved/);
+  await expect(page.locator(".ct-notice")).toHaveClass(/is-on/);
+  await expect(page.getByRole("button", { name: /the card demo/ })).toHaveCount(0);
+  await page.waitForTimeout(2500);
+  await expect(page.locator(".ct-amount")).toHaveText("S$248.60");
+});
+
 test("cards: segmented control switches card (click + arrow keys)", async ({ page }, testInfo) => {
   await page.goto("./#cards");
   const tabs = page.locator("#cards").getByRole("tab");
@@ -745,8 +777,9 @@ test("cards: segmented control switches card (click + arrow keys)", async ({ pag
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   await expect(caption).toHaveText(/Physical cards/);
-  // Each card type has its own render: the physical card has the chip, the virtual one doesn't.
-  await expect(page.locator(".cards-scene.is-current img.cards-render")).toHaveAttribute("src", /cards-physical/);
+  // The physical card is the Gleec Pay card on a terminal (drawn, not a render).
+  await expect(page.locator(".ct-card")).toContainText("Gleec Pay");
+  await expect(page.locator(".ct-terminal")).toHaveCount(1);
   if (!isMobile(testInfo)) {
     await tabs.nth(1).focus();
     await page.keyboard.press("ArrowLeft");

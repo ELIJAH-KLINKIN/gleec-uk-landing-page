@@ -1,15 +1,14 @@
 // Cards.jsx — company cards. A segmented control switches between the virtual
 // card (an interactive phone: pay from the wallet, see the whole stack) and the
-// physical card (a Blender render with a spend notification led by the
-// merchant's logo, the app's icon as a small badge).
+// physical card (tapped on a card terminal in three everyday moments, each with
+// the app's notification).
 import { useState } from "react";
 import { CARDS } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
-import MerchantLogo from "./ui/MerchantLogo.jsx";
 import Stage from "./art/Stage.jsx";
 import WalletPhone from "./art/WalletPhone.jsx";
-import appIcon from "../assets/logo-g.svg";
+import CardTerminal from "./art/CardTerminal.jsx";
 import "./Cards.css";
 
 export default function Cards() {
@@ -41,37 +40,9 @@ export default function Cards() {
                 <WalletPhone />
               </div>
             ) : (
-              <div className="cards-stage" aria-hidden="true" key="physical">
-                <div className="cards-scene is-current">
-                  {/* Rendered in Blender (art-src/blender/cards.py). */}
-                  <img
-                    className="cards-render"
-                    src={`/art/cards-${scene.id}.webp`}
-                    alt=""
-                    width="1600"
-                    height="1171"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="cards-notice">
-                    <span className="cards-notice-avatar">
-                      <MerchantLogo id={scene.notice.merchant} size={36} className="cards-notice-merchant" />
-                      <span className="cards-notice-badge">
-                        <img src={appIcon} alt="" width="6" height="8" />
-                      </span>
-                    </span>
-                    <span className="cards-notice-text">
-                      <span className="cards-notice-head">
-                        <span>{scene.notice.app}</span>
-                        <span>now</span>
-                      </span>
-                      <strong>
-                        {scene.notice.title} · {scene.notice.amount}
-                      </strong>
-                      <span>{scene.notice.detail}</span>
-                    </span>
-                  </div>
-                </div>
+              // Physical: the card tapped on a terminal, playing itself (art/CardTerminal.jsx).
+              <div className="cards-stage" key="physical">
+                <CardTerminal />
               </div>
             )}
           </Stage>
