@@ -42,9 +42,6 @@
   width: auto;
   height: 20px;
 }
-.nav-brand-accent {
-  color: var(--tint-text);
-}
 .nav-links {
   position: relative;
   display: flex;

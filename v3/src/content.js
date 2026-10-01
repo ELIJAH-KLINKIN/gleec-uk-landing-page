@@ -13,7 +13,7 @@ export const NAV = [
 // The legal entity behind the site. Used by the footer and the legal pages.
 export const COMPANY = {
   name: "Gleec Pay Ltd",
-  brand: "Gleec Business",
+  brand: "Gleec Pay",
   number: "14776628",
   registeredIn: "England and Wales",
   office: ["Tower 42", "25 Old Broad Street", "London EC2N 1HN", "United Kingdom"],
@@ -141,7 +141,7 @@ export const HIGHLIGHTS = {
 };
 
 // Global Account details, by where the payer is: GBP on UK details, everything else
-// on one Luxembourg IBAN (SEPA, SEPA Instant and SWIFT in 24 currencies), so only GBP
+// on one European IBAN (SEPA, SEPA Instant and SWIFT in 24 currencies), so only GBP
 // needs a Local / International switch. Gleec Pay is shown as the account provider
 // and the bank codes are placeholders (XXXX): the partner banks' NDAs keep the talks
 // confidential, so their names and codes go on the page only once they agree in writing.
@@ -153,7 +153,7 @@ export const EXPLORER = {
   eyebrow: "Global Account",
   // Kept as is on purpose during the FCA review (Ilia's call).
   title: "Open global accounts. Move money the right way.",
-  lead: "UK account details for pounds, and a Luxembourg IBAN for euros, dollars and more, so European clients pay you like a local supplier. All in your company’s name.",
+  lead: "UK account details for pounds, and a European IBAN for euros, dollars and more, so European clients pay you like a local supplier. All in your company’s name.",
   stat: { value: "24", label: "currencies on one IBAN, GBP, EUR and USD first" },
   soonLabel: "Coming soon",
   soon: ["CHF", "CAD", "AUD", "DKK", "SEK", "NOK", "PLN", "CZK", "HUF", "JPY"],
@@ -201,8 +201,8 @@ export const EXPLORER = {
           id: "all",
           info: "For EUR payments via SEPA and SEPA Instant, and via SWIFT from outside the SEPA area.",
           rows: [
-            ["IBAN", "LU00 XXX0 0000 1234 5678"],
-            ["SWIFT/BIC", "XXXXLULL"],
+            ["IBAN", "XX00 XXXX 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXXXXX"],
           ],
         },
       ],
@@ -220,8 +220,8 @@ export const EXPLORER = {
           id: "all",
           info: "For USD payments via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "LU00 XXX0 0000 1234 5678"],
-            ["SWIFT/BIC", "XXXXLULL"],
+            ["IBAN", "XX00 XXXX 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXXXXX"],
           ],
         },
       ],
@@ -239,8 +239,8 @@ export const EXPLORER = {
           id: "all",
           info: "For payments in other supported currencies via SWIFT. The sender’s bank or an intermediary may charge a fee.",
           rows: [
-            ["IBAN", "LU00 XXX0 0000 1234 5678"],
-            ["SWIFT/BIC", "XXXXLULL"],
+            ["IBAN", "XX00 XXXX 0000 1234 5678"],
+            ["SWIFT/BIC", "XXXXXXXX"],
           ],
         },
       ],
@@ -256,7 +256,7 @@ export const PAYMENTS = {
   title: "Pay suppliers and staff. See when it lands.",
   lead: "Choose who to pay and which account to pay from. Before you send, you see how the payment travels and when it will arrive. After, you can follow it to the recipient’s bank.",
   videoLabel:
-    "Recording of the Gleec Business app: a payment of £4,850 to Hartwell & Frome LLP by Faster Payments, reviewed and sent, then tracked to the recipient’s bank.",
+    "Recording of the Gleec Pay app: a payment of £4,850 to Hartwell & Frome LLP by Faster Payments, reviewed and sent, then tracked to the recipient’s bank.",
   timingsTitle: "How long it takes",
   timings: [
     ["Faster Payments", "Usually within seconds, 24/7"],
@@ -315,7 +315,7 @@ export const CARDS = {
         "Keep card activity visible in one workspace",
       ],
       notice: {
-        app: "Gleec Business",
+        app: "Gleec Pay",
         merchant: "booking",
         title: "Booking.com · Travel",
         detail: "Physical · Travel team · within limit",
@@ -329,7 +329,7 @@ export const CARDS = {
 export const SEGMENTS = {
   eyebrow: "Who it’s for",
   title: "Built for businesses traditional banking leaves behind.",
-  lead: "Gleec Business is for companies that often struggle to open or keep a business bank account — including regulated digital-asset businesses that need fiat GBP, EUR and USD accounts. Gleec Pay Ltd provides fiat services only and does not handle cryptoassets. Where high-street banks see complexity, we see customers worth serving.",
+  lead: "Gleec Pay is for companies that often struggle to open or keep a business bank account — including regulated digital-asset businesses that need fiat GBP, EUR and USD accounts. Gleec Pay Ltd provides fiat services only and does not handle cryptoassets. Where high-street banks see complexity, we see customers worth serving.",
   items: [
     {
       id: "local",
@@ -415,7 +415,7 @@ export const PLANS = {
 export const CONTROLS = {
   eyebrow: "Controls",
   title: "Designed for regulated, high-control payments.",
-  lead: "Gleec Business is being built with KYB, screening, monitoring, Confirmation of Payee, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
+  lead: "Gleec Pay is being built with KYB, screening, monitoring, Confirmation of Payee, safeguarding, approval workflows and audit trails from day one — not as an afterthought.",
   items: [
     {
       icon: "shield-check",
@@ -448,7 +448,7 @@ export const WAITLIST = {
   // Step 1 — email only.
   eyebrow: "Waitlist",
   title: "We’ll contact eligible companies as onboarding opens.",
-  lead: "Leave your work email to register your interest in Gleec Business.",
+  lead: "Leave your work email to register your interest in Gleec Pay.",
   emailLabel: "Work email",
   emailPlaceholder: "Work email",
   join: "Join",
@@ -510,12 +510,12 @@ export const FAQ = {
       a: "Gleec Pay Ltd is preparing an application to the FCA to become an Authorised Electronic Money Institution. It is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
     },
     {
-      q: "Is Gleec Business a bank?",
-      a: "No. Gleec Business is not a bank. The proposed service is an e-money and payment account platform. E-money accounts are not bank accounts and are not protected by the Financial Services Compensation Scheme.",
+      q: "Is Gleec Pay a bank?",
+      a: "No. Gleec Pay is not a bank. The proposed service is an e-money and payment account platform. E-money accounts are not bank accounts and are not protected by the Financial Services Compensation Scheme.",
     },
     {
       q: "Are the products on this website available now?",
-      a: "The website describes the proposed Gleec Business product direction. Products, features, pricing, payment routes and card functionality are illustrative and subject to FCA authorisation, onboarding approval, partner availability, final terms and applicable law.",
+      a: "The website describes the proposed Gleec Pay product direction. Products, features, pricing, payment routes and card functionality are illustrative and subject to FCA authorisation, onboarding approval, partner availability, final terms and applicable law.",
     },
     {
       q: "Does Gleec Pay Ltd provide crypto services?",
@@ -551,7 +551,7 @@ export const FAQ = {
 export const FOOTER = {
   tagline: "Proposed UK business accounts and payment infrastructure for complex companies.",
   legal: [
-    "Gleec Business is a brand of Gleec Pay Ltd, a company registered in England and Wales, company number 14776628. Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN, United Kingdom. Gleec Pay Ltd is preparing an application to the Financial Conduct Authority to become an Authorised Electronic Money Institution. Gleec Pay Ltd is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
+    "Gleec Pay Ltd is a company registered in England and Wales, company number 14776628. Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN, United Kingdom. Gleec Pay Ltd is preparing an application to the Financial Conduct Authority to become an Authorised Electronic Money Institution. Gleec Pay Ltd is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
     "The information on this website is for general information and application-preparation purposes only. It does not constitute an offer, invitation or financial promotion to provide regulated services. Any products, features, pricing, payment routes, account details or card functionality shown are illustrative and subject to authorisation, onboarding approval, partner availability, final terms and applicable law.",
     "Gleec Pay Ltd’s proposed UK services are fiat-only. Gleec Pay Ltd will not provide cryptoasset exchange, custody, brokerage, stablecoin issuance, staking, investment services or cryptoasset settlement. E-money accounts are not bank accounts and are not protected by the Financial Services Compensation Scheme. If authorised, relevant customer funds will be safeguarded in accordance with applicable e-money safeguarding requirements.",
     "All trademarks referenced on this page are the property of their respective owners.",

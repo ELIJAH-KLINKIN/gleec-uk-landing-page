@@ -29,7 +29,7 @@ const setAttr = (html, pattern, value) => {
 // The landing page keeps the head written in index.html; legal pages get theirs here.
 function headFor(html, page) {
   const url = siteUrl + page.path.slice(1);
-  const title = `${page.title} — Gleec Business`;
+  const title = `${page.title} — Gleec Pay`;
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeAttr(title)}</title>`);
   html = setAttr(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, page.description);
   html = setAttr(html, /(<link rel="canonical" href=")[^"]*(")/, url);

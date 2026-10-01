@@ -74,7 +74,7 @@ export default function Payments() {
               <span />
               <span />
             </span>
-            <span className="demo-window-title">Gleec Business</span>
+            <span className="demo-window-title">Gleec Pay</span>
           </div>
           <SendRecording />
         </div>

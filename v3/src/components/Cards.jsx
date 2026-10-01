@@ -9,7 +9,7 @@ import SegmentedControl from "./ui/SegmentedControl.jsx";
 import MerchantLogo from "./ui/MerchantLogo.jsx";
 import Stage from "./art/Stage.jsx";
 import WalletPhone from "./art/WalletPhone.jsx";
-import appIcon from "../assets/logo-g.png";
+import appIcon from "../assets/logo-g.svg";
 import "./Cards.css";
 
 export default function Cards() {

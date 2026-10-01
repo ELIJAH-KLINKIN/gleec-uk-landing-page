@@ -10,8 +10,7 @@ const SECTIONS = [
       <>
         <p>
           These terms apply to your use of this website, which is operated by {COMPANY.name} (“we”, “us”), a company
-          registered in {COMPANY.registeredIn} with company number {COMPANY.number}. {COMPANY.brand} is a brand of{" "}
-          {COMPANY.name}.
+          registered in {COMPANY.registeredIn} with company number {COMPANY.number}.
         </p>
         <p>
           By using the website you agree to these terms. If you do not agree, please do not use it. These terms cover

@@ -285,7 +285,7 @@ export default function WalletPhone() {
             </span>
             <span className="wp-banner-text">
               <span className="wp-banner-head">
-                <span>Gleec Business</span>
+                <span>Gleec Pay</span>
                 <span>now</span>
               </span>
               <strong>
@@ -325,7 +325,7 @@ function CardFace({ card, className = "" }) {
     <span className={`wp-card wp-card-${card.tone} ${className}`}>
       <span className="wp-card-brand">
         <img className="wp-card-logo" src={logoWhite} alt="" width="12" height="16" />
-        Gleec
+        Gleec Pay
       </span>
       {/* Like a wallet card: what it's for on top, so the stack is easy to tell apart. */}
       <span className="wp-card-type">

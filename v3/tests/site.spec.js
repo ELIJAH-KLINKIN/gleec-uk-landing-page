@@ -27,7 +27,7 @@ test("prerendered HTML and metadata", async ({ page, request }) => {
   expect(html).toContain("for companies that don’t fit the default box.");
   expect(html).toContain('id="waitlist"');
   await page.goto("./");
-  await expect(page).toHaveTitle(/Gleec Business/);
+  await expect(page).toHaveTitle(/^Gleec Pay — /);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /^https:\/\/.+og-image\.png$/);
   // The shared-link preview travels without the page, so it carries the FCA qualifier itself.
@@ -35,9 +35,12 @@ test("prerendered HTML and metadata", async ({ page, request }) => {
     "content",
     /subject to FCA authorisation/,
   );
-  // One brand spelling everywhere: "Gleec Business", never "GLEEC Business".
+  // One brand everywhere: "Gleec Pay" (2026-10-01), never "GLEEC" or the old "Gleec Business".
   expect(html).not.toContain("GLEEC");
   expect(await page.content()).not.toContain("GLEEC");
+  expect(await page.content()).not.toContain("Gleec Business");
+  await expect(page.locator(".nav-brand")).toHaveText("Gleec Pay");
+  await expect(page.locator(".nav-brand img")).toHaveAttribute("src", /logo-g.*\.svg/);
   await expect(page.locator('meta[name="theme-color"]')).toHaveCount(2);
   await expect(page.locator("h1")).toHaveCount(1);
 });
@@ -373,7 +376,7 @@ test("the site stores nothing on the device (matches the cookie policy)", async 
 for (const [path, title, text] of LEGAL) {
   test(`legal page ${path}: prerendered, titled, linked back home`, async ({ page, request }, testInfo) => {
     const html = await (await request.get(path)).text();
-    expect(html, "own <title>").toContain(`<title>${title} — Gleec Business</title>`);
+    expect(html, "own <title>").toContain(`<title>${title} — Gleec Pay</title>`);
     expect(html, "own canonical URL").toMatch(new RegExp(`rel="canonical" href="[^"]*${path}"`));
     expect(html, "prerendered body").toContain(text);
 
@@ -791,7 +794,7 @@ test("explorer: account details read like a payer's bank asks for them", async (
   ]);
   await expect(details).toContainText("XXXXGB2L");
 
-  // Everything but GBP: one Luxembourg IBAN (SEPA and SWIFT), no switch.
+  // Everything but GBP: one European IBAN (SEPA and SWIFT), no switch.
   for (const [market, title, info] of [
     ["Eurozone", "Global Account · EUR", /SEPA and SEPA Instant/],
     ["United States", "Global Account · USD", /via SWIFT/],
@@ -801,8 +804,8 @@ test("explorer: account details read like a payer's bank asks for them", async (
     await expect(heading).toHaveText(title);
     await expect(section.locator(".xp-panel-head .footnote")).toHaveText(info);
     await expect(section.getByRole("tablist", { name: "Paying from" })).toHaveCount(0);
-    await expect(details).toContainText("LU00 XXX0 0000 1234 5678");
-    await expect(details).toContainText("XXXXLULL");
+    await expect(details).toContainText("XX00 XXXX 0000 1234 5678");
+    await expect(details).toContainText("XXXXXXXX");
     await expect(details).toContainText("Gleec Pay Ltd");
   }
   // The identifier breakdown box is gone.

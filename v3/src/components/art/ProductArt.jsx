@@ -7,7 +7,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Flag from "../ui/Flag.jsx";
 import Icon from "../ui/Icon.jsx";
-import logo from "../../assets/logo-g.png";
+import logo from "../../assets/logo-g.svg";
 import AddAccountPhone from "./AddAccountPhone.jsx";
 import { GalleryPaused } from "../../lib/galleryMotion.js";
 import { useAutoAdvance } from "../../lib/useAutoAdvance.js";

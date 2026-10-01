@@ -39,7 +39,7 @@ export const LEGAL_PAGES = [
     path: "/terms/",
     eyebrow: "Legal",
     title: "Website terms of use",
-    description: "The terms that apply when you use the Gleec Business website.",
+    description: "The terms that apply when you use the Gleec Pay website.",
   },
   {
     id: "complaints",
@@ -61,7 +61,7 @@ export const LEGAL_PAGES = [
     path: "/accessibility/",
     eyebrow: "Support",
     title: "Accessibility statement",
-    description: "How we make the Gleec Business website accessible, known limitations and how to ask for help.",
+    description: "How we make the Gleec Pay website accessible, known limitations and how to ask for help.",
   },
 ];
 

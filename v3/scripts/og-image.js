@@ -19,12 +19,11 @@ const html = `<!doctype html>
   }
   .brand { display: flex; align-items: center; gap: 12px; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
   .brand img { height: 32px; }
-  .brand span { color: #7a2ef5; }
   h1 { max-width: 900px; font-size: 76px; line-height: 1.04; font-weight: 700; letter-spacing: -0.035em; }
   h1 em { font-style: normal; color: #8c41ff; }
   p { font-size: 25px; color: #6e6e73; }
 </style></head><body>
-  <div class="brand"><img src="${dataUrl("logo-g.png", "image/png")}" alt=""><b>Gleec <span>Business</span></b></div>
+  <div class="brand"><img src="${dataUrl("logo-g.svg", "image/svg+xml")}" alt=""><b>Gleec Pay</b></div>
   <h1>Business accounts for companies that <em>don’t fit the default box.</em></h1>
   <p>GBP, EUR and USD accounts · Planned, subject to FCA authorisation</p>
 </body></html>`;

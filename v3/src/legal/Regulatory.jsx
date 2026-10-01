@@ -28,8 +28,8 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          {COMPANY.brand} is a brand of {COMPANY.name}, a private limited company registered in {COMPANY.registeredIn}{" "}
-          with company number {COMPANY.number}. Our registered office is:
+          {COMPANY.name} is a private limited company registered in {COMPANY.registeredIn} with company number{" "}
+          {COMPANY.number}. Our registered office is:
         </p>
         <Address />
         <p>

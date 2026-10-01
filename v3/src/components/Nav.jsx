@@ -6,7 +6,7 @@
 // a quarter of the way down the screen.
 import { useEffect, useRef, useState } from "react";
 import { NAV } from "../content.js";
-import logo from "../assets/logo-g.png";
+import logo from "../assets/logo-g.svg";
 import "./Nav.css";
 
 export default function Nav({ home = true }) {
@@ -98,7 +98,7 @@ export default function Nav({ home = true }) {
         <a
           className="nav-brand"
           href="/"
-          aria-label={home ? "Gleec Business, back to top" : "Gleec Business, home"}
+          aria-label={home ? "Gleec Pay, back to top" : "Gleec Pay, home"}
           onClick={(e) => {
             setOpen(false);
             if (!home) return;
@@ -109,9 +109,7 @@ export default function Nav({ home = true }) {
           }}
         >
           <img src={logo} alt="" width="15" height="20" />
-          <span>
-            Gleec <span className="nav-brand-accent">Business</span>
-          </span>
+          <span>Gleec Pay</span>
         </a>
         <ul className="nav-links" ref={linksRef}>
           {NAV.map((l) => (

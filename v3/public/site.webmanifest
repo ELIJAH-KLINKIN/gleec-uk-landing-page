@@ -1,6 +1,6 @@
 {
-  "name": "Gleec Business",
-  "short_name": "Gleec Business",
+  "name": "Gleec Pay",
+  "short_name": "Gleec Pay",
   "start_url": "./",
   "display": "browser",
   "background_color": "#000000",

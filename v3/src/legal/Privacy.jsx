@@ -24,7 +24,7 @@ const SECTIONS = [
       <>
         <p>
           {COMPANY.name} (“we”, “us”) is the controller of the personal data described in this policy. We are a company
-          registered in {COMPANY.registeredIn} with company number {COMPANY.number}, and {COMPANY.brand} is our brand.
+          registered in {COMPANY.registeredIn} with company number {COMPANY.number}.
         </p>
         <p>
           We have appointed a Data Protection Officer (DPO). To contact our DPO, <WriteToUs subject="Data protection" />
