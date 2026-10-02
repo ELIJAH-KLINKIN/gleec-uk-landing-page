@@ -1,0 +1,376 @@
+/* CardReader (version 2): a square touchscreen reader and a vertical card,
+   drawn to scale in em of the stage's height (26em). --tx is where the
+   reader stands; the card's resting place is under the reader's slot. */
+.cr {
+  position: absolute;
+  inset: 0;
+}
+.cr-stage {
+  --tx: 44%;
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+.cr-stage > * {
+  font-size: calc(100cqh / 26);
+}
+@media (max-width: 734px) {
+  .cr-stage {
+    --tx: 50%;
+  }
+}
+
+/* ---------- The reader: a soft white body, black glass, a bright screen ---------- */
+.cr-reader {
+  position: absolute;
+  z-index: 2;
+  top: 0.8em;
+  left: calc(var(--tx) - 6.75em);
+  width: 13.5em;
+  height: 13.5em;
+  padding: 0.55em;
+  border-radius: 2.4em;
+  background: linear-gradient(160deg, #fbfbfd 0%, #e9e9ee 55%, #d9d9df 100%);
+  box-shadow:
+    0 1.6em 3em rgba(0, 0, 0, 0.32),
+    inset 0 -0.18em 0 rgba(0, 0, 0, 0.12),
+    inset 0 0.08em 0 rgba(255, 255, 255, 0.9);
+}
+/* The chip slot runs along the bottom edge. */
+.cr-slot {
+  position: absolute;
+  bottom: -0.05em;
+  left: 50%;
+  width: 8.6em;
+  height: 0.28em;
+  border-radius: 0.2em 0.2em 0 0;
+  translate: -50% 0;
+  background: linear-gradient(#2a2a2e, #0c0c0e);
+}
+.cr-glass {
+  height: 100%;
+  padding: 0.5em;
+  border-radius: 1.9em;
+  background: #0b0b0d;
+}
+.cr-screen {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.35em;
+  height: 100%;
+  padding: 0.7em;
+  border-radius: 1.45em;
+  background: #ffffff;
+  color: #1d1d1f;
+  text-align: center;
+  line-height: 1.15;
+}
+.cr-merchant {
+  font-size: 0.66em;
+  font-weight: 500;
+  color: #6e6e73;
+}
+.cr-amount {
+  font-family: var(--font-display);
+  font-size: 2.1em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.cr-prompt {
+  display: grid;
+  justify-items: center;
+  gap: 0.35em;
+  margin-top: 0.4em;
+  font-size: 0.66em;
+  font-weight: 600;
+  color: #3a3a3f;
+}
+.cr-nfc {
+  width: 2.4em;
+  height: 2.4em;
+  color: #1d1d1f;
+}
+/* PIN entry on the screen */
+.cr-screen.is-pin {
+  align-content: start;
+  padding-top: 0.9em;
+  gap: 0.3em;
+}
+.cr-pin-title {
+  font-size: 0.86em;
+  font-weight: 700;
+}
+.cr-dots {
+  display: flex;
+  gap: 0.45em;
+  margin: 0.15em 0 0.25em;
+}
+.cr-dots span {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.09em #8e8e93;
+}
+.cr-dots .is-on {
+  background: #1d1d1f;
+  box-shadow: none;
+}
+.cr-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 2.5em);
+  gap: 0.28em 0.45em;
+}
+.cr-pad span {
+  display: grid;
+  place-items: center;
+  height: 1.5em;
+  border-radius: 0.75em;
+  font-size: 0.66em;
+  font-weight: 600;
+  background: #f0f0f3;
+}
+.cr-pad span:empty {
+  background: none;
+}
+/* Processing */
+.cr-spinner {
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  border: 0.22em solid #e5e5ea;
+  border-top-color: #1d1d1f;
+  animation: cr-spin 800ms linear infinite;
+}
+@keyframes cr-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+.cr-label {
+  font-size: 0.86em;
+  font-weight: 700;
+}
+/* Approved: green */
+.cr-screen.is-approved {
+  background: #2fa84f;
+  color: #fff;
+}
+.cr-ok {
+  display: grid;
+  place-items: center;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  font-size: 1em;
+  color: #2fa84f;
+  background: #fff;
+  animation: cr-pop 280ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.cr-ok svg {
+  width: 1.4em;
+  height: 1.4em;
+}
+@keyframes cr-pop {
+  from {
+    scale: 0.4;
+    opacity: 0;
+  }
+}
+.cr-screen.is-approved .cr-label {
+  margin-top: 0.3em;
+  font-size: 1em;
+}
+.cr-sub {
+  font-size: 0.66em;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ---------- The card: vertical, graphite, the red G, chip at the top ---------- */
+.cr-card {
+  position: absolute;
+  z-index: 1; /* behind the reader: inserting hides its top in the slot */
+  top: 14.9em;
+  left: calc(var(--tx) - 3.9em);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  justify-items: start;
+  width: 7.8em;
+  height: 12.4em;
+  padding: 0.8em 0.75em 0.75em;
+  border-radius: 0.7em;
+  color: #fff;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.1), transparent 40%),
+    linear-gradient(170deg, #34343a 0%, #17171a 55%, #0c0c0e 100%);
+  box-shadow:
+    0 1em 2em rgba(0, 0, 0, 0.4),
+    inset 0 0 0 0.06em rgba(255, 255, 255, 0.1);
+  translate: -10.4em -2.4em;
+  rotate: -14deg;
+  transition:
+    translate 650ms cubic-bezier(0.32, 0.72, 0.24, 1),
+    rotate 650ms cubic-bezier(0.32, 0.72, 0.24, 1),
+    scale 650ms cubic-bezier(0.32, 0.72, 0.24, 1);
+}
+/* Contactless: the card stays in front of the reader. */
+.cr-stage.mode-tap .cr-card {
+  z-index: 3;
+}
+.cr-card-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-family: var(--font-display);
+  font-size: 0.86em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.cr-card-brand img {
+  width: auto;
+  height: 1.1em;
+}
+.cr-chip {
+  margin-top: 0.9em;
+  width: 1.55em;
+  height: 1.95em;
+  border-radius: 0.28em;
+  background:
+    linear-gradient(
+      transparent 32%,
+      rgba(90, 60, 10, 0.35) 33% 35%,
+      transparent 36% 64%,
+      rgba(90, 60, 10, 0.35) 65% 67%,
+      transparent 68%
+    ),
+    linear-gradient(90deg, transparent 45%, rgba(90, 60, 10, 0.35) 46% 54%, transparent 55%),
+    linear-gradient(135deg, #f3dc95, #c49a45 60%, #e7c977);
+}
+.cr-card-nfc {
+  position: absolute;
+  top: 3.15em;
+  left: 2.65em;
+  width: 1.1em;
+  height: 1.1em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.cr-card-foot {
+  grid-row: 4;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  width: 100%;
+}
+.cr-card-num {
+  font-size: 0.66em;
+  white-space: nowrap;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+.cr-card-type {
+  display: grid;
+  justify-items: end;
+  font-size: 0.42em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+.cr-card-type span {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Chip and PIN: under the slot, then in (its top hidden behind the reader). */
+.cr-stage.mode-insert:is(.is-align, .is-remove) .cr-card {
+  translate: 0 -1.2em;
+  rotate: 0deg;
+}
+.cr-stage.mode-insert:is(.is-insert, .is-pin1, .is-pin2, .is-pin3, .is-pin4, .is-processing, .is-approved) .cr-card {
+  translate: 0 -5.6em; /* the chip goes all the way in */
+  rotate: 0deg;
+}
+/* Contactless: the card taps the screen, in front of it. */
+.cr-stage.mode-tap:is(.is-tap, .is-processing) .cr-card {
+  translate: 1.4em -12.6em;
+  rotate: -8deg;
+  scale: 0.96;
+}
+
+/* ---------- The notification ---------- */
+.cr .cr-notice {
+  z-index: 4;
+  transform: none;
+  top: 4%;
+  right: -4%;
+  bottom: auto;
+  font-size: var(--t-footnote);
+  opacity: 0;
+  translate: 0 -0.6em;
+  transition:
+    opacity 300ms var(--ease),
+    translate 380ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.cr .cr-notice.is-on {
+  opacity: 1;
+  translate: 0 0;
+}
+.cr-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #fff;
+}
+@media (max-width: 734px) {
+  .cr .cr-notice {
+    top: auto;
+    right: 50%;
+    bottom: -12%;
+    translate: 50% -0.6em;
+  }
+  .cr .cr-notice.is-on {
+    translate: 50% 0;
+  }
+}
+
+/* ---------- Pause / Play ---------- */
+.cr-play {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: var(--hit);
+  height: var(--hit);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fill);
+  color: var(--label);
+  cursor: pointer;
+  transition: background-color var(--dur-1);
+}
+.cr-play:hover {
+  background: var(--fill-2);
+}
+.cr-play svg {
+  fill: currentColor;
+}
+@media (max-width: 734px) {
+  .cr-play {
+    top: 0;
+    bottom: auto;
+  }
+}
+
+/* Paused, or a still under Reduce Motion: nothing moves. */
+.cr.is-paused * {
+  animation-play-state: paused !important;
+}
+.cr.is-still * {
+  animation: none !important;
+  transition: none !important;
+}

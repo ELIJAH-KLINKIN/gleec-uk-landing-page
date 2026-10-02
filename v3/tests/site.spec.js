@@ -737,18 +737,24 @@ test("highlights gallery: never plays under Reduce Motion", async ({ page }) => 
   await expect(page.locator(".hl").getByRole("button", { name: /Pause highlights|Play highlights/ })).toHaveCount(0);
 });
 
-test("cards: the physical card taps a terminal — Approved, then the notification; Pause holds it", async ({ page }) => {
-  test.setTimeout(40_000);
+test("cards: the physical card goes chip and PIN into the reader, then the notification; Pause holds it", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
   await page.goto("./#cards");
   await page.locator("#cards").getByRole("tab", { name: "Physical" }).click();
-  const stage = page.locator(".ct-stage");
-  await expect(page.locator(".ct-amount")).toHaveText("S$248.60");
-  await expect(stage).toHaveClass(/is-processing/, { timeout: 8000 });
-  await expect(page.locator(".ct-status")).toHaveText(/Approved/, { timeout: 8000 });
-  await expect(page.locator(".ct-notice")).toHaveClass(/is-on/, { timeout: 4000 });
-  await expect(page.locator(".ct-notice")).toContainText("Telok Ayer Kitchen · −S$248.60");
+  const stage = page.locator(".cr-stage");
+  await expect(page.locator(".cr-amount")).toHaveText("S$248.60");
+  // In from the bottom, chip first, then the PIN on the screen (the card stays in).
+  await expect(page.locator(".cr-pin-title")).toHaveText("Enter PIN", { timeout: 8000 });
+  await expect(stage).toHaveClass(/mode-insert/);
+  await expect(page.locator(".cr-dots .is-on")).toHaveCount(4, { timeout: 4000 });
+  await expect(page.locator(".cr-screen.is-approved")).toContainText("Approved", { timeout: 4000 });
+  await expect(page.locator(".cr-sub")).toHaveText("Remove card", { timeout: 4000 });
+  await expect(page.locator(".cr-notice")).toHaveClass(/is-on/, { timeout: 4000 });
+  await expect(page.locator(".cr-notice")).toContainText("Telok Ayer Kitchen · −S$248.60");
   // Then the hotel deposit.
-  await expect(page.locator(".ct-amount")).toHaveText("£300.00", { timeout: 10000 });
+  await expect(page.locator(".cr-amount")).toHaveText("£300.00", { timeout: 10000 });
   // Pause holds the scene where it is; Play goes on.
   await page.getByRole("button", { name: "Pause the card demo" }).click();
   const before = await stage.getAttribute("class");
@@ -762,11 +768,11 @@ test("cards: under Reduce Motion the physical card is a still, approved", async 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./#cards");
   await page.locator("#cards").getByRole("tab", { name: "Physical" }).click();
-  await expect(page.locator(".ct-status")).toHaveText(/Approved/);
-  await expect(page.locator(".ct-notice")).toHaveClass(/is-on/);
+  await expect(page.locator(".cr-screen.is-approved")).toContainText("Approved");
+  await expect(page.locator(".cr-notice")).toHaveClass(/is-on/);
   await expect(page.getByRole("button", { name: /the card demo/ })).toHaveCount(0);
   await page.waitForTimeout(2500);
-  await expect(page.locator(".ct-amount")).toHaveText("S$248.60");
+  await expect(page.locator(".cr-notice")).toContainText("Telok Ayer Kitchen");
 });
 
 test("cards: segmented control switches card (click + arrow keys)", async ({ page }, testInfo) => {
@@ -777,9 +783,9 @@ test("cards: segmented control switches card (click + arrow keys)", async ({ pag
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   await expect(caption).toHaveText(/Physical cards/);
-  // The physical card is the Gleec Pay card on a terminal (drawn, not a render).
-  await expect(page.locator(".ct-card")).toContainText("Gleec Pay");
-  await expect(page.locator(".ct-terminal")).toHaveCount(1);
+  // The physical card is the Gleec Pay card at a card reader (drawn, not a render).
+  await expect(page.locator(".cr-card")).toContainText("Gleec Pay");
+  await expect(page.locator(".cr-reader")).toHaveCount(1);
   if (!isMobile(testInfo)) {
     await tabs.nth(1).focus();
     await page.keyboard.press("ArrowLeft");

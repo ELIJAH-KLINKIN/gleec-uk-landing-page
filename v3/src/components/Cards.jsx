@@ -8,7 +8,7 @@ import SectionHeader from "./ui/SectionHeader.jsx";
 import SegmentedControl from "./ui/SegmentedControl.jsx";
 import Stage from "./art/Stage.jsx";
 import WalletPhone from "./art/WalletPhone.jsx";
-import CardTerminal from "./art/CardTerminal.jsx";
+import CardReader from "./art/CardReader.jsx";
 import "./Cards.css";
 
 export default function Cards() {
@@ -40,9 +40,10 @@ export default function Cards() {
                 <WalletPhone />
               </div>
             ) : (
-              // Physical: the card tapped on a terminal, playing itself (art/CardTerminal.jsx).
+              // Physical: chip and PIN or a tap on a card reader, playing itself (art/CardReader.jsx;
+              // version 1, the handheld terminal with keys, is art/CardTerminal.jsx).
               <div className="cards-stage" key="physical">
-                <CardTerminal />
+                <CardReader />
               </div>
             )}
           </Stage>
