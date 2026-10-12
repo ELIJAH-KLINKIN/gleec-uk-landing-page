@@ -1,6 +1,6 @@
-// CardReader.jsx — version 2 of "pay with the physical card" (version 1, the
-// handheld terminal with keys, is CardTerminal.jsx). A modern square card reader,
-// all touchscreen like the readers shops use today (no keypad, no maker's logo),
+// CardReader.jsx — "pay with the physical card". A modern square card reader,
+// all touchscreen like the readers shops use today (no keypad, no maker's logo;
+// Ilia chose it over a handheld terminal with keys, 2026-10-12),
 // and a vertical Gleec Pay card, both drawn in HTML/CSS. Larger amounts go chip
 // and PIN: the card goes into the slot from the bottom, chip first, the PIN is
 // entered on the screen, Approved, "Remove card", and it slides out. Small

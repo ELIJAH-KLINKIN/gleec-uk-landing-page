@@ -1,4 +1,4 @@
-/* CardReader (version 2): a square touchscreen reader and a vertical card,
+/* CardReader: a square touchscreen reader and a vertical card,
    drawn to scale in em of the stage's height (26em). --tx is where the
    reader stands; the card's resting place is under the reader's slot. */
 .cr {

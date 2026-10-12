@@ -124,19 +124,30 @@ test("menu links land each section with its heading below the bar", async ({ pag
   await page.goto("./");
   for (const label of ["Product", "Accounts", "Payments", "Cards", "Pricing", "FAQ"]) {
     const link = page.locator(".nav-links a", { hasText: label });
-    await link.click();
-    await settle(page);
-    const { headTop, navBottom, vh } = await page.evaluate(
-      (href) => {
-        const h = document.querySelector(href).querySelector("h2");
+    const href = await link.getAttribute("href");
+    const measure = () =>
+      page.evaluate((sel) => {
+        const h = document.querySelector(sel).querySelector("h2");
         return {
           headTop: h.getBoundingClientRect().top,
           navBottom: document.querySelector(".nav").getBoundingClientRect().bottom,
           vh: window.innerHeight,
         };
-      },
-      await link.getAttribute("href"),
-    );
+      }, href);
+    await link.click();
+    // Wait for the glide to arrive (on a busy machine it can start late, and
+    // "not moving yet" looks the same as "settled"), then check where it rests.
+    await expect
+      .poll(
+        async () => {
+          const m = await measure();
+          return m.headTop > m.navBottom && m.headTop < m.vh / 2;
+        },
+        { message: `${label} heading arrives under the bar`, timeout: 8000 },
+      )
+      .toBe(true);
+    await settle(page);
+    const { headTop, navBottom, vh } = await measure();
     expect(headTop, `${label} heading below the bar`).toBeGreaterThan(navBottom);
     expect(headTop, `${label} heading in the top half`).toBeLessThan(vh / 2);
   }

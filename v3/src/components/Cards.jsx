@@ -1,7 +1,7 @@
 // Cards.jsx — company cards. A segmented control switches between the virtual
 // card (an interactive phone: pay from the wallet, see the whole stack) and the
-// physical card (tapped on a card terminal in three everyday moments, each with
-// the app's notification).
+// physical card (chip and PIN or a tap on a modern card reader, in three everyday
+// moments, each with the app's notification).
 import { useState } from "react";
 import { CARDS } from "../content.js";
 import SectionHeader from "./ui/SectionHeader.jsx";
@@ -40,8 +40,7 @@ export default function Cards() {
                 <WalletPhone />
               </div>
             ) : (
-              // Physical: chip and PIN or a tap on a card reader, playing itself (art/CardReader.jsx;
-              // version 1, the handheld terminal with keys, is art/CardTerminal.jsx).
+              // Physical: chip and PIN or a tap on a card reader, playing itself (art/CardReader.jsx).
               <div className="cards-stage" key="physical">
                 <CardReader />
               </div>
