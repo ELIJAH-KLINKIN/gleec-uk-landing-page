@@ -1,5 +1,5 @@
 // middleware.ts — password gate for the whole site. One personal password per person, each kept only in its
-// own env var SITE_PASSWORD_<NAME> (e.g. SITE_PASSWORD_DANIEL). To add a person: add the name below and the variable.
+// own env var (SITE_PASSWORD_DANIEL …). To add a person: add the variable's name to VARS below, then redeploy.
 // Spec: ~/*design-guidelines/passwordpage.md
 export const config = {
   matcher: ["/((?!favicon\\.ico|favicon-32\\.png|apple-touch-icon\\.png|icon-192\\.png).*)"], // the sign-in page's own icons stay public
@@ -11,7 +11,16 @@ const LOGIN = "/__login";
 const LOGOUT = "/__logout";
 const KEY = "GLEEC-PAY-UK/v1"; // any constant per site; change it to sign everyone out
 
-const PEOPLE = ["ilia", "daniel", "vince", "thaina", "austin"];
+// The env variables that hold a password, as they are named in Vercel; the part after SITE_PASSWORD_ is the name logged at sign-in.
+const VARS = [
+  "SITE_PASSWORD_ILYA",
+  "SITE_PASSWORD_DANIEL",
+  "SITE_PASSWORD_DAVID",
+  "SITE_PASSWORD_THAINA",
+  "SITE_PASSWORD_AUSTIN",
+  "SITE_PASSWOTD_VINCENT", // sic: spelt this way in Vercel
+  "SITE_PASSWORD_VINCENT",
+];
 
 type Person = { name: string; token: string };
 
@@ -31,9 +40,9 @@ function same(a: string, b: string): boolean {
 async function people(): Promise<Person[]> {
   // none set: nothing opens (fail closed)
   const out: Person[] = [];
-  for (const name of PEOPLE) {
-    const pw = (process.env["SITE_PASSWORD_" + name.toUpperCase()] || "").trim();
-    if (pw) out.push({ name, token: await token(pw) });
+  for (const v of VARS) {
+    const pw = (process.env[v] || "").trim();
+    if (pw) out.push({ name: v.slice("SITE_PASSWORD_".length).toLowerCase(), token: await token(pw) });
   }
   return out;
 }
