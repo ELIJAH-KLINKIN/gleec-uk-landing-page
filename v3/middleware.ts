@@ -1,5 +1,6 @@
-// middleware.ts — password gate for the whole site. One personal password per person, kept only in the
-// env var SITE_PASSWORDS ("name:password,name:password"). Spec: ~/*design-guidelines/passwordpage.md
+// middleware.ts — password gate for the whole site. One personal password per person, each kept only in its
+// own env var SITE_PASSWORD_<NAME> (e.g. SITE_PASSWORD_DANIEL). To add a person: add the name below and the variable.
+// Spec: ~/*design-guidelines/passwordpage.md
 export const config = {
   matcher: ["/((?!favicon\\.ico|favicon-32\\.png|apple-touch-icon\\.png|icon-192\\.png).*)"], // the sign-in page's own icons stay public
 };
@@ -9,6 +10,8 @@ const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 const LOGIN = "/__login";
 const LOGOUT = "/__logout";
 const KEY = "GLEEC-PAY-UK/v1"; // any constant per site; change it to sign everyone out
+
+const PEOPLE = ["ilia", "daniel", "vince", "thaina", "austin"];
 
 type Person = { name: string; token: string };
 
@@ -28,11 +31,9 @@ function same(a: string, b: string): boolean {
 async function people(): Promise<Person[]> {
   // none set: nothing opens (fail closed)
   const out: Person[] = [];
-  for (const part of (process.env.SITE_PASSWORDS || "").split(",")) {
-    const i = part.indexOf(":");
-    const name = part.slice(0, i).trim(),
-      pw = part.slice(i + 1).trim();
-    if (i > 0 && pw) out.push({ name, token: await token(pw) });
+  for (const name of PEOPLE) {
+    const pw = (process.env["SITE_PASSWORD_" + name.toUpperCase()] || "").trim();
+    if (pw) out.push({ name, token: await token(pw) });
   }
   return out;
 }
