@@ -516,7 +516,7 @@ export const FAQ = {
     },
     {
       q: "How is Gleec Pay Ltd related to other Gleec companies?",
-      a: "Gleec Pay Ltd is the only Gleec company that would provide the services on this website. Other Gleec-branded companies, including those offering digital-asset services, are separate legal entities: their products are not offered by Gleec Pay Ltd and are not covered by its application to the FCA or, if granted, its authorisation. If authorised, customer funds would be safeguarded by Gleec Pay Ltd and never held by another Gleec company.",
+      a: "Gleec Pay Ltd forms part of the wider Gleec Group, which includes Gleec Pay Holdings Limited and other separately incorporated entities. Gleec Pay Ltd is the sole legal entity responsible for the services described on this website. Other Gleec Group companies, including those providing digital-asset services, operate as separate legal entities and are not covered by Gleec Pay Ltd’s FCA authorisation application or any subsequent authorisation.",
     },
     {
       q: "Who can apply?",
@@ -524,7 +524,7 @@ export const FAQ = {
     },
     {
       q: "Are customer funds protected by FSCS?",
-      a: "No. E-money accounts are not bank accounts and are not protected by FSCS. If authorised, relevant customer funds will be safeguarded in accordance with applicable e-money safeguarding requirements.",
+      a: "No. Gleec Pay is not a bank, and e-money accounts are not protected by the Financial Services Compensation Scheme (FSCS). Once FCA-authorised, Gleec Pay will safeguard relevant customer funds in accordance with the Electronic Money Regulations 2011 and applicable FCA safeguarding requirements. Safeguarding is designed to protect customer funds if Gleec Pay becomes insolvent, although customers may experience delays or shortfalls in recovering their money.",
     },
     {
       q: "Which currencies and payment routes are planned?",
@@ -545,7 +545,7 @@ export const FOOTER = {
   tagline: "Proposed UK business accounts and payment infrastructure for complex companies.",
   legal: [
     "Gleec Pay Ltd is a company registered in England and Wales, company number 14776628. Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN, United Kingdom. Gleec Pay Ltd is preparing an application to the Financial Conduct Authority to become an Authorised Electronic Money Institution. Gleec Pay Ltd is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
-    "The information on this website is for general information and application-preparation purposes only. It does not constitute an offer, invitation or financial promotion to provide regulated services. Any products, features, pricing, payment routes, account details or card functionality shown are illustrative and subject to authorisation, onboarding approval, partner availability, final terms and applicable law.",
+    "The information on this website is for general information and application-preparation purposes only. The information on this website describes services proposed by Gleec Pay Ltd and does not constitute an offer to provide services that require regulatory authorisation. Any products, features, pricing, payment routes, account details or card functionality shown are illustrative and subject to authorisation, onboarding approval, partner availability, final terms and applicable law.",
     "Gleec Pay Ltd’s proposed UK services are fiat-only. Gleec Pay Ltd will not provide cryptoasset exchange, custody, brokerage, stablecoin issuance, staking, investment services or cryptoasset settlement. E-money accounts are not bank accounts and are not protected by the Financial Services Compensation Scheme. If authorised, relevant customer funds will be safeguarded in accordance with applicable e-money safeguarding requirements.",
     "All trademarks referenced on this page are the property of their respective owners.",
   ],

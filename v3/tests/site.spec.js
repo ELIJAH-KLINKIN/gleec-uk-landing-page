@@ -341,7 +341,7 @@ const LEGAL = [
   ["/regulatory/", "Regulatory information", "not currently authorised by the FCA"],
   ["/safeguarding/", "How your money will be protected", "not covered by the FSCS"],
   ["/privacy/", "Privacy policy", "ico.org.uk/make-a-complaint"],
-  ["/cookies/", "Cookie policy", "does not use cookies"],
+  ["/cookies/", "Cookie policy", "strictly necessary cookie"],
   ["/terms/", "Website terms of use", "laws of England and Wales"],
   ["/complaints/", "Complaints", "financial-ombudsman.org.uk"],
   ["/contact/", "Contact us", "14776628"],

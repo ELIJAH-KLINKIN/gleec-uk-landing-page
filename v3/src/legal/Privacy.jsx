@@ -11,7 +11,7 @@ const SUMMARY = (
       a call or contact us, plus limited technical data to keep the website secure.
     </li>
     <li>We use it to tell you about our launch and to talk to eligible businesses about opening an account.</li>
-    <li>We don’t sell your data, and the website uses no cookies or trackers.</li>
+    <li>We don’t sell your data, and the website uses no advertising or tracking cookies.</li>
     <li>You can ask to see, correct or delete your data, or stop hearing from us, at any time.</li>
   </ul>
 );
@@ -74,7 +74,7 @@ const SECTIONS = [
           ],
           [
             "Security data",
-            "A one-way coded version of your IP address (we never store the address itself) and your browser type. We use these to limit repeated or automated sign-ups.",
+            "A pseudonymised (one-way coded) version of your IP address and your browser type. We use these to limit repeated or automated sign-ups.",
             "Your browser, when you submit the form",
           ],
           [
@@ -151,8 +151,10 @@ const SECTIONS = [
             system our team uses. When you book a call, your name and email appear in the calendar invitation.
           </li>
           <li>
-            <strong>Our team’s notification channel.</strong> When someone joins the waitlist or books a call, our team
-            is alerted through a private Telegram channel. The alert contains the details you submitted.
+            <strong>Our team’s notification channel.</strong> Internal notifications may be sent through an approved
+            messaging platform using only the minimum personal information necessary to notify authorised staff of new
+            enquiries or bookings. Access is restricted to authorised personnel and subject to appropriate data
+            protection and security controls.
           </li>
           <li>
             <strong>Other Gleec group companies</strong> that provide technical support to us under written agreements,
@@ -180,8 +182,9 @@ const SECTIONS = [
         We store waitlist data in the United Kingdom. Some of our service providers, or their support teams, are based
         outside the UK. When personal data is transferred outside the UK, we make sure it is protected as UK law
         requires, by relying on UK adequacy regulations (for example, for US companies certified under the UK Extension
-        to the EU–US Data Privacy Framework) or on the UK International Data Transfer Agreement or Addendum. You can ask
-        us for details.
+        to the EU–US Data Privacy Framework) or on the UK International Data Transfer Agreement or Addendum. We maintain
+        records of relevant international data transfers and the safeguards applicable to each recipient. You can ask us
+        for details.
       </p>
     ),
   },
@@ -194,7 +197,7 @@ const SECTIONS = [
         rows={[
           [
             "Waitlist, call bookings and correspondence",
-            "Up to 24 months after our last contact with you, or until you ask us to delete it, whichever is sooner. If your business becomes a customer, the customer privacy notice applies instead.",
+            "We retain waitlist, booking and correspondence information for up to 24 months following your last meaningful interaction with us, unless a longer retention period is required or justified by applicable law. You may request earlier deletion, subject to applicable legal exceptions. If your business becomes a customer, the customer privacy notice applies instead.",
           ],
           ["Security data (coded IP address, browser type)", "Kept with your registration and deleted with it"],
           ["Hosting provider delivery logs", "Short periods set by the provider, normally no more than 30 days"],
@@ -251,9 +254,10 @@ const SECTIONS = [
     body: (
       <p>
         We protect personal data with encryption in transit and at rest, access limited to people who need it, and
-        security controls on our systems and providers. We never store your IP address itself, only a one-way code
-        derived from it. No system is perfectly secure, but we act quickly on any incident and will tell you and the ICO
-        when the law requires.
+        security controls on our systems and providers. For registration security checks, we retain a pseudonymised
+        representation of your IP address. Our hosting provider may separately process IP addresses to deliver, secure
+        and maintain the website. No system is perfectly secure, but we act quickly on any incident and will tell you
+        and the ICO when the law requires.
       </p>
     ),
   },
@@ -264,7 +268,8 @@ const SECTIONS = [
       <>
         <p>Our website and services are for businesses and are not intended for anyone under 18.</p>
         <p>
-          The website does not use cookies or similar technologies; see our <a href="/cookies/">Cookie policy</a>.
+          We do not use cookies or similar technologies for advertising or non-essential tracking. Any technologies
+          necessary for website operation and security are described in our <a href="/cookies/">Cookie policy</a>.
         </p>
         <p>
           We may update this policy. The date at the top shows when it last changed, and we will tell you about

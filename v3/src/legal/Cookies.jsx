@@ -1,17 +1,25 @@
-// Cookies.jsx — cookie policy. The site sets no cookies and loads nothing from
-// third parties, so there is no consent banner; this page says so plainly.
+// Cookies.jsx — cookie policy. The only cookie is the strictly necessary one
+// set by the password page (middleware.ts) while the site is internal; nothing
+// is loaded from third parties, so there is no consent banner (PECR reg. 6(4)).
 import { COMPANY } from "../content.js";
 import { Address, LegalSections, WriteToUs } from "./parts.jsx";
 
 const SECTIONS = [
   {
     id: "none",
-    title: "We don’t use cookies",
+    title: "No advertising or tracking cookies",
     body: (
       <>
         <p>
-          This website does not use cookies or similar technologies, such as local storage, tracking pixels, web beacons
-          or device fingerprinting. That is why you do not see a cookie banner.
+          This website does not use cookies or similar technologies for advertising or tracking, such as analytics
+          cookies, tracking pixels, web beacons or device fingerprinting. That is why you do not see a cookie banner.
+        </p>
+        <p>
+          While the website is in preview, it is protected by a password. When you enter it, we set one strictly
+          necessary cookie, <code>site_access</code>, so you don’t have to enter the password on every page. It holds
+          only a coded confirmation that you signed in, not your password or any personal details, and it expires after
+          30 days. Because it is strictly necessary for the website to work, the law does not require your consent for
+          it. It will be removed when the website launches.
         </p>
         <p>In particular, the website:</p>
         <ul>

@@ -1,7 +1,7 @@
 // pages.js — the legal and regulatory pages: one entry per URL. The prerender
 // step writes each to dist/<path>index.html with its own title and description;
 // the client picks the same page from location.pathname when it hydrates.
-export const LEGAL_UPDATED = "28 September 2026";
+export const LEGAL_UPDATED = "Nov-20, 2026";
 
 export const LEGAL_PAGES = [
   {
@@ -32,7 +32,8 @@ export const LEGAL_PAGES = [
     path: "/cookies/",
     eyebrow: "Legal",
     title: "Cookie policy",
-    description: "This website does not use cookies or similar tracking technologies.",
+    description:
+      "This website uses no advertising or tracking cookies, only one strictly necessary cookie while it is in preview.",
   },
   {
     id: "terms",
