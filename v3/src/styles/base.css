@@ -193,6 +193,26 @@ a:hover {
   max-width: 680px;
   margin: var(--s-5) auto 0;
 }
+/* A quiet status line under the lead, e.g. "Later phase" on Cards. */
+.section-head .section-note {
+  max-width: 620px;
+  margin: var(--s-4) auto 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--label-2);
+  text-wrap: pretty;
+}
+.section-badge {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--label);
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
 
 /* ---------- Buttons ---------- */
 .btn {

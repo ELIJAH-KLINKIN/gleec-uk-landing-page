@@ -18,7 +18,11 @@ export default function Cards() {
   return (
     <section id="cards" className="section cards" aria-labelledby="cards-title">
       <div className="container">
-        <SectionHeader id="cards-title" eyebrow={CARDS.eyebrow} title={CARDS.title} lead={CARDS.lead} />
+        <SectionHeader id="cards-title" eyebrow={CARDS.eyebrow} title={CARDS.title} lead={CARDS.lead}>
+          <p className="section-note">
+            <span className="section-badge">{CARDS.badge}</span> {CARDS.note}
+          </p>
+        </SectionHeader>
 
         <div className="cards-switch">
           <SegmentedControl

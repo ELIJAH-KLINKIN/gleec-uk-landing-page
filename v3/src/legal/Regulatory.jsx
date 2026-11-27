@@ -8,7 +8,7 @@ import { Address, LegalSections, WriteToUs } from "./parts.jsx";
 const SUMMARY = (
   <ul>
     <li>
-      {COMPANY.name} is <strong>not yet authorised</strong> by the FCA. It is preparing an application to become an
+      {COMPANY.name} is <strong>not yet authorised</strong> by the FCA. It has applied for authorisation as an
       Authorised Electronic Money Institution.
     </li>
     <li>We do not open accounts, hold customer money or provide payment services yet.</li>
@@ -48,7 +48,7 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          {COMPANY.name} is preparing an application to the Financial Conduct Authority (FCA) to become an Authorised
+          {COMPANY.name} has applied to the Financial Conduct Authority (FCA) for authorisation as an Authorised
           Electronic Money Institution under the Electronic Money Regulations 2011. If authorised, we will issue
           electronic money and provide payment services connected to it.
         </p>

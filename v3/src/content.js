@@ -25,7 +25,7 @@ export const COMPANY = {
 };
 
 export const DISCLAIMER_SHORT =
-  "Gleec Pay Ltd is preparing an application to the FCA to become an Authorised Electronic Money Institution. Products and services shown are subject to authorisation, onboarding approval, partner availability and final terms.";
+  "Gleec Pay Ltd has applied to the FCA for authorisation as an Authorised Electronic Money Institution. Products and services shown are subject to authorisation, onboarding approval, partner availability and final terms.";
 
 export const HERO = {
   // The headline's first line rotates with the demo tab below it
@@ -55,7 +55,7 @@ export const HERO = {
       id: "cards",
       label: "Cards",
       phrase: "Corporate cards",
-      caption: "Virtual and physical company cards with limits and spend controls.",
+      caption: "Virtual and physical company cards with limits and spend controls. Planned for a later phase.",
     },
     {
       id: "payments",
@@ -292,6 +292,9 @@ export const PAYMENTS = {
 };
 export const CARDS = {
   eyebrow: "Cards",
+  // Vincent's review (Nov-20, 2026): cards are not day-one, so the section says so.
+  badge: "Later phase",
+  note: "Card services are planned for a future phase and are not available at launch. Availability will depend on the necessary provider arrangements, regulatory assessment and operational readiness.",
   title: "Company cards with controls built in.",
   lead: "Virtual and physical cards for team spend, supplier payments and subscriptions — with limits, visibility and controls built into every purchase.",
   scenes: [
@@ -500,7 +503,7 @@ export const FAQ = {
   items: [
     {
       q: "Is Gleec Pay Ltd authorised by the FCA?",
-      a: "Gleec Pay Ltd is preparing an application to the FCA to become an Authorised Electronic Money Institution. It is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
+      a: "Gleec Pay Ltd has applied to the FCA for authorisation as an Authorised Electronic Money Institution under the Electronic Money Regulations 2011. Authorisation has not yet been granted: Gleec Pay Ltd is not currently authorised by the FCA, and the proposed regulated services are not currently available.",
     },
     {
       q: "Is Gleec Pay a bank?",
@@ -544,8 +547,8 @@ export const FAQ = {
 export const FOOTER = {
   tagline: "Proposed UK business accounts and payment infrastructure for complex companies.",
   legal: [
-    "Gleec Pay Ltd is a company registered in England and Wales, company number 14776628. Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN, United Kingdom. Gleec Pay Ltd is preparing an application to the Financial Conduct Authority to become an Authorised Electronic Money Institution. Gleec Pay Ltd is not currently authorised by the FCA and does not currently provide regulated e-money or payment services in the UK.",
-    "The information on this website is for general information and application-preparation purposes only. The information on this website describes services proposed by Gleec Pay Ltd and does not constitute an offer to provide services that require regulatory authorisation. Any products, features, pricing, payment routes, account details or card functionality shown are illustrative and subject to authorisation, onboarding approval, partner availability, final terms and applicable law.",
+    "Gleec Pay Ltd is a company registered in England and Wales, company number 14776628. Registered office: Tower 42, 25 Old Broad Street, London EC2N 1HN, United Kingdom. Gleec Pay Ltd has applied to the Financial Conduct Authority for authorisation as an Authorised Electronic Money Institution under the Electronic Money Regulations 2011. Authorisation has not yet been granted, and the proposed regulated services are not currently available.",
+    "The information on this website is for general information purposes only. The information on this website describes services proposed by Gleec Pay Ltd and does not constitute an offer to provide services that require regulatory authorisation. Any products, features, pricing, payment routes, account details or card functionality shown are illustrative and subject to authorisation, onboarding approval, partner availability, final terms and applicable law.",
     "Gleec Pay Ltd’s proposed UK services are fiat-only. Gleec Pay Ltd will not provide cryptoasset exchange, custody, brokerage, stablecoin issuance, staking, investment services or cryptoasset settlement. E-money accounts are not bank accounts and are not protected by the Financial Services Compensation Scheme. If authorised, relevant customer funds will be safeguarded in accordance with applicable e-money safeguarding requirements.",
     "All trademarks referenced on this page are the property of their respective owners.",
   ],

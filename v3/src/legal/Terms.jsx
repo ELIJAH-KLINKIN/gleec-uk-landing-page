@@ -26,9 +26,10 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          {COMPANY.name} is preparing an application to the Financial Conduct Authority (FCA) to become an Authorised
-          Electronic Money Institution. It is not currently authorised by the FCA and does not currently provide
-          regulated e-money or payment services. See <a href="/regulatory/">Regulatory information</a>.
+          {COMPANY.name} has applied to the Financial Conduct Authority (FCA) for authorisation as an Authorised
+          Electronic Money Institution. Authorisation has not yet been granted: it is not currently authorised by the
+          FCA and does not currently provide regulated e-money or payment services. See{" "}
+          <a href="/regulatory/">Regulatory information</a>.
         </p>
         <p>
           Nothing on this website is an offer, invitation or recommendation to open an account or to use any regulated
